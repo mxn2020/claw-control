@@ -3,19 +3,14 @@ import { Card, CardHeader, CardTitle, CardContent } from '#/components/ui/card'
 import { Badge } from '#/components/ui/badge'
 import { Input } from '#/components/ui/input'
 import { Mic, Settings, MessageSquare, Volume2 } from 'lucide-react'
+import { useVoiceSettings } from '#/lib/dataHooks'
 
 export const Route = createFileRoute('/_app/voice/')({
   component: VoiceIndex,
 })
 
-const recentTranscripts = [
-  { id: '1', text: 'Hey Claw, schedule a meeting with the design team for tomorrow at 2pm.', time: '10 min ago', agent: 'Calendar Agent' },
-  { id: '2', text: 'Summarize the last 3 emails from the marketing team.', time: '25 min ago', agent: 'Email Drafter' },
-  { id: '3', text: 'What\'s the status on the deployment pipeline?', time: '1 hr ago', agent: 'Code Reviewer' },
-  { id: '4', text: 'Add a reminder to review the Q3 budget report by Friday.', time: '2 hrs ago', agent: 'Task Agent' },
-]
-
 function VoiceIndex() {
+  const settings = useVoiceSettings()
   return (
     <div className="space-y-6">
       <div>
@@ -56,17 +51,17 @@ function VoiceIndex() {
             <div className="space-y-4">
               <div>
                 <label className="text-xs text-slate-400 block mb-1.5">TTS Voice</label>
-                <Input placeholder="Nova (Default)" readOnly />
+                <Input placeholder={settings?.ttsVoice ?? 'Nova (Default)'} readOnly />
               </div>
               <div>
                 <label className="text-xs text-slate-400 block mb-1.5">STT Language</label>
-                <Input placeholder="English (US)" readOnly />
+                <Input placeholder={settings?.language ?? 'en-US'} readOnly />
               </div>
               <div>
                 <label className="text-xs text-slate-400 block mb-1.5">Wake Word</label>
                 <div className="flex items-center gap-2">
-                  <Input placeholder="Hey Claw" readOnly className="flex-1" />
-                  <Badge variant="success">Active</Badge>
+                  <Input placeholder={settings?.wakeWord ?? 'Hey Claw'} readOnly className="flex-1" />
+                  <Badge variant={settings?.enabled ? 'success' : 'danger'}>{settings?.enabled ? 'Active' : 'Inactive'}</Badge>
                 </div>
               </div>
               <div className="flex items-center justify-between pt-2 border-t border-slate-700/60">
@@ -90,12 +85,7 @@ function VoiceIndex() {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {recentTranscripts.map((t) => (
-                <div key={t.id} className="rounded-lg border border-slate-700 bg-slate-800/50 px-3 py-2.5">
-                  <p className="text-sm text-slate-200">{t.text}</p>
-                  <p className="text-xs text-slate-500 mt-1">{t.agent} · {t.time}</p>
-                </div>
-              ))}
+              <p className="text-sm text-slate-500">No recent transcripts</p>
             </div>
           </CardContent>
         </Card>

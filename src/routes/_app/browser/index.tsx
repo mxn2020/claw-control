@@ -2,28 +2,25 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import { Card, CardHeader, CardTitle, CardContent } from '#/components/ui/card'
 import { Badge } from '#/components/ui/badge'
 import { Globe, Monitor, Image, List, Clock } from 'lucide-react'
+import { useBrowserSessions } from '#/lib/dataHooks'
 
 export const Route = createFileRoute('/_app/browser/')({
   component: BrowserIndex,
 })
 
-const activeSessions = [
-  { id: 'bs_1', url: 'github.com/claw-control', agent: 'Code Reviewer', status: 'active' as const, duration: '5 min' },
-  { id: 'bs_2', url: 'docs.google.com/spreadsheet/...', agent: 'Research Assistant', status: 'active' as const, duration: '12 min' },
-]
-
-const queuedTasks = [
-  { id: 'qt_1', description: 'Scrape pricing from competitor sites', agent: 'Research Assistant', priority: 'medium' as const },
-  { id: 'qt_2', description: 'Fill out vendor registration form', agent: 'Admin Agent', priority: 'low' as const },
-]
-
-const browserProfiles = [
-  { id: 'bp_1', name: 'Default', sessions: 12, lastUsed: '2 min ago' },
-  { id: 'bp_2', name: 'Work', sessions: 8, lastUsed: '1 hr ago' },
-  { id: 'bp_3', name: 'Research', sessions: 23, lastUsed: '3 hrs ago' },
-]
+const formatRelativeTime = (ts: number) => {
+  const diff = Date.now() - ts
+  if (diff < 60000) return Math.floor(diff / 1000) + 's ago'
+  if (diff < 3600000) return Math.floor(diff / 60000) + ' min'
+  if (diff < 86400000) return Math.floor(diff / 3600000) + ' hrs'
+  return Math.floor(diff / 86400000) + ' days'
+}
 
 function BrowserIndex() {
+  const sessions = useBrowserSessions()
+
+  const activeSessions = sessions.filter((s) => s.status === 'active')
+  const pastSessions = sessions.filter((s) => s.status === 'completed' || s.status === 'failed')
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -59,7 +56,7 @@ function BrowserIndex() {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-white">{s.url}</p>
-                    <p className="text-xs text-slate-500">{s.agent} · {s.duration}</p>
+                    <p className="text-xs text-slate-500">{s.agentId} · {formatRelativeTime(s.createdAt)}</p>
                   </div>
                 </div>
                 <Badge variant="success">{s.status}</Badge>
@@ -80,13 +77,13 @@ function BrowserIndex() {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {queuedTasks.map((t) => (
+              {pastSessions.map((t) => (
                 <div key={t.id} className="rounded-lg border border-slate-700 bg-slate-800/50 px-4 py-3">
-                  <p className="text-sm text-slate-200">{t.description}</p>
+                  <p className="text-sm text-slate-200">{t.taskDescription}</p>
                   <div className="flex items-center gap-2 mt-1.5">
-                    <span className="text-xs text-slate-500">{t.agent}</span>
-                    <Badge className={t.priority === 'medium' ? 'bg-amber-900/50 text-amber-300' : 'bg-slate-700 text-slate-400'}>
-                      {t.priority}
+                    <span className="text-xs text-slate-500">{t.agentId}</span>
+                    <Badge className={t.status === 'failed' ? 'bg-red-900/50 text-red-300' : 'bg-slate-700 text-slate-400'}>
+                      {t.status}
                     </Badge>
                   </div>
                 </div>
@@ -95,21 +92,21 @@ function BrowserIndex() {
           </CardContent>
         </Card>
 
-        {/* Browser Profiles */}
+        {/* Past Sessions */}
         <Card>
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
               <Image className="w-4 h-4 text-cyan-400" />
-              Browser Profiles
+              Past Sessions
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {browserProfiles.map((p) => (
+              {sessions.filter((s) => s.status === 'completed').map((p) => (
                 <div key={p.id} className="flex items-center justify-between rounded-lg border border-slate-700 bg-slate-800/50 px-4 py-3">
                   <div>
-                    <p className="text-sm font-medium text-white">{p.name}</p>
-                    <p className="text-xs text-slate-500">{p.sessions} sessions · Last used {p.lastUsed}</p>
+                    <p className="text-sm font-medium text-white">{p.url}</p>
+                    <p className="text-xs text-slate-500">{p.pagesVisited.length} pages · {formatRelativeTime(p.createdAt)}</p>
                   </div>
                 </div>
               ))}

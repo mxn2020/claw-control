@@ -3,27 +3,62 @@ import { Card, CardHeader, CardTitle, CardContent } from '#/components/ui/card'
 import { Badge } from '#/components/ui/badge'
 import { Input } from '#/components/ui/input'
 import { BarChart3, DollarSign, Activity, Settings } from 'lucide-react'
+import { useUsageRecords } from '#/lib/dataHooks'
 
 export const Route = createFileRoute('/_app/usage/')({
   component: UsageIndex,
 })
 
-const tokenBreakdown = [
-  { agent: 'Research Assistant', tokens: '45.2k', cost: '$1.82', percentage: 34 },
-  { agent: 'Code Reviewer', tokens: '32.1k', cost: '$1.28', percentage: 24 },
-  { agent: 'Email Drafter', tokens: '21.8k', cost: '$0.87', percentage: 16 },
-  { agent: 'Meeting Summarizer', tokens: '18.5k', cost: '$0.74', percentage: 14 },
-  { agent: 'Other', tokens: '15.9k', cost: '$0.64', percentage: 12 },
-]
-
-const spendByPeriod = [
-  { period: 'Today', spend: '$1.24', tokens: '31.0k' },
-  { period: 'This Week', spend: '$5.35', tokens: '133.5k' },
-  { period: 'This Month', spend: '$18.42', tokens: '460.5k' },
-  { period: 'All Time', spend: '$87.60', tokens: '2.19M' },
-]
-
 function UsageIndex() {
+  const records = useUsageRecords()
+
+  // Aggregate by agentId for token breakdown
+  const byAgent: Record<string, { tokens: number; cost: number }> = {}
+  let totalTokens = 0
+  let totalCost = 0
+  for (const r of records) {
+    const key = r.agentId
+    if (!byAgent[key]) byAgent[key] = { tokens: 0, cost: 0 }
+    byAgent[key].tokens += r.tokensUsed
+    byAgent[key].cost += r.cost
+    totalTokens += r.tokensUsed
+    totalCost += r.cost
+  }
+
+  function fmtTokens(t: number): string {
+    if (t >= 1_000_000) return `${(t / 1_000_000).toFixed(2)}M`
+    if (t >= 1_000) return `${(t / 1_000).toFixed(1)}k`
+    return String(t)
+  }
+
+  const tokenBreakdown = Object.entries(byAgent)
+    .sort((a, b) => b[1].tokens - a[1].tokens)
+    .map(([agent, data]) => ({
+      agent,
+      tokens: fmtTokens(data.tokens),
+      cost: `$${data.cost.toFixed(2)}`,
+      percentage: totalTokens > 0 ? Math.round((data.tokens / totalTokens) * 100) : 0,
+    }))
+
+  // Aggregate by period
+  const now = Date.now()
+  const todayStr = new Date(now).toISOString().slice(0, 10)
+  const weekAgo = now - 7 * 86_400_000
+  const monthAgo = now - 30 * 86_400_000
+
+  const todayRecords = records.filter((r) => r.date === todayStr)
+  const weekRecords = records.filter((r) => r.createdAt >= weekAgo)
+  const monthRecords = records.filter((r) => r.createdAt >= monthAgo)
+
+  const sumTokens = (rs: typeof records) => rs.reduce((s, r) => s + r.tokensUsed, 0)
+  const sumCost = (rs: typeof records) => rs.reduce((s, r) => s + r.cost, 0)
+
+  const spendByPeriod = [
+    { period: 'Today', spend: `$${sumCost(todayRecords).toFixed(2)}`, tokens: `${fmtTokens(sumTokens(todayRecords))}` },
+    { period: 'This Week', spend: `$${sumCost(weekRecords).toFixed(2)}`, tokens: `${fmtTokens(sumTokens(weekRecords))}` },
+    { period: 'This Month', spend: `$${sumCost(monthRecords).toFixed(2)}`, tokens: `${fmtTokens(sumTokens(monthRecords))}` },
+    { period: 'All Time', spend: `$${totalCost.toFixed(2)}`, tokens: `${fmtTokens(totalTokens)}` },
+  ]
   return (
     <div className="space-y-6">
       <div>

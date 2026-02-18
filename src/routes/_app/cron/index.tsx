@@ -3,75 +3,34 @@ import { Card, CardHeader, CardTitle, CardContent } from '#/components/ui/card'
 import { Badge } from '#/components/ui/badge'
 import { Button } from '#/components/ui/button'
 import { Clock, Bot, Plus, CheckCircle2, XCircle, Calendar } from 'lucide-react'
+import { useCronJobs } from '#/lib/dataHooks'
 
 export const Route = createFileRoute('/_app/cron/')({
   component: Cron,
 })
 
-const jobs = [
-  {
-    id: 'cron1',
-    name: 'Morning Briefing',
-    schedule: 'Every day at 7:00 AM',
-    nextRun: 'Tomorrow, 7:00 AM',
-    lastRun: 'Today, 7:00 AM',
-    lastStatus: 'success' as const,
-    agent: 'Research Assistant',
-    enabled: true,
-  },
-  {
-    id: 'cron2',
-    name: 'Inbox Triage',
-    schedule: 'Every 30 minutes',
-    nextRun: 'In 12 min',
-    lastRun: '18 min ago',
-    lastStatus: 'success' as const,
-    agent: 'Email Drafter',
-    enabled: true,
-  },
-  {
-    id: 'cron3',
-    name: 'Weekly Expense Report',
-    schedule: 'Every Friday at 5:00 PM',
-    nextRun: 'Fri, Jan 17',
-    lastRun: 'Jan 10, 2025',
-    lastStatus: 'success' as const,
-    agent: 'Finance Tracker',
-    enabled: true,
-  },
-  {
-    id: 'cron4',
-    name: 'Competitor Monitor',
-    schedule: 'Every day at 9:00 AM',
-    nextRun: 'Tomorrow, 9:00 AM',
-    lastRun: 'Today, 9:00 AM',
-    lastStatus: 'failed' as const,
-    agent: 'Research Assistant',
-    enabled: true,
-  },
-  {
-    id: 'cron5',
-    name: 'Database Backup Check',
-    schedule: 'Every 6 hours',
-    nextRun: 'In 4 hrs',
-    lastRun: '2 hrs ago',
-    lastStatus: 'success' as const,
-    agent: 'Code Reviewer',
-    enabled: true,
-  },
-  {
-    id: 'cron6',
-    name: 'Social Media Post',
-    schedule: 'Mon, Wed, Fri at 10:00 AM',
-    nextRun: 'Fri, Jan 17',
-    lastRun: 'Jan 15, 2025',
-    lastStatus: 'success' as const,
-    agent: 'Research Assistant',
-    enabled: false,
-  },
-]
+const formatRelativeTime = (ts: number | undefined) => {
+  if (!ts) return '—'
+  const diff = Date.now() - ts
+  if (diff < 0) {
+    const absDiff = -diff
+    if (absDiff < 3600000) return 'In ' + Math.floor(absDiff / 60000) + ' min'
+    if (absDiff < 86400000) return 'In ' + Math.floor(absDiff / 3600000) + ' hrs'
+    return 'In ' + Math.floor(absDiff / 86400000) + ' days'
+  }
+  if (diff < 60000) return Math.floor(diff / 1000) + 's ago'
+  if (diff < 3600000) return Math.floor(diff / 60000) + ' min ago'
+  if (diff < 86400000) return Math.floor(diff / 3600000) + ' hrs ago'
+  return Math.floor(diff / 86400000) + ' days ago'
+}
+
+const formatNextRun = (ts: number | undefined) => {
+  if (!ts) return '—'
+  return formatRelativeTime(ts)
+}
 
 function Cron() {
+  const jobs = useCronJobs()
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -102,7 +61,7 @@ function Cron() {
           <CardContent className="py-3 flex items-center gap-3">
             <CheckCircle2 className="w-5 h-5 text-emerald-400" />
             <div>
-              <p className="text-xl font-bold text-white">{jobs.filter(j => j.lastStatus === 'success').length}</p>
+              <p className="text-xl font-bold text-white">{jobs.filter(j => j.lastRunStatus === 'success').length}</p>
               <p className="text-xs text-slate-500">Last Run OK</p>
             </div>
           </CardContent>
@@ -111,7 +70,7 @@ function Cron() {
           <CardContent className="py-3 flex items-center gap-3">
             <XCircle className="w-5 h-5 text-red-400" />
             <div>
-              <p className="text-xl font-bold text-white">{jobs.filter(j => j.lastStatus === 'failed').length}</p>
+              <p className="text-xl font-bold text-white">{jobs.filter(j => j.lastRunStatus === 'failed').length}</p>
               <p className="text-xs text-slate-500">Failed</p>
             </div>
           </CardContent>
@@ -133,24 +92,24 @@ function Cron() {
                   <div className="flex items-center gap-4 text-xs text-slate-500">
                     <span>Schedule: {job.schedule}</span>
                     <span className="flex items-center gap-1">
-                      <Bot size={11} /> {job.agent}
+                      <Bot size={11} /> {job.agentId}
                     </span>
                   </div>
                 </div>
                 <div className="flex items-center gap-6 text-xs">
                   <div className="text-right">
                     <p className="text-slate-500">Next run</p>
-                    <p className="text-slate-300">{job.nextRun}</p>
+                    <p className="text-slate-300">{formatNextRun(job.nextRunAt)}</p>
                   </div>
                   <div className="text-right">
                     <p className="text-slate-500">Last run</p>
                     <div className="flex items-center gap-1">
-                      {job.lastStatus === 'success' ? (
+                      {job.lastRunStatus === 'success' ? (
                         <CheckCircle2 size={12} className="text-emerald-400" />
                       ) : (
                         <XCircle size={12} className="text-red-400" />
                       )}
-                      <span className="text-slate-300">{job.lastRun}</span>
+                      <span className="text-slate-300">{formatRelativeTime(job.lastRunAt)}</span>
                     </div>
                   </div>
                 </div>

@@ -4,26 +4,46 @@ import { Badge } from '#/components/ui/badge'
 import { Button } from '#/components/ui/button'
 import { Input } from '#/components/ui/input'
 import { Brain, Heart, Plus, Search, FolderOpen, Clock } from 'lucide-react'
+import { useMemoryFiles } from '#/lib/dataHooks'
 
 export const Route = createFileRoute('/_app/memory/')({
   component: MemoryIndex,
 })
 
-const topicClusters = [
-  { name: 'Work', count: 142, color: 'bg-cyan-500' },
-  { name: 'Personal', count: 87, color: 'bg-emerald-500' },
-  { name: 'Projects', count: 63, color: 'bg-amber-500' },
-  { name: 'General', count: 45, color: 'bg-purple-500' },
-]
-
-const recentMemories = [
-  { id: '1', content: 'Prefers dark mode across all interfaces', source: 'Preference', time: '10 min ago' },
-  { id: '2', content: 'Weekly standup is every Monday at 9:30 AM', source: 'Calendar', time: '1 hr ago' },
-  { id: '3', content: 'Primary programming language is TypeScript', source: 'Conversation', time: '3 hrs ago' },
-  { id: '4', content: 'Allergic to shellfish — noted for restaurant suggestions', source: 'Personal', time: 'Yesterday' },
-]
+const formatRelativeTime = (ts: number) => {
+  const diff = Date.now() - ts
+  if (diff < 60000) return Math.floor(diff / 1000) + 's ago'
+  if (diff < 3600000) return Math.floor(diff / 60000) + ' min ago'
+  if (diff < 86400000) return Math.floor(diff / 3600000) + ' hrs ago'
+  return Math.floor(diff / 86400000) + ' days ago'
+}
 
 function MemoryIndex() {
+  const files = useMemoryFiles()
+
+  // Derive topic clusters from tags
+  const tagCounts: Record<string, number> = {}
+  for (const f of files) {
+    for (const tag of f.tags) {
+      tagCounts[tag] = (tagCounts[tag] || 0) + 1
+    }
+  }
+  const colors = ['bg-cyan-500', 'bg-emerald-500', 'bg-amber-500', 'bg-purple-500']
+  const topicClusters = Object.entries(tagCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 4)
+    .map(([name, count], i) => ({ name, count, color: colors[i % colors.length] }))
+
+  // Recent memories (sorted by createdAt descending)
+  const recentMemories = [...files]
+    .sort((a, b) => b.createdAt - a.createdAt)
+    .slice(0, 4)
+    .map((f) => ({
+      id: f.id,
+      content: f.path,
+      source: f.fileType,
+      time: formatRelativeTime(f.createdAt),
+    }))
   return (
     <div className="space-y-6">
       <div>
@@ -55,8 +75,8 @@ function MemoryIndex() {
             </div>
           </CardHeader>
           <CardContent>
-            <span className="text-3xl font-bold text-white">337</span>
-            <span className="text-xs text-slate-400 ml-2">across 4 topics</span>
+            <span className="text-3xl font-bold text-white">{files.length}</span>
+            <span className="text-xs text-slate-400 ml-2">across {topicClusters.length} topics</span>
           </CardContent>
         </Card>
         <Card>
