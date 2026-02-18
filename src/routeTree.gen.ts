@@ -11,10 +11,23 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as DashboardRouteImport } from './routes/_dashboard'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DashboardSwarmsIndexRouteImport } from './routes/_dashboard/swarms/index'
+import { Route as DashboardSkillsIndexRouteImport } from './routes/_dashboard/skills/index'
+import { Route as DashboardSettingsIndexRouteImport } from './routes/_dashboard/settings/index'
+import { Route as DashboardSessionsIndexRouteImport } from './routes/_dashboard/sessions/index'
+import { Route as DashboardSecurityIndexRouteImport } from './routes/_dashboard/security/index'
+import { Route as DashboardObserveIndexRouteImport } from './routes/_dashboard/observe/index'
 import { Route as DashboardFleetIndexRouteImport } from './routes/_dashboard/fleet/index'
+import { Route as DashboardConfigureIndexRouteImport } from './routes/_dashboard/configure/index'
+import { Route as DashboardChannelsIndexRouteImport } from './routes/_dashboard/channels/index'
+import { Route as DashboardBlueprintsIndexRouteImport } from './routes/_dashboard/blueprints/index'
+import { Route as DashboardAuditIndexRouteImport } from './routes/_dashboard/audit/index'
 import { Route as DashboardAgentsIndexRouteImport } from './routes/_dashboard/agents/index'
 import { Route as DashboardAgentsNewRouteImport } from './routes/_dashboard/agents/new'
+import { Route as DashboardSwarmsSwarmIdIndexRouteImport } from './routes/_dashboard/swarms/$swarmId/index'
+import { Route as DashboardSessionsSessionIdIndexRouteImport } from './routes/_dashboard/sessions/$sessionId/index'
 import { Route as DashboardFleetInstancesIndexRouteImport } from './routes/_dashboard/fleet/instances/index'
+import { Route as DashboardBlueprintsBlueprintIdIndexRouteImport } from './routes/_dashboard/blueprints/$blueprintId/index'
 import { Route as DashboardAgentsAgentIdIndexRouteImport } from './routes/_dashboard/agents/$agentId/index'
 import { Route as DashboardFleetInstancesNewRouteImport } from './routes/_dashboard/fleet/instances/new'
 import { Route as DashboardFleetInstancesInstanceIdIndexRouteImport } from './routes/_dashboard/fleet/instances/$instanceId/index'
@@ -28,9 +41,60 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardSwarmsIndexRoute = DashboardSwarmsIndexRouteImport.update({
+  id: '/swarms/',
+  path: '/swarms/',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardSkillsIndexRoute = DashboardSkillsIndexRouteImport.update({
+  id: '/skills/',
+  path: '/skills/',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardSettingsIndexRoute = DashboardSettingsIndexRouteImport.update({
+  id: '/settings/',
+  path: '/settings/',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardSessionsIndexRoute = DashboardSessionsIndexRouteImport.update({
+  id: '/sessions/',
+  path: '/sessions/',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardSecurityIndexRoute = DashboardSecurityIndexRouteImport.update({
+  id: '/security/',
+  path: '/security/',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardObserveIndexRoute = DashboardObserveIndexRouteImport.update({
+  id: '/observe/',
+  path: '/observe/',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardFleetIndexRoute = DashboardFleetIndexRouteImport.update({
   id: '/fleet/',
   path: '/fleet/',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardConfigureIndexRoute = DashboardConfigureIndexRouteImport.update({
+  id: '/configure/',
+  path: '/configure/',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardChannelsIndexRoute = DashboardChannelsIndexRouteImport.update({
+  id: '/channels/',
+  path: '/channels/',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardBlueprintsIndexRoute =
+  DashboardBlueprintsIndexRouteImport.update({
+    id: '/blueprints/',
+    path: '/blueprints/',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardAuditIndexRoute = DashboardAuditIndexRouteImport.update({
+  id: '/audit/',
+  path: '/audit/',
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardAgentsIndexRoute = DashboardAgentsIndexRouteImport.update({
@@ -43,10 +107,28 @@ const DashboardAgentsNewRoute = DashboardAgentsNewRouteImport.update({
   path: '/agents/new',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardSwarmsSwarmIdIndexRoute =
+  DashboardSwarmsSwarmIdIndexRouteImport.update({
+    id: '/swarms/$swarmId/',
+    path: '/swarms/$swarmId/',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardSessionsSessionIdIndexRoute =
+  DashboardSessionsSessionIdIndexRouteImport.update({
+    id: '/sessions/$sessionId/',
+    path: '/sessions/$sessionId/',
+    getParentRoute: () => DashboardRoute,
+  } as any)
 const DashboardFleetInstancesIndexRoute =
   DashboardFleetInstancesIndexRouteImport.update({
     id: '/fleet/instances/',
     path: '/fleet/instances/',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardBlueprintsBlueprintIdIndexRoute =
+  DashboardBlueprintsBlueprintIdIndexRouteImport.update({
+    id: '/blueprints/$blueprintId/',
+    path: '/blueprints/$blueprintId/',
     getParentRoute: () => DashboardRoute,
   } as any)
 const DashboardAgentsAgentIdIndexRoute =
@@ -72,20 +154,46 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/agents/new': typeof DashboardAgentsNewRoute
   '/agents/': typeof DashboardAgentsIndexRoute
+  '/audit/': typeof DashboardAuditIndexRoute
+  '/blueprints/': typeof DashboardBlueprintsIndexRoute
+  '/channels/': typeof DashboardChannelsIndexRoute
+  '/configure/': typeof DashboardConfigureIndexRoute
   '/fleet/': typeof DashboardFleetIndexRoute
+  '/observe/': typeof DashboardObserveIndexRoute
+  '/security/': typeof DashboardSecurityIndexRoute
+  '/sessions/': typeof DashboardSessionsIndexRoute
+  '/settings/': typeof DashboardSettingsIndexRoute
+  '/skills/': typeof DashboardSkillsIndexRoute
+  '/swarms/': typeof DashboardSwarmsIndexRoute
   '/fleet/instances/new': typeof DashboardFleetInstancesNewRoute
   '/agents/$agentId/': typeof DashboardAgentsAgentIdIndexRoute
+  '/blueprints/$blueprintId/': typeof DashboardBlueprintsBlueprintIdIndexRoute
   '/fleet/instances/': typeof DashboardFleetInstancesIndexRoute
+  '/sessions/$sessionId/': typeof DashboardSessionsSessionIdIndexRoute
+  '/swarms/$swarmId/': typeof DashboardSwarmsSwarmIdIndexRoute
   '/fleet/instances/$instanceId/': typeof DashboardFleetInstancesInstanceIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/agents/new': typeof DashboardAgentsNewRoute
   '/agents': typeof DashboardAgentsIndexRoute
+  '/audit': typeof DashboardAuditIndexRoute
+  '/blueprints': typeof DashboardBlueprintsIndexRoute
+  '/channels': typeof DashboardChannelsIndexRoute
+  '/configure': typeof DashboardConfigureIndexRoute
   '/fleet': typeof DashboardFleetIndexRoute
+  '/observe': typeof DashboardObserveIndexRoute
+  '/security': typeof DashboardSecurityIndexRoute
+  '/sessions': typeof DashboardSessionsIndexRoute
+  '/settings': typeof DashboardSettingsIndexRoute
+  '/skills': typeof DashboardSkillsIndexRoute
+  '/swarms': typeof DashboardSwarmsIndexRoute
   '/fleet/instances/new': typeof DashboardFleetInstancesNewRoute
   '/agents/$agentId': typeof DashboardAgentsAgentIdIndexRoute
+  '/blueprints/$blueprintId': typeof DashboardBlueprintsBlueprintIdIndexRoute
   '/fleet/instances': typeof DashboardFleetInstancesIndexRoute
+  '/sessions/$sessionId': typeof DashboardSessionsSessionIdIndexRoute
+  '/swarms/$swarmId': typeof DashboardSwarmsSwarmIdIndexRoute
   '/fleet/instances/$instanceId': typeof DashboardFleetInstancesInstanceIdIndexRoute
 }
 export interface FileRoutesById {
@@ -94,10 +202,23 @@ export interface FileRoutesById {
   '/_dashboard': typeof DashboardRouteWithChildren
   '/_dashboard/agents/new': typeof DashboardAgentsNewRoute
   '/_dashboard/agents/': typeof DashboardAgentsIndexRoute
+  '/_dashboard/audit/': typeof DashboardAuditIndexRoute
+  '/_dashboard/blueprints/': typeof DashboardBlueprintsIndexRoute
+  '/_dashboard/channels/': typeof DashboardChannelsIndexRoute
+  '/_dashboard/configure/': typeof DashboardConfigureIndexRoute
   '/_dashboard/fleet/': typeof DashboardFleetIndexRoute
+  '/_dashboard/observe/': typeof DashboardObserveIndexRoute
+  '/_dashboard/security/': typeof DashboardSecurityIndexRoute
+  '/_dashboard/sessions/': typeof DashboardSessionsIndexRoute
+  '/_dashboard/settings/': typeof DashboardSettingsIndexRoute
+  '/_dashboard/skills/': typeof DashboardSkillsIndexRoute
+  '/_dashboard/swarms/': typeof DashboardSwarmsIndexRoute
   '/_dashboard/fleet/instances/new': typeof DashboardFleetInstancesNewRoute
   '/_dashboard/agents/$agentId/': typeof DashboardAgentsAgentIdIndexRoute
+  '/_dashboard/blueprints/$blueprintId/': typeof DashboardBlueprintsBlueprintIdIndexRoute
   '/_dashboard/fleet/instances/': typeof DashboardFleetInstancesIndexRoute
+  '/_dashboard/sessions/$sessionId/': typeof DashboardSessionsSessionIdIndexRoute
+  '/_dashboard/swarms/$swarmId/': typeof DashboardSwarmsSwarmIdIndexRoute
   '/_dashboard/fleet/instances/$instanceId/': typeof DashboardFleetInstancesInstanceIdIndexRoute
 }
 export interface FileRouteTypes {
@@ -106,20 +227,46 @@ export interface FileRouteTypes {
     | '/'
     | '/agents/new'
     | '/agents/'
+    | '/audit/'
+    | '/blueprints/'
+    | '/channels/'
+    | '/configure/'
     | '/fleet/'
+    | '/observe/'
+    | '/security/'
+    | '/sessions/'
+    | '/settings/'
+    | '/skills/'
+    | '/swarms/'
     | '/fleet/instances/new'
     | '/agents/$agentId/'
+    | '/blueprints/$blueprintId/'
     | '/fleet/instances/'
+    | '/sessions/$sessionId/'
+    | '/swarms/$swarmId/'
     | '/fleet/instances/$instanceId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/agents/new'
     | '/agents'
+    | '/audit'
+    | '/blueprints'
+    | '/channels'
+    | '/configure'
     | '/fleet'
+    | '/observe'
+    | '/security'
+    | '/sessions'
+    | '/settings'
+    | '/skills'
+    | '/swarms'
     | '/fleet/instances/new'
     | '/agents/$agentId'
+    | '/blueprints/$blueprintId'
     | '/fleet/instances'
+    | '/sessions/$sessionId'
+    | '/swarms/$swarmId'
     | '/fleet/instances/$instanceId'
   id:
     | '__root__'
@@ -127,10 +274,23 @@ export interface FileRouteTypes {
     | '/_dashboard'
     | '/_dashboard/agents/new'
     | '/_dashboard/agents/'
+    | '/_dashboard/audit/'
+    | '/_dashboard/blueprints/'
+    | '/_dashboard/channels/'
+    | '/_dashboard/configure/'
     | '/_dashboard/fleet/'
+    | '/_dashboard/observe/'
+    | '/_dashboard/security/'
+    | '/_dashboard/sessions/'
+    | '/_dashboard/settings/'
+    | '/_dashboard/skills/'
+    | '/_dashboard/swarms/'
     | '/_dashboard/fleet/instances/new'
     | '/_dashboard/agents/$agentId/'
+    | '/_dashboard/blueprints/$blueprintId/'
     | '/_dashboard/fleet/instances/'
+    | '/_dashboard/sessions/$sessionId/'
+    | '/_dashboard/swarms/$swarmId/'
     | '/_dashboard/fleet/instances/$instanceId/'
   fileRoutesById: FileRoutesById
 }
@@ -155,11 +315,81 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_dashboard/swarms/': {
+      id: '/_dashboard/swarms/'
+      path: '/swarms'
+      fullPath: '/swarms/'
+      preLoaderRoute: typeof DashboardSwarmsIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/skills/': {
+      id: '/_dashboard/skills/'
+      path: '/skills'
+      fullPath: '/skills/'
+      preLoaderRoute: typeof DashboardSkillsIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/settings/': {
+      id: '/_dashboard/settings/'
+      path: '/settings'
+      fullPath: '/settings/'
+      preLoaderRoute: typeof DashboardSettingsIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/sessions/': {
+      id: '/_dashboard/sessions/'
+      path: '/sessions'
+      fullPath: '/sessions/'
+      preLoaderRoute: typeof DashboardSessionsIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/security/': {
+      id: '/_dashboard/security/'
+      path: '/security'
+      fullPath: '/security/'
+      preLoaderRoute: typeof DashboardSecurityIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/observe/': {
+      id: '/_dashboard/observe/'
+      path: '/observe'
+      fullPath: '/observe/'
+      preLoaderRoute: typeof DashboardObserveIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/_dashboard/fleet/': {
       id: '/_dashboard/fleet/'
       path: '/fleet'
       fullPath: '/fleet/'
       preLoaderRoute: typeof DashboardFleetIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/configure/': {
+      id: '/_dashboard/configure/'
+      path: '/configure'
+      fullPath: '/configure/'
+      preLoaderRoute: typeof DashboardConfigureIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/channels/': {
+      id: '/_dashboard/channels/'
+      path: '/channels'
+      fullPath: '/channels/'
+      preLoaderRoute: typeof DashboardChannelsIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/blueprints/': {
+      id: '/_dashboard/blueprints/'
+      path: '/blueprints'
+      fullPath: '/blueprints/'
+      preLoaderRoute: typeof DashboardBlueprintsIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/audit/': {
+      id: '/_dashboard/audit/'
+      path: '/audit'
+      fullPath: '/audit/'
+      preLoaderRoute: typeof DashboardAuditIndexRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/_dashboard/agents/': {
@@ -176,11 +406,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAgentsNewRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/_dashboard/swarms/$swarmId/': {
+      id: '/_dashboard/swarms/$swarmId/'
+      path: '/swarms/$swarmId'
+      fullPath: '/swarms/$swarmId/'
+      preLoaderRoute: typeof DashboardSwarmsSwarmIdIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/sessions/$sessionId/': {
+      id: '/_dashboard/sessions/$sessionId/'
+      path: '/sessions/$sessionId'
+      fullPath: '/sessions/$sessionId/'
+      preLoaderRoute: typeof DashboardSessionsSessionIdIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/_dashboard/fleet/instances/': {
       id: '/_dashboard/fleet/instances/'
       path: '/fleet/instances'
       fullPath: '/fleet/instances/'
       preLoaderRoute: typeof DashboardFleetInstancesIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/blueprints/$blueprintId/': {
+      id: '/_dashboard/blueprints/$blueprintId/'
+      path: '/blueprints/$blueprintId'
+      fullPath: '/blueprints/$blueprintId/'
+      preLoaderRoute: typeof DashboardBlueprintsBlueprintIdIndexRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/_dashboard/agents/$agentId/': {
@@ -210,20 +461,47 @@ declare module '@tanstack/react-router' {
 interface DashboardRouteChildren {
   DashboardAgentsNewRoute: typeof DashboardAgentsNewRoute
   DashboardAgentsIndexRoute: typeof DashboardAgentsIndexRoute
+  DashboardAuditIndexRoute: typeof DashboardAuditIndexRoute
+  DashboardBlueprintsIndexRoute: typeof DashboardBlueprintsIndexRoute
+  DashboardChannelsIndexRoute: typeof DashboardChannelsIndexRoute
+  DashboardConfigureIndexRoute: typeof DashboardConfigureIndexRoute
   DashboardFleetIndexRoute: typeof DashboardFleetIndexRoute
+  DashboardObserveIndexRoute: typeof DashboardObserveIndexRoute
+  DashboardSecurityIndexRoute: typeof DashboardSecurityIndexRoute
+  DashboardSessionsIndexRoute: typeof DashboardSessionsIndexRoute
+  DashboardSettingsIndexRoute: typeof DashboardSettingsIndexRoute
+  DashboardSkillsIndexRoute: typeof DashboardSkillsIndexRoute
+  DashboardSwarmsIndexRoute: typeof DashboardSwarmsIndexRoute
   DashboardFleetInstancesNewRoute: typeof DashboardFleetInstancesNewRoute
   DashboardAgentsAgentIdIndexRoute: typeof DashboardAgentsAgentIdIndexRoute
+  DashboardBlueprintsBlueprintIdIndexRoute: typeof DashboardBlueprintsBlueprintIdIndexRoute
   DashboardFleetInstancesIndexRoute: typeof DashboardFleetInstancesIndexRoute
+  DashboardSessionsSessionIdIndexRoute: typeof DashboardSessionsSessionIdIndexRoute
+  DashboardSwarmsSwarmIdIndexRoute: typeof DashboardSwarmsSwarmIdIndexRoute
   DashboardFleetInstancesInstanceIdIndexRoute: typeof DashboardFleetInstancesInstanceIdIndexRoute
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardAgentsNewRoute: DashboardAgentsNewRoute,
   DashboardAgentsIndexRoute: DashboardAgentsIndexRoute,
+  DashboardAuditIndexRoute: DashboardAuditIndexRoute,
+  DashboardBlueprintsIndexRoute: DashboardBlueprintsIndexRoute,
+  DashboardChannelsIndexRoute: DashboardChannelsIndexRoute,
+  DashboardConfigureIndexRoute: DashboardConfigureIndexRoute,
   DashboardFleetIndexRoute: DashboardFleetIndexRoute,
+  DashboardObserveIndexRoute: DashboardObserveIndexRoute,
+  DashboardSecurityIndexRoute: DashboardSecurityIndexRoute,
+  DashboardSessionsIndexRoute: DashboardSessionsIndexRoute,
+  DashboardSettingsIndexRoute: DashboardSettingsIndexRoute,
+  DashboardSkillsIndexRoute: DashboardSkillsIndexRoute,
+  DashboardSwarmsIndexRoute: DashboardSwarmsIndexRoute,
   DashboardFleetInstancesNewRoute: DashboardFleetInstancesNewRoute,
   DashboardAgentsAgentIdIndexRoute: DashboardAgentsAgentIdIndexRoute,
+  DashboardBlueprintsBlueprintIdIndexRoute:
+    DashboardBlueprintsBlueprintIdIndexRoute,
   DashboardFleetInstancesIndexRoute: DashboardFleetInstancesIndexRoute,
+  DashboardSessionsSessionIdIndexRoute: DashboardSessionsSessionIdIndexRoute,
+  DashboardSwarmsSwarmIdIndexRoute: DashboardSwarmsSwarmIdIndexRoute,
   DashboardFleetInstancesInstanceIdIndexRoute:
     DashboardFleetInstancesInstanceIdIndexRoute,
 }
@@ -239,12 +517,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
