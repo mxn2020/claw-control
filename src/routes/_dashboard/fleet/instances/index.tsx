@@ -7,7 +7,15 @@ export const Route = createFileRoute('/_dashboard/fleet/instances/')({
   component: InstanceList,
 })
 
-const instances = [
+// Data hook - ready for Convex migration
+function useInstancesData() {
+  // When Convex is connected, replace with:
+  // const instances = useQuery(api.instances.list, {})
+  // return instances ?? mockInstances
+  return mockInstances
+}
+
+const mockInstances = [
   {
     id: 'inst_1',
     name: 'Production Gateway',
@@ -41,6 +49,8 @@ const instances = [
 ]
 
 function InstanceList() {
+  const instances = useInstancesData()
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
