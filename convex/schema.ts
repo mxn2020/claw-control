@@ -179,4 +179,173 @@ export default defineSchema({
     details: v.optional(v.string()),
     createdAt: v.number(),
   }).index("by_org", ["orgId"]).index("by_resource", ["resourceType", "resourceId"]),
+
+  // Tasks
+  tasks: defineTable({
+    orgId: v.id("organizations"),
+    userId: v.string(),
+    agentId: v.optional(v.string()),
+    title: v.string(),
+    description: v.optional(v.string()),
+    status: v.union(
+      v.literal("queued"),
+      v.literal("running"),
+      v.literal("needs_review"),
+      v.literal("done"),
+      v.literal("failed")
+    ),
+    priority: v.union(v.literal("low"), v.literal("medium"), v.literal("high")),
+    deadline: v.optional(v.number()),
+    output: v.optional(v.string()),
+    error: v.optional(v.string()),
+    createdAt: v.number(),
+    updatedAt: v.optional(v.number()),
+  }).index("by_org", ["orgId"]).index("by_user", ["userId"]).index("by_status", ["status"]),
+
+  // Canvases
+  canvases: defineTable({
+    orgId: v.id("organizations"),
+    userId: v.string(),
+    agentId: v.optional(v.string()),
+    title: v.string(),
+    content: v.optional(v.string()),
+    type: v.union(
+      v.literal("dashboard"),
+      v.literal("form"),
+      v.literal("board"),
+      v.literal("code_preview"),
+      v.literal("chart"),
+      v.literal("custom")
+    ),
+    sessionId: v.optional(v.string()),
+    thumbnail: v.optional(v.string()),
+    createdAt: v.number(),
+    updatedAt: v.optional(v.number()),
+  }).index("by_org", ["orgId"]).index("by_user", ["userId"]),
+
+  // Voice Settings
+  voiceSettings: defineTable({
+    orgId: v.id("organizations"),
+    userId: v.string(),
+    wakeWord: v.optional(v.string()),
+    ttsVoice: v.optional(v.string()),
+    speakingRate: v.optional(v.number()),
+    sttEngine: v.optional(v.string()),
+    language: v.optional(v.string()),
+    enabled: v.boolean(),
+    createdAt: v.number(),
+  }).index("by_user", ["userId"]),
+
+  // Memory Files
+  memoryFiles: defineTable({
+    orgId: v.id("organizations"),
+    userId: v.string(),
+    agentId: v.optional(v.string()),
+    path: v.string(),
+    content: v.string(),
+    fileType: v.optional(v.string()),
+    tags: v.optional(v.array(v.string())),
+    createdAt: v.number(),
+    updatedAt: v.optional(v.number()),
+  }).index("by_org", ["orgId"]).index("by_user", ["userId"]).index("by_agent", ["agentId"]),
+
+  // Browser Sessions
+  browserSessions: defineTable({
+    orgId: v.id("organizations"),
+    userId: v.string(),
+    agentId: v.optional(v.string()),
+    url: v.optional(v.string()),
+    taskDescription: v.optional(v.string()),
+    status: v.union(v.literal("active"), v.literal("completed"), v.literal("failed")),
+    pagesVisited: v.optional(v.array(v.string())),
+    outcome: v.optional(v.string()),
+    createdAt: v.number(),
+  }).index("by_org", ["orgId"]).index("by_user", ["userId"]),
+
+  // Nodes
+  nodes: defineTable({
+    orgId: v.id("organizations"),
+    userId: v.string(),
+    name: v.string(),
+    deviceType: v.union(
+      v.literal("macos"),
+      v.literal("iphone"),
+      v.literal("android"),
+      v.literal("linux"),
+      v.literal("windows")
+    ),
+    status: v.union(v.literal("online"), v.literal("offline"), v.literal("sleeping")),
+    osVersion: v.optional(v.string()),
+    capabilities: v.optional(v.object({
+      camera: v.optional(v.boolean()),
+      screenRecord: v.optional(v.boolean()),
+      location: v.optional(v.boolean()),
+      notifications: v.optional(v.boolean()),
+      voiceWake: v.optional(v.boolean()),
+    })),
+    lastSeen: v.optional(v.number()),
+    createdAt: v.number(),
+  }).index("by_org", ["orgId"]).index("by_user", ["userId"]),
+
+  // Discover Items
+  discoverItems: defineTable({
+    orgId: v.optional(v.id("organizations")),
+    type: v.union(v.literal("skill"), v.literal("automation"), v.literal("showcase")),
+    title: v.string(),
+    description: v.optional(v.string()),
+    author: v.optional(v.string()),
+    category: v.optional(v.string()),
+    tags: v.optional(v.array(v.string())),
+    installCount: v.optional(v.number()),
+    rating: v.optional(v.number()),
+    createdAt: v.number(),
+  }).index("by_type", ["type"]),
+
+  // Usage Records
+  usageRecords: defineTable({
+    orgId: v.id("organizations"),
+    userId: v.string(),
+    agentId: v.optional(v.string()),
+    model: v.optional(v.string()),
+    tokensUsed: v.number(),
+    cost: v.number(),
+    taskType: v.optional(v.string()),
+    date: v.string(),
+    createdAt: v.number(),
+  }).index("by_org", ["orgId"]).index("by_user", ["userId"]).index("by_date", ["date"]),
+
+  // Approvals
+  approvals: defineTable({
+    orgId: v.id("organizations"),
+    userId: v.string(),
+    agentId: v.string(),
+    description: v.string(),
+    actionDetail: v.optional(v.string()),
+    riskLevel: v.union(v.literal("low"), v.literal("medium"), v.literal("high")),
+    status: v.union(
+      v.literal("pending"),
+      v.literal("approved"),
+      v.literal("rejected"),
+      v.literal("deferred")
+    ),
+    decidedBy: v.optional(v.string()),
+    decidedAt: v.optional(v.number()),
+    createdAt: v.number(),
+  }).index("by_org", ["orgId"]).index("by_user", ["userId"]).index("by_status", ["status"]),
+
+  // Cron Jobs
+  cronJobs: defineTable({
+    orgId: v.id("organizations"),
+    userId: v.string(),
+    agentId: v.optional(v.string()),
+    name: v.string(),
+    schedule: v.string(),
+    instruction: v.optional(v.string()),
+    enabled: v.boolean(),
+    lastRunAt: v.optional(v.number()),
+    lastRunStatus: v.optional(v.union(v.literal("success"), v.literal("failed"), v.literal("skipped"))),
+    nextRunAt: v.optional(v.number()),
+    outputChannel: v.optional(v.string()),
+    createdAt: v.number(),
+  }).index("by_org", ["orgId"]).index("by_user", ["userId"]),
 });
