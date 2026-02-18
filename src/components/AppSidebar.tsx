@@ -46,7 +46,7 @@ const navSections: NavSection[] = [
   {
     title: 'AGENTS',
     items: [
-      { label: 'Catalog', to: '/agents/catalog', icon: <Bot size={18} /> },
+      { label: 'Catalog', to: '/agents', icon: <Bot size={18} /> },
       { label: 'Blueprints', to: '/blueprints', icon: <FileCode2 size={18} /> },
     ],
   },

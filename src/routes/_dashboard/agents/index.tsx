@@ -171,7 +171,9 @@ function AgentCatalog() {
                       <div className="text-lg font-semibold text-white">
                         {agent.totalTokens >= 1_000_000
                           ? `${(agent.totalTokens / 1_000_000).toFixed(1)}M`
-                          : `${(agent.totalTokens / 1_000).toFixed(0)}K`}
+                          : agent.totalTokens >= 1_000
+                            ? `${(agent.totalTokens / 1_000).toFixed(1)}K`
+                            : agent.totalTokens}
                       </div>
                       <div className="text-xs text-slate-400">Tokens</div>
                     </div>
