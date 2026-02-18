@@ -7,73 +7,11 @@ import {
 } from '#/components/ui/card'
 import { Badge } from '#/components/ui/badge'
 import { Bot, Activity, AlertCircle, Clock, Plus, Coins } from 'lucide-react'
+import { useAgents } from '#/lib/dataHooks'
 
 export const Route = createFileRoute('/_dashboard/agents/')({
   component: AgentCatalog,
 })
-
-const mockAgents = [
-  {
-    id: 'agent_1',
-    name: 'Support Agent',
-    instance: 'Production Gateway',
-    status: 'active' as const,
-    model: 'gpt-4o',
-    sessions: 142,
-    totalTokens: 1_284_300,
-    totalCost: 38.52,
-  },
-  {
-    id: 'agent_2',
-    name: 'Research Agent',
-    instance: 'Production Gateway',
-    status: 'active' as const,
-    model: 'claude-3.5-sonnet',
-    sessions: 87,
-    totalTokens: 2_105_800,
-    totalCost: 63.17,
-  },
-  {
-    id: 'agent_3',
-    name: 'Code Review Bot',
-    instance: 'Staging Server',
-    status: 'idle' as const,
-    model: 'gpt-4o',
-    sessions: 56,
-    totalTokens: 892_400,
-    totalCost: 26.77,
-  },
-  {
-    id: 'agent_4',
-    name: 'QA Tester',
-    instance: 'Staging Server',
-    status: 'error' as const,
-    model: 'gpt-4o-mini',
-    sessions: 34,
-    totalTokens: 310_200,
-    totalCost: 4.65,
-  },
-  {
-    id: 'agent_5',
-    name: 'Docs Writer',
-    instance: 'Production Gateway',
-    status: 'active' as const,
-    model: 'claude-3.5-sonnet',
-    sessions: 29,
-    totalTokens: 645_100,
-    totalCost: 19.35,
-  },
-  {
-    id: 'agent_6',
-    name: 'Dev Sandbox Agent',
-    instance: 'Dev Instance',
-    status: 'idle' as const,
-    model: 'gpt-4o-mini',
-    sessions: 12,
-    totalTokens: 98_700,
-    totalCost: 1.48,
-  },
-]
 
 const statusVariant = (status: string) => {
   switch (status) {
@@ -82,6 +20,7 @@ const statusVariant = (status: string) => {
     case 'idle':
       return 'warning' as const
     case 'error':
+    case 'paused':
       return 'danger' as const
     default:
       return 'default' as const
@@ -89,15 +28,17 @@ const statusVariant = (status: string) => {
 }
 
 function AgentCatalog() {
-  const active = mockAgents.filter((a) => a.status === 'active').length
-  const idle = mockAgents.filter((a) => a.status === 'idle').length
-  const error = mockAgents.filter((a) => a.status === 'error').length
+  const agents = useAgents()
+
+  const active = agents.filter((a) => a.status === 'active').length
+  const idle = agents.filter((a) => a.status === 'idle').length
+  const paused = agents.filter((a) => a.status === 'paused').length
 
   const stats = [
-    { label: 'Total Agents', value: mockAgents.length, icon: <Bot className="w-5 h-5 text-cyan-400" /> },
+    { label: 'Total Agents', value: agents.length, icon: <Bot className="w-5 h-5 text-cyan-400" /> },
     { label: 'Active', value: active, icon: <Activity className="w-5 h-5 text-emerald-400" /> },
     { label: 'Idle', value: idle, icon: <Clock className="w-5 h-5 text-amber-400" /> },
-    { label: 'Error', value: error, icon: <AlertCircle className="w-5 h-5 text-red-400" /> },
+    { label: 'Paused', value: paused, icon: <AlertCircle className="w-5 h-5 text-red-400" /> },
   ]
 
   return (
@@ -140,7 +81,7 @@ function AgentCatalog() {
       <div>
         <h2 className="text-lg font-semibold text-white mb-4">All Agents</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {mockAgents.map((agent) => (
+          {agents.map((agent) => (
             <Link
               key={agent.id}
               to="/agents/$agentId"
@@ -156,7 +97,7 @@ function AgentCatalog() {
                     </Badge>
                   </div>
                   <div className="flex items-center gap-2 text-xs text-slate-400">
-                    <span>{agent.instance}</span>
+                    <span>{agent.instanceId}</span>
                     <span>·</span>
                     <span>{agent.model}</span>
                   </div>
@@ -164,7 +105,7 @@ function AgentCatalog() {
                 <CardContent>
                   <div className="grid grid-cols-3 gap-2 text-center">
                     <div>
-                      <div className="text-lg font-semibold text-white">{agent.sessions}</div>
+                      <div className="text-lg font-semibold text-white">{agent.sessionCount}</div>
                       <div className="text-xs text-slate-400">Sessions</div>
                     </div>
                     <div>

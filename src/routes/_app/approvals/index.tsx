@@ -3,81 +3,11 @@ import { Card, CardHeader, CardTitle, CardContent } from '#/components/ui/card'
 import { Badge } from '#/components/ui/badge'
 import { Button } from '#/components/ui/button'
 import { ShieldCheck, Bot, Clock, CheckCircle2, XCircle } from 'lucide-react'
+import { useApprovals } from '#/lib/dataHooks'
 
 export const Route = createFileRoute('/_app/approvals/')({
   component: Approvals,
 })
-
-interface ApprovalRequest {
-  id: string
-  title: string
-  agent: string
-  description: string
-  context: string
-  risk: 'low' | 'medium' | 'high'
-  timestamp: string
-  status: 'pending' | 'approved' | 'denied'
-}
-
-const pendingApprovals: ApprovalRequest[] = [
-  {
-    id: 'ap1',
-    title: 'Send partnership follow-up email',
-    agent: 'Email Drafter',
-    description: 'Ready to send the follow-up email to Acme Corp regarding the partnership proposal.',
-    context: 'Recipient: jane@acmecorp.com. Email includes pricing tier details and NDA reference.',
-    risk: 'medium',
-    timestamp: '10 min ago',
-    status: 'pending',
-  },
-  {
-    id: 'ap2',
-    title: 'Deploy security patch to production',
-    agent: 'Code Reviewer',
-    description: 'PR #247 auth middleware fix is ready for production deployment.',
-    context: 'Changes: 3 files modified, fixes CVE-2024-1234. All tests passing. Staging verified.',
-    risk: 'high',
-    timestamp: '25 min ago',
-    status: 'pending',
-  },
-  {
-    id: 'ap3',
-    title: 'Purchase domain clawverse.ai',
-    agent: 'Research Assistant',
-    description: 'Found the domain clawverse.ai available at $89/year. Requesting approval to purchase.',
-    context: 'Registrar: Cloudflare. Auto-renewal enabled. Payment method: company card on file.',
-    risk: 'low',
-    timestamp: '1 hr ago',
-    status: 'pending',
-  },
-  {
-    id: 'ap4',
-    title: 'Share monthly report with board',
-    agent: 'Finance Tracker',
-    description: 'Monthly financial report is compiled and ready to be shared with board members.',
-    context: 'Report covers December 2024 financials. 14 recipients on the distribution list.',
-    risk: 'medium',
-    timestamp: '2 hrs ago',
-    status: 'pending',
-  },
-  {
-    id: 'ap5',
-    title: 'Schedule recurring team standup',
-    agent: 'Meeting Summarizer',
-    description: 'Wants to create a recurring calendar event for daily standups at 10:00 AM.',
-    context: 'Invitees: 6 team members. Duration: 15 min. Platform: Zoom.',
-    risk: 'low',
-    timestamp: '3 hrs ago',
-    status: 'pending',
-  },
-]
-
-const pastDecisions: ApprovalRequest[] = [
-  { id: 'ph1', title: 'Update API rate limits', agent: 'Code Reviewer', description: '', context: '', risk: 'high', timestamp: 'Yesterday', status: 'approved' },
-  { id: 'ph2', title: 'Send client invoice', agent: 'Finance Tracker', description: '', context: '', risk: 'medium', timestamp: 'Yesterday', status: 'approved' },
-  { id: 'ph3', title: 'Post on company Twitter', agent: 'Research Assistant', description: '', context: '', risk: 'medium', timestamp: '2 days ago', status: 'denied' },
-  { id: 'ph4', title: 'Upgrade server instance', agent: 'Code Reviewer', description: '', context: '', risk: 'high', timestamp: '3 days ago', status: 'approved' },
-]
 
 const riskColor = {
   low: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
@@ -85,7 +15,19 @@ const riskColor = {
   high: 'bg-red-500/10 text-red-400 border-red-500/20',
 }
 
+const formatRelativeTime = (ts: number) => {
+  const diff = Date.now() - ts
+  if (diff < 60000) return Math.floor(diff / 1000) + 's ago'
+  if (diff < 3600000) return Math.floor(diff / 60000) + ' min ago'
+  if (diff < 86400000) return Math.floor(diff / 3600000) + ' hrs ago'
+  return Math.floor(diff / 86400000) + ' days ago'
+}
+
 function Approvals() {
+  const approvals = useApprovals()
+
+  const pendingApprovals = approvals.filter((a) => a.status === 'pending')
+  const pastDecisions = approvals.filter((a) => a.status !== 'pending')
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -110,21 +52,21 @@ function Approvals() {
               <div className="flex items-start justify-between">
                 <div className="flex-1 space-y-2">
                   <div className="flex items-center gap-2">
-                    <p className="text-sm font-medium text-white">{req.title}</p>
-                    <Badge className={riskColor[req.risk]}>{req.risk} risk</Badge>
+                    <p className="text-sm font-medium text-white">{req.description}</p>
+                    <Badge className={riskColor[req.riskLevel]}>{req.riskLevel} risk</Badge>
                   </div>
-                  <p className="text-sm text-slate-400">{req.description}</p>
+                  <p className="text-sm text-slate-400">{req.actionDetail}</p>
                   <div className="rounded-md bg-slate-800/50 px-3 py-2 text-xs text-slate-500">
-                    <span className="text-slate-400 font-medium">Context: </span>{req.context}
+                    <span className="text-slate-400 font-medium">Context: </span>{req.actionDetail}
                   </div>
                   <div className="flex items-center gap-3 text-xs text-slate-500">
                     <div className="flex items-center gap-1">
                       <Bot size={12} />
-                      <span>{req.agent}</span>
+                      <span>{req.agentId}</span>
                     </div>
                     <div className="flex items-center gap-1">
                       <Clock size={12} />
-                      <span>{req.timestamp}</span>
+                      <span>{formatRelativeTime(req.createdAt)}</span>
                     </div>
                   </div>
                 </div>
@@ -162,12 +104,12 @@ function Approvals() {
                   ) : (
                     <XCircle size={16} className="text-red-400" />
                   )}
-                  <span className="text-sm text-white">{d.title}</span>
-                  <Badge className={riskColor[d.risk]}>{d.risk}</Badge>
+                  <span className="text-sm text-white">{d.description}</span>
+                  <Badge className={riskColor[d.riskLevel]}>{d.riskLevel}</Badge>
                 </div>
                 <div className="flex items-center gap-3 text-xs text-slate-500">
-                  <span>{d.agent}</span>
-                  <span>{d.timestamp}</span>
+                  <span>{d.agentId}</span>
+                  <span>{d.decidedAt ? formatRelativeTime(d.decidedAt) : ''}</span>
                   <Badge variant={d.status === 'approved' ? 'success' : 'danger'}>
                     {d.status}
                   </Badge>

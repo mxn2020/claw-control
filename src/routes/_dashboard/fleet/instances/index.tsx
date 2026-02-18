@@ -2,54 +2,21 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import { Card, CardContent } from '#/components/ui/card'
 import { Badge } from '#/components/ui/badge'
 import { Plus } from 'lucide-react'
+import { useInstances } from '#/lib/dataHooks'
 
 export const Route = createFileRoute('/_dashboard/fleet/instances/')({
   component: InstanceList,
 })
 
-// Data hook - ready for Convex migration
-function useInstancesData() {
-  // When Convex is connected, replace with:
-  // const instances = useQuery(api.instances.list, {})
-  // return instances ?? mockInstances
-  return mockInstances
+const formatRelativeTime = (ts: number) => {
+  const diff = Date.now() - ts
+  if (diff < 60000) return Math.floor(diff / 1000) + 's ago'
+  if (diff < 3600000) return Math.floor(diff / 60000) + 'm ago'
+  return Math.floor(diff / 3600000) + 'h ago'
 }
 
-const mockInstances = [
-  {
-    id: 'inst_1',
-    name: 'Production Gateway',
-    status: 'online' as const,
-    provider: 'DigitalOcean',
-    region: 'nyc3',
-    agents: 3,
-    version: 'v0.9.2',
-    lastHeartbeat: '2 seconds ago',
-  },
-  {
-    id: 'inst_2',
-    name: 'Staging Server',
-    status: 'online' as const,
-    provider: 'Hetzner',
-    region: 'eu-central',
-    agents: 2,
-    version: 'v0.9.2',
-    lastHeartbeat: '5 seconds ago',
-  },
-  {
-    id: 'inst_3',
-    name: 'Dev Instance',
-    status: 'offline' as const,
-    provider: 'Local',
-    region: '—',
-    agents: 1,
-    version: 'v0.9.1',
-    lastHeartbeat: '3 hours ago',
-  },
-]
-
 function InstanceList() {
-  const instances = useInstancesData()
+  const instances = useInstances()
 
   return (
     <div className="space-y-6">
@@ -108,13 +75,13 @@ function InstanceList() {
                     </td>
                     <td className="px-4 py-3 text-slate-300">{instance.provider}</td>
                     <td className="px-4 py-3 text-slate-300">{instance.region}</td>
-                    <td className="px-4 py-3 text-slate-300">{instance.agents}</td>
+                    <td className="px-4 py-3 text-slate-300">{instance.agentCount}</td>
                     <td className="px-4 py-3">
                       <code className="text-xs bg-slate-700/50 px-1.5 py-0.5 rounded text-slate-300">
                         {instance.version}
                       </code>
                     </td>
-                    <td className="px-4 py-3 text-slate-400">{instance.lastHeartbeat}</td>
+                    <td className="px-4 py-3 text-slate-400">{formatRelativeTime(instance.lastHeartbeat)}</td>
                   </tr>
                 ))}
               </tbody>

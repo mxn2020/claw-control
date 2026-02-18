@@ -3,32 +3,11 @@ import { Card, CardContent } from '#/components/ui/card'
 import { Badge } from '#/components/ui/badge'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '#/components/ui/tabs'
 import { Bot, CheckSquare, Clock, AlertCircle, CheckCircle2 } from 'lucide-react'
+import { useTasks } from '#/lib/dataHooks'
 
 export const Route = createFileRoute('/_app/tasks/')({
   component: Tasks,
 })
-
-interface Task {
-  id: string
-  title: string
-  agent: string
-  status: 'inbox' | 'active' | 'pending_approval' | 'completed'
-  priority: 'high' | 'medium' | 'low'
-  dueDate: string
-  description: string
-}
-
-const tasks: Task[] = [
-  { id: 't1', title: 'Draft Q1 investor update email', agent: 'Email Drafter', status: 'inbox', priority: 'high', dueDate: 'Today', description: 'Prepare quarterly update for investors' },
-  { id: 't2', title: 'Summarize competitor analysis', agent: 'Research Assistant', status: 'inbox', priority: 'medium', dueDate: 'Tomorrow', description: 'Compile competitive landscape report' },
-  { id: 't3', title: 'Review PR #247 security changes', agent: 'Code Reviewer', status: 'active', priority: 'high', dueDate: 'Today', description: 'Security patch for auth middleware' },
-  { id: 't4', title: 'Generate monthly expense report', agent: 'Finance Tracker', status: 'active', priority: 'medium', dueDate: 'Jan 20', description: 'December expenses categorization' },
-  { id: 't5', title: 'Schedule team retrospective', agent: 'Meeting Summarizer', status: 'active', priority: 'low', dueDate: 'Jan 22', description: 'Find optimal time for all team members' },
-  { id: 't6', title: 'Publish blog post on AI trends', agent: 'Research Assistant', status: 'pending_approval', priority: 'medium', dueDate: 'Jan 18', description: 'Final review before publishing' },
-  { id: 't7', title: 'Send partnership follow-up', agent: 'Email Drafter', status: 'pending_approval', priority: 'high', dueDate: 'Today', description: 'Awaiting your approval to send' },
-  { id: 't8', title: 'Database migration plan review', agent: 'Code Reviewer', status: 'completed', priority: 'high', dueDate: 'Jan 14', description: 'Migration plan approved and documented' },
-  { id: 't9', title: 'Weekly standup notes compiled', agent: 'Meeting Summarizer', status: 'completed', priority: 'low', dueDate: 'Jan 15', description: "All notes from this week's standups" },
-]
 
 const priorityColor = {
   high: 'bg-red-500/10 text-red-400 border-red-500/20',
@@ -36,7 +15,17 @@ const priorityColor = {
   low: 'bg-slate-500/10 text-slate-400 border-slate-500/20',
 }
 
-function TaskCard({ task }: { task: Task }) {
+const formatDeadline = (ts: number) => {
+  const d = new Date(ts)
+  const now = new Date()
+  const diffDays = Math.round((ts - now.getTime()) / 86_400_000)
+  if (diffDays === 0) return 'Today'
+  if (diffDays === 1) return 'Tomorrow'
+  if (diffDays === -1) return 'Yesterday'
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+}
+
+function TaskCard({ task }: { task: { id: string; title: string; agentId: string; status: string; priority: 'high' | 'medium' | 'low'; deadline: number; description: string } }) {
   return (
     <Card className="hover:border-cyan-500/30 transition-all">
       <CardContent className="py-4">
@@ -50,11 +39,11 @@ function TaskCard({ task }: { task: Task }) {
             <div className="flex items-center gap-3 mt-2">
               <div className="flex items-center gap-1 text-xs text-slate-400">
                 <Bot size={12} />
-                <span>{task.agent}</span>
+                <span>{task.agentId}</span>
               </div>
               <div className="flex items-center gap-1 text-xs text-slate-500">
                 <Clock size={12} />
-                <span>{task.dueDate}</span>
+                <span>{formatDeadline(task.deadline)}</span>
               </div>
             </div>
           </div>
@@ -65,10 +54,12 @@ function TaskCard({ task }: { task: Task }) {
 }
 
 function Tasks() {
-  const inbox = tasks.filter((t) => t.status === 'inbox')
-  const active = tasks.filter((t) => t.status === 'active')
-  const pending = tasks.filter((t) => t.status === 'pending_approval')
-  const completed = tasks.filter((t) => t.status === 'completed')
+  const allTasks = useTasks()
+
+  const inbox = allTasks.filter((t) => t.status === 'queued')
+  const active = allTasks.filter((t) => t.status === 'running')
+  const pending = allTasks.filter((t) => t.status === 'needs_review')
+  const completed = allTasks.filter((t) => t.status === 'done')
 
   return (
     <div className="space-y-6">
