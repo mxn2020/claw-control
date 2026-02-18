@@ -31,9 +31,19 @@ import { Route as AppProjectsIndexRouteImport } from './routes/_app/projects/ind
 import { Route as AppPersonalIndexRouteImport } from './routes/_app/personal/index'
 import { Route as AppCronIndexRouteImport } from './routes/_app/cron/index'
 import { Route as AppChatIndexRouteImport } from './routes/_app/chat/index'
+import { Route as AppCanvasIndexRouteImport } from './routes/_app/canvas/index'
+import { Route as AppBrowserIndexRouteImport } from './routes/_app/browser/index'
 import { Route as AppBriefingIndexRouteImport } from './routes/_app/briefing/index'
 import { Route as AppAutomationsIndexRouteImport } from './routes/_app/automations/index'
 import { Route as AppApprovalsIndexRouteImport } from './routes/_app/approvals/index'
+import { Route as AppDiscoverIndexRouteImport } from './routes/_app/discover/index'
+import { Route as AppMemoryIndexRouteImport } from './routes/_app/memory/index'
+import { Route as AppNodesIndexRouteImport } from './routes/_app/nodes/index'
+import { Route as AppUsageIndexRouteImport } from './routes/_app/usage/index'
+import { Route as AppVoiceIndexRouteImport } from './routes/_app/voice/index'
+import { Route as AppBrowserSessionsRouteImport } from './routes/_app/browser/sessions'
+import { Route as AppMemoryBrowseRouteImport } from './routes/_app/memory/browse'
+import { Route as AppMemorySearchRouteImport } from './routes/_app/memory/search'
 import { Route as DashboardSkillsPoliciesRouteImport } from './routes/_dashboard/skills/policies'
 import { Route as DashboardSkillsMarketplaceRouteImport } from './routes/_dashboard/skills/marketplace'
 import { Route as DashboardSkillsInstalledRouteImport } from './routes/_dashboard/skills/installed'
@@ -62,7 +72,9 @@ import { Route as DashboardAuditIncidentsRouteImport } from './routes/_dashboard
 import { Route as DashboardAuditConfigChangesRouteImport } from './routes/_dashboard/audit/config-changes'
 import { Route as DashboardAuditAccessRouteImport } from './routes/_dashboard/audit/access'
 import { Route as DashboardAgentsNewRouteImport } from './routes/_dashboard/agents/new'
+import { Route as AppCanvasCanvasIdRouteImport } from './routes/_app/canvas/$canvasId'
 import { Route as AppChatAgentIdRouteImport } from './routes/_app/chat/$agentId'
+import { Route as AppNodesNodeIdRouteImport } from './routes/_app/nodes/$nodeId'
 import { Route as DashboardSwarmsSwarmIdIndexRouteImport } from './routes/_dashboard/swarms/$swarmId/index'
 import { Route as DashboardSessionsSessionIdIndexRouteImport } from './routes/_dashboard/sessions/$sessionId/index'
 import { Route as DashboardFleetInstancesIndexRouteImport } from './routes/_dashboard/fleet/instances/index'
@@ -221,6 +233,66 @@ const AppAutomationsIndexRoute = AppAutomationsIndexRouteImport.update({
 const AppApprovalsIndexRoute = AppApprovalsIndexRouteImport.update({
   id: '/approvals/',
   path: '/approvals/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppBrowserIndexRoute = AppBrowserIndexRouteImport.update({
+  id: '/browser/',
+  path: '/browser/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCanvasIndexRoute = AppCanvasIndexRouteImport.update({
+  id: '/canvas/',
+  path: '/canvas/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDiscoverIndexRoute = AppDiscoverIndexRouteImport.update({
+  id: '/discover/',
+  path: '/discover/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppMemoryIndexRoute = AppMemoryIndexRouteImport.update({
+  id: '/memory/',
+  path: '/memory/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppNodesIndexRoute = AppNodesIndexRouteImport.update({
+  id: '/nodes/',
+  path: '/nodes/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppUsageIndexRoute = AppUsageIndexRouteImport.update({
+  id: '/usage/',
+  path: '/usage/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppVoiceIndexRoute = AppVoiceIndexRouteImport.update({
+  id: '/voice/',
+  path: '/voice/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppBrowserSessionsRoute = AppBrowserSessionsRouteImport.update({
+  id: '/browser/sessions',
+  path: '/browser/sessions',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppMemoryBrowseRoute = AppMemoryBrowseRouteImport.update({
+  id: '/memory/browse',
+  path: '/memory/browse',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppMemorySearchRoute = AppMemorySearchRouteImport.update({
+  id: '/memory/search',
+  path: '/memory/search',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCanvasCanvasIdRoute = AppCanvasCanvasIdRouteImport.update({
+  id: '/canvas/$canvasId',
+  path: '/canvas/$canvasId',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppNodesNodeIdRoute = AppNodesNodeIdRouteImport.update({
+  id: '/nodes/$nodeId',
+  path: '/nodes/$nodeId',
   getParentRoute: () => AppRoute,
 } as any)
 const DashboardSkillsPoliciesRoute = DashboardSkillsPoliciesRouteImport.update({
@@ -601,6 +673,11 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/home': typeof AppHomeRoute
   '/chat/$agentId': typeof AppChatAgentIdRoute
+  '/canvas/$canvasId': typeof AppCanvasCanvasIdRoute
+  '/nodes/$nodeId': typeof AppNodesNodeIdRoute
+  '/browser/sessions': typeof AppBrowserSessionsRoute
+  '/memory/browse': typeof AppMemoryBrowseRoute
+  '/memory/search': typeof AppMemorySearchRoute
   '/agents/new': typeof DashboardAgentsNewRoute
   '/audit/access': typeof DashboardAuditAccessRoute
   '/audit/config-changes': typeof DashboardAuditConfigChangesRoute
@@ -632,11 +709,18 @@ export interface FileRoutesByFullPath {
   '/approvals/': typeof AppApprovalsIndexRoute
   '/automations/': typeof AppAutomationsIndexRoute
   '/briefing/': typeof AppBriefingIndexRoute
+  '/browser/': typeof AppBrowserIndexRoute
+  '/canvas/': typeof AppCanvasIndexRoute
   '/chat/': typeof AppChatIndexRoute
   '/cron/': typeof AppCronIndexRoute
+  '/discover/': typeof AppDiscoverIndexRoute
+  '/memory/': typeof AppMemoryIndexRoute
+  '/nodes/': typeof AppNodesIndexRoute
   '/personal/': typeof AppPersonalIndexRoute
   '/projects/': typeof AppProjectsIndexRoute
   '/tasks/': typeof AppTasksIndexRoute
+  '/usage/': typeof AppUsageIndexRoute
+  '/voice/': typeof AppVoiceIndexRoute
   '/work/': typeof AppWorkIndexRoute
   '/agents/': typeof DashboardAgentsIndexRoute
   '/audit/': typeof DashboardAuditIndexRoute
@@ -690,6 +774,11 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/home': typeof AppHomeRoute
   '/chat/$agentId': typeof AppChatAgentIdRoute
+  '/canvas/$canvasId': typeof AppCanvasCanvasIdRoute
+  '/nodes/$nodeId': typeof AppNodesNodeIdRoute
+  '/browser/sessions': typeof AppBrowserSessionsRoute
+  '/memory/browse': typeof AppMemoryBrowseRoute
+  '/memory/search': typeof AppMemorySearchRoute
   '/agents/new': typeof DashboardAgentsNewRoute
   '/audit/access': typeof DashboardAuditAccessRoute
   '/audit/config-changes': typeof DashboardAuditConfigChangesRoute
@@ -721,11 +810,18 @@ export interface FileRoutesByTo {
   '/approvals': typeof AppApprovalsIndexRoute
   '/automations': typeof AppAutomationsIndexRoute
   '/briefing': typeof AppBriefingIndexRoute
+  '/browser': typeof AppBrowserIndexRoute
+  '/canvas': typeof AppCanvasIndexRoute
   '/chat': typeof AppChatIndexRoute
   '/cron': typeof AppCronIndexRoute
+  '/discover': typeof AppDiscoverIndexRoute
+  '/memory': typeof AppMemoryIndexRoute
+  '/nodes': typeof AppNodesIndexRoute
   '/personal': typeof AppPersonalIndexRoute
   '/projects': typeof AppProjectsIndexRoute
   '/tasks': typeof AppTasksIndexRoute
+  '/usage': typeof AppUsageIndexRoute
+  '/voice': typeof AppVoiceIndexRoute
   '/work': typeof AppWorkIndexRoute
   '/agents': typeof DashboardAgentsIndexRoute
   '/audit': typeof DashboardAuditIndexRoute
@@ -782,6 +878,11 @@ export interface FileRoutesById {
   '/_dashboard': typeof DashboardRouteWithChildren
   '/_app/home': typeof AppHomeRoute
   '/_app/chat/$agentId': typeof AppChatAgentIdRoute
+  '/_app/canvas/$canvasId': typeof AppCanvasCanvasIdRoute
+  '/_app/nodes/$nodeId': typeof AppNodesNodeIdRoute
+  '/_app/browser/sessions': typeof AppBrowserSessionsRoute
+  '/_app/memory/browse': typeof AppMemoryBrowseRoute
+  '/_app/memory/search': typeof AppMemorySearchRoute
   '/_dashboard/agents/new': typeof DashboardAgentsNewRoute
   '/_dashboard/audit/access': typeof DashboardAuditAccessRoute
   '/_dashboard/audit/config-changes': typeof DashboardAuditConfigChangesRoute
@@ -813,11 +914,18 @@ export interface FileRoutesById {
   '/_app/approvals/': typeof AppApprovalsIndexRoute
   '/_app/automations/': typeof AppAutomationsIndexRoute
   '/_app/briefing/': typeof AppBriefingIndexRoute
+  '/_app/browser/': typeof AppBrowserIndexRoute
+  '/_app/canvas/': typeof AppCanvasIndexRoute
   '/_app/chat/': typeof AppChatIndexRoute
   '/_app/cron/': typeof AppCronIndexRoute
+  '/_app/discover/': typeof AppDiscoverIndexRoute
+  '/_app/memory/': typeof AppMemoryIndexRoute
+  '/_app/nodes/': typeof AppNodesIndexRoute
   '/_app/personal/': typeof AppPersonalIndexRoute
   '/_app/projects/': typeof AppProjectsIndexRoute
   '/_app/tasks/': typeof AppTasksIndexRoute
+  '/_app/usage/': typeof AppUsageIndexRoute
+  '/_app/voice/': typeof AppVoiceIndexRoute
   '/_app/work/': typeof AppWorkIndexRoute
   '/_dashboard/agents/': typeof DashboardAgentsIndexRoute
   '/_dashboard/audit/': typeof DashboardAuditIndexRoute
@@ -873,6 +981,11 @@ export interface FileRouteTypes {
     | '/'
     | '/home'
     | '/chat/$agentId'
+    | '/canvas/$canvasId'
+    | '/nodes/$nodeId'
+    | '/browser/sessions'
+    | '/memory/browse'
+    | '/memory/search'
     | '/agents/new'
     | '/audit/access'
     | '/audit/config-changes'
@@ -904,11 +1017,18 @@ export interface FileRouteTypes {
     | '/approvals/'
     | '/automations/'
     | '/briefing/'
+    | '/browser/'
+    | '/canvas/'
     | '/chat/'
     | '/cron/'
+    | '/discover/'
+    | '/memory/'
+    | '/nodes/'
     | '/personal/'
     | '/projects/'
     | '/tasks/'
+    | '/usage/'
+    | '/voice/'
     | '/work/'
     | '/agents/'
     | '/audit/'
@@ -962,6 +1082,11 @@ export interface FileRouteTypes {
     | '/'
     | '/home'
     | '/chat/$agentId'
+    | '/canvas/$canvasId'
+    | '/nodes/$nodeId'
+    | '/browser/sessions'
+    | '/memory/browse'
+    | '/memory/search'
     | '/agents/new'
     | '/audit/access'
     | '/audit/config-changes'
@@ -993,11 +1118,18 @@ export interface FileRouteTypes {
     | '/approvals'
     | '/automations'
     | '/briefing'
+    | '/browser'
+    | '/canvas'
     | '/chat'
     | '/cron'
+    | '/discover'
+    | '/memory'
+    | '/nodes'
     | '/personal'
     | '/projects'
     | '/tasks'
+    | '/usage'
+    | '/voice'
     | '/work'
     | '/agents'
     | '/audit'
@@ -1053,6 +1185,11 @@ export interface FileRouteTypes {
     | '/_dashboard'
     | '/_app/home'
     | '/_app/chat/$agentId'
+    | '/_app/canvas/$canvasId'
+    | '/_app/nodes/$nodeId'
+    | '/_app/browser/sessions'
+    | '/_app/memory/browse'
+    | '/_app/memory/search'
     | '/_dashboard/agents/new'
     | '/_dashboard/audit/access'
     | '/_dashboard/audit/config-changes'
@@ -1084,11 +1221,18 @@ export interface FileRouteTypes {
     | '/_app/approvals/'
     | '/_app/automations/'
     | '/_app/briefing/'
+    | '/_app/browser/'
+    | '/_app/canvas/'
     | '/_app/chat/'
     | '/_app/cron/'
+    | '/_app/discover/'
+    | '/_app/memory/'
+    | '/_app/nodes/'
     | '/_app/personal/'
     | '/_app/projects/'
     | '/_app/tasks/'
+    | '/_app/usage/'
+    | '/_app/voice/'
     | '/_app/work/'
     | '/_dashboard/agents/'
     | '/_dashboard/audit/'
@@ -1322,6 +1466,76 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppApprovalsIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/browser/': {
+      id: '/_app/browser/'
+      path: '/browser'
+      fullPath: '/browser/'
+      preLoaderRoute: typeof AppBrowserIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/canvas/': {
+      id: '/_app/canvas/'
+      path: '/canvas'
+      fullPath: '/canvas/'
+      preLoaderRoute: typeof AppCanvasIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/discover/': {
+      id: '/_app/discover/'
+      path: '/discover'
+      fullPath: '/discover/'
+      preLoaderRoute: typeof AppDiscoverIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/memory/': {
+      id: '/_app/memory/'
+      path: '/memory'
+      fullPath: '/memory/'
+      preLoaderRoute: typeof AppMemoryIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/nodes/': {
+      id: '/_app/nodes/'
+      path: '/nodes'
+      fullPath: '/nodes/'
+      preLoaderRoute: typeof AppNodesIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/usage/': {
+      id: '/_app/usage/'
+      path: '/usage'
+      fullPath: '/usage/'
+      preLoaderRoute: typeof AppUsageIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/voice/': {
+      id: '/_app/voice/'
+      path: '/voice'
+      fullPath: '/voice/'
+      preLoaderRoute: typeof AppVoiceIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/browser/sessions': {
+      id: '/_app/browser/sessions'
+      path: '/browser/sessions'
+      fullPath: '/browser/sessions'
+      preLoaderRoute: typeof AppBrowserSessionsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/memory/browse': {
+      id: '/_app/memory/browse'
+      path: '/memory/browse'
+      fullPath: '/memory/browse'
+      preLoaderRoute: typeof AppMemoryBrowseRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/memory/search': {
+      id: '/_app/memory/search'
+      path: '/memory/search'
+      fullPath: '/memory/search'
+      preLoaderRoute: typeof AppMemorySearchRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_dashboard/skills/policies': {
       id: '/_dashboard/skills/policies'
       path: '/skills/policies'
@@ -1523,6 +1737,20 @@ declare module '@tanstack/react-router' {
       path: '/chat/$agentId'
       fullPath: '/chat/$agentId'
       preLoaderRoute: typeof AppChatAgentIdRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/canvas/$canvasId': {
+      id: '/_app/canvas/$canvasId'
+      path: '/canvas/$canvasId'
+      fullPath: '/canvas/$canvasId'
+      preLoaderRoute: typeof AppCanvasCanvasIdRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/nodes/$nodeId': {
+      id: '/_app/nodes/$nodeId'
+      path: '/nodes/$nodeId'
+      fullPath: '/nodes/$nodeId'
+      preLoaderRoute: typeof AppNodesNodeIdRouteImport
       parentRoute: typeof AppRoute
     }
     '/_dashboard/swarms/$swarmId/': {
@@ -1776,28 +2004,52 @@ declare module '@tanstack/react-router' {
 interface AppRouteChildren {
   AppHomeRoute: typeof AppHomeRoute
   AppChatAgentIdRoute: typeof AppChatAgentIdRoute
+  AppCanvasCanvasIdRoute: typeof AppCanvasCanvasIdRoute
+  AppNodesNodeIdRoute: typeof AppNodesNodeIdRoute
+  AppBrowserSessionsRoute: typeof AppBrowserSessionsRoute
+  AppMemoryBrowseRoute: typeof AppMemoryBrowseRoute
+  AppMemorySearchRoute: typeof AppMemorySearchRoute
   AppApprovalsIndexRoute: typeof AppApprovalsIndexRoute
   AppAutomationsIndexRoute: typeof AppAutomationsIndexRoute
   AppBriefingIndexRoute: typeof AppBriefingIndexRoute
+  AppBrowserIndexRoute: typeof AppBrowserIndexRoute
+  AppCanvasIndexRoute: typeof AppCanvasIndexRoute
   AppChatIndexRoute: typeof AppChatIndexRoute
   AppCronIndexRoute: typeof AppCronIndexRoute
+  AppDiscoverIndexRoute: typeof AppDiscoverIndexRoute
+  AppMemoryIndexRoute: typeof AppMemoryIndexRoute
+  AppNodesIndexRoute: typeof AppNodesIndexRoute
   AppPersonalIndexRoute: typeof AppPersonalIndexRoute
   AppProjectsIndexRoute: typeof AppProjectsIndexRoute
   AppTasksIndexRoute: typeof AppTasksIndexRoute
+  AppUsageIndexRoute: typeof AppUsageIndexRoute
+  AppVoiceIndexRoute: typeof AppVoiceIndexRoute
   AppWorkIndexRoute: typeof AppWorkIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
   AppHomeRoute: AppHomeRoute,
   AppChatAgentIdRoute: AppChatAgentIdRoute,
+  AppCanvasCanvasIdRoute: AppCanvasCanvasIdRoute,
+  AppNodesNodeIdRoute: AppNodesNodeIdRoute,
+  AppBrowserSessionsRoute: AppBrowserSessionsRoute,
+  AppMemoryBrowseRoute: AppMemoryBrowseRoute,
+  AppMemorySearchRoute: AppMemorySearchRoute,
   AppApprovalsIndexRoute: AppApprovalsIndexRoute,
   AppAutomationsIndexRoute: AppAutomationsIndexRoute,
   AppBriefingIndexRoute: AppBriefingIndexRoute,
+  AppBrowserIndexRoute: AppBrowserIndexRoute,
+  AppCanvasIndexRoute: AppCanvasIndexRoute,
   AppChatIndexRoute: AppChatIndexRoute,
   AppCronIndexRoute: AppCronIndexRoute,
+  AppDiscoverIndexRoute: AppDiscoverIndexRoute,
+  AppMemoryIndexRoute: AppMemoryIndexRoute,
+  AppNodesIndexRoute: AppNodesIndexRoute,
   AppPersonalIndexRoute: AppPersonalIndexRoute,
   AppProjectsIndexRoute: AppProjectsIndexRoute,
   AppTasksIndexRoute: AppTasksIndexRoute,
+  AppUsageIndexRoute: AppUsageIndexRoute,
+  AppVoiceIndexRoute: AppVoiceIndexRoute,
   AppWorkIndexRoute: AppWorkIndexRoute,
 }
 
