@@ -51,8 +51,16 @@ import { Route as DashboardConfigureDefaultsRouteImport } from './routes/_dashbo
 import { Route as DashboardChannelsRoutingRouteImport } from './routes/_dashboard/channels/routing'
 import { Route as DashboardChannelsHealthRouteImport } from './routes/_dashboard/channels/health'
 import { Route as DashboardChannelsConnectorsRouteImport } from './routes/_dashboard/channels/connectors'
+import { Route as DashboardSettingsWebhooksRouteImport } from './routes/_dashboard/settings/webhooks'
+import { Route as DashboardSettingsProfileRouteImport } from './routes/_dashboard/settings/profile'
+import { Route as DashboardSettingsNotificationsRouteImport } from './routes/_dashboard/settings/notifications'
+import { Route as DashboardSettingsAppearanceRouteImport } from './routes/_dashboard/settings/appearance'
+import { Route as DashboardSettingsApiKeysRouteImport } from './routes/_dashboard/settings/api-keys'
+import { Route as DashboardConfigureSelfHostingRouteImport } from './routes/_dashboard/configure/self-hosting'
 import { Route as DashboardAuditToolsRouteImport } from './routes/_dashboard/audit/tools'
+import { Route as DashboardAuditIncidentsRouteImport } from './routes/_dashboard/audit/incidents'
 import { Route as DashboardAuditConfigChangesRouteImport } from './routes/_dashboard/audit/config-changes'
+import { Route as DashboardAuditAccessRouteImport } from './routes/_dashboard/audit/access'
 import { Route as DashboardAgentsNewRouteImport } from './routes/_dashboard/agents/new'
 import { Route as AppChatAgentIdRouteImport } from './routes/_app/chat/$agentId'
 import { Route as DashboardSwarmsSwarmIdIndexRouteImport } from './routes/_dashboard/swarms/$swarmId/index'
@@ -309,10 +317,56 @@ const DashboardAuditToolsRoute = DashboardAuditToolsRouteImport.update({
   path: '/audit/tools',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardAuditIncidentsRoute = DashboardAuditIncidentsRouteImport.update({
+  id: '/audit/incidents',
+  path: '/audit/incidents',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardAuditConfigChangesRoute =
   DashboardAuditConfigChangesRouteImport.update({
     id: '/audit/config-changes',
     path: '/audit/config-changes',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardAuditAccessRoute = DashboardAuditAccessRouteImport.update({
+  id: '/audit/access',
+  path: '/audit/access',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardConfigureSelfHostingRoute =
+  DashboardConfigureSelfHostingRouteImport.update({
+    id: '/configure/self-hosting',
+    path: '/configure/self-hosting',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardSettingsApiKeysRoute =
+  DashboardSettingsApiKeysRouteImport.update({
+    id: '/settings/api-keys',
+    path: '/settings/api-keys',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardSettingsAppearanceRoute =
+  DashboardSettingsAppearanceRouteImport.update({
+    id: '/settings/appearance',
+    path: '/settings/appearance',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardSettingsNotificationsRoute =
+  DashboardSettingsNotificationsRouteImport.update({
+    id: '/settings/notifications',
+    path: '/settings/notifications',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardSettingsProfileRoute =
+  DashboardSettingsProfileRouteImport.update({
+    id: '/settings/profile',
+    path: '/settings/profile',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardSettingsWebhooksRoute =
+  DashboardSettingsWebhooksRouteImport.update({
+    id: '/settings/webhooks',
+    path: '/settings/webhooks',
     getParentRoute: () => DashboardRoute,
   } as any)
 const DashboardAgentsNewRoute = DashboardAgentsNewRouteImport.update({
@@ -499,7 +553,9 @@ export interface FileRoutesByFullPath {
   '/home': typeof AppHomeRoute
   '/chat/$agentId': typeof AppChatAgentIdRoute
   '/agents/new': typeof DashboardAgentsNewRoute
+  '/audit/access': typeof DashboardAuditAccessRoute
   '/audit/config-changes': typeof DashboardAuditConfigChangesRoute
+  '/audit/incidents': typeof DashboardAuditIncidentsRoute
   '/audit/tools': typeof DashboardAuditToolsRoute
   '/channels/connectors': typeof DashboardChannelsConnectorsRoute
   '/channels/health': typeof DashboardChannelsHealthRoute
@@ -507,6 +563,7 @@ export interface FileRoutesByFullPath {
   '/configure/defaults': typeof DashboardConfigureDefaultsRoute
   '/configure/integrations': typeof DashboardConfigureIntegrationsRoute
   '/configure/providers': typeof DashboardConfigureProvidersRoute
+  '/configure/self-hosting': typeof DashboardConfigureSelfHostingRoute
   '/observe/cost': typeof DashboardObserveCostRoute
   '/observe/live': typeof DashboardObserveLiveRoute
   '/observe/logs': typeof DashboardObserveLogsRoute
@@ -518,6 +575,11 @@ export interface FileRoutesByFullPath {
   '/skills/installed': typeof DashboardSkillsInstalledRoute
   '/skills/marketplace': typeof DashboardSkillsMarketplaceRoute
   '/skills/policies': typeof DashboardSkillsPoliciesRoute
+  '/settings/api-keys': typeof DashboardSettingsApiKeysRoute
+  '/settings/appearance': typeof DashboardSettingsAppearanceRoute
+  '/settings/notifications': typeof DashboardSettingsNotificationsRoute
+  '/settings/profile': typeof DashboardSettingsProfileRoute
+  '/settings/webhooks': typeof DashboardSettingsWebhooksRoute
   '/approvals/': typeof AppApprovalsIndexRoute
   '/automations/': typeof AppAutomationsIndexRoute
   '/briefing/': typeof AppBriefingIndexRoute
@@ -573,7 +635,9 @@ export interface FileRoutesByTo {
   '/home': typeof AppHomeRoute
   '/chat/$agentId': typeof AppChatAgentIdRoute
   '/agents/new': typeof DashboardAgentsNewRoute
+  '/audit/access': typeof DashboardAuditAccessRoute
   '/audit/config-changes': typeof DashboardAuditConfigChangesRoute
+  '/audit/incidents': typeof DashboardAuditIncidentsRoute
   '/audit/tools': typeof DashboardAuditToolsRoute
   '/channels/connectors': typeof DashboardChannelsConnectorsRoute
   '/channels/health': typeof DashboardChannelsHealthRoute
@@ -581,6 +645,7 @@ export interface FileRoutesByTo {
   '/configure/defaults': typeof DashboardConfigureDefaultsRoute
   '/configure/integrations': typeof DashboardConfigureIntegrationsRoute
   '/configure/providers': typeof DashboardConfigureProvidersRoute
+  '/configure/self-hosting': typeof DashboardConfigureSelfHostingRoute
   '/observe/cost': typeof DashboardObserveCostRoute
   '/observe/live': typeof DashboardObserveLiveRoute
   '/observe/logs': typeof DashboardObserveLogsRoute
@@ -592,6 +657,11 @@ export interface FileRoutesByTo {
   '/skills/installed': typeof DashboardSkillsInstalledRoute
   '/skills/marketplace': typeof DashboardSkillsMarketplaceRoute
   '/skills/policies': typeof DashboardSkillsPoliciesRoute
+  '/settings/api-keys': typeof DashboardSettingsApiKeysRoute
+  '/settings/appearance': typeof DashboardSettingsAppearanceRoute
+  '/settings/notifications': typeof DashboardSettingsNotificationsRoute
+  '/settings/profile': typeof DashboardSettingsProfileRoute
+  '/settings/webhooks': typeof DashboardSettingsWebhooksRoute
   '/approvals': typeof AppApprovalsIndexRoute
   '/automations': typeof AppAutomationsIndexRoute
   '/briefing': typeof AppBriefingIndexRoute
@@ -650,7 +720,9 @@ export interface FileRoutesById {
   '/_app/home': typeof AppHomeRoute
   '/_app/chat/$agentId': typeof AppChatAgentIdRoute
   '/_dashboard/agents/new': typeof DashboardAgentsNewRoute
+  '/_dashboard/audit/access': typeof DashboardAuditAccessRoute
   '/_dashboard/audit/config-changes': typeof DashboardAuditConfigChangesRoute
+  '/_dashboard/audit/incidents': typeof DashboardAuditIncidentsRoute
   '/_dashboard/audit/tools': typeof DashboardAuditToolsRoute
   '/_dashboard/channels/connectors': typeof DashboardChannelsConnectorsRoute
   '/_dashboard/channels/health': typeof DashboardChannelsHealthRoute
@@ -658,6 +730,7 @@ export interface FileRoutesById {
   '/_dashboard/configure/defaults': typeof DashboardConfigureDefaultsRoute
   '/_dashboard/configure/integrations': typeof DashboardConfigureIntegrationsRoute
   '/_dashboard/configure/providers': typeof DashboardConfigureProvidersRoute
+  '/_dashboard/configure/self-hosting': typeof DashboardConfigureSelfHostingRoute
   '/_dashboard/observe/cost': typeof DashboardObserveCostRoute
   '/_dashboard/observe/live': typeof DashboardObserveLiveRoute
   '/_dashboard/observe/logs': typeof DashboardObserveLogsRoute
@@ -669,6 +742,11 @@ export interface FileRoutesById {
   '/_dashboard/skills/installed': typeof DashboardSkillsInstalledRoute
   '/_dashboard/skills/marketplace': typeof DashboardSkillsMarketplaceRoute
   '/_dashboard/skills/policies': typeof DashboardSkillsPoliciesRoute
+  '/_dashboard/settings/api-keys': typeof DashboardSettingsApiKeysRoute
+  '/_dashboard/settings/appearance': typeof DashboardSettingsAppearanceRoute
+  '/_dashboard/settings/notifications': typeof DashboardSettingsNotificationsRoute
+  '/_dashboard/settings/profile': typeof DashboardSettingsProfileRoute
+  '/_dashboard/settings/webhooks': typeof DashboardSettingsWebhooksRoute
   '/_app/approvals/': typeof AppApprovalsIndexRoute
   '/_app/automations/': typeof AppAutomationsIndexRoute
   '/_app/briefing/': typeof AppBriefingIndexRoute
@@ -726,7 +804,9 @@ export interface FileRouteTypes {
     | '/home'
     | '/chat/$agentId'
     | '/agents/new'
+    | '/audit/access'
     | '/audit/config-changes'
+    | '/audit/incidents'
     | '/audit/tools'
     | '/channels/connectors'
     | '/channels/health'
@@ -734,6 +814,7 @@ export interface FileRouteTypes {
     | '/configure/defaults'
     | '/configure/integrations'
     | '/configure/providers'
+    | '/configure/self-hosting'
     | '/observe/cost'
     | '/observe/live'
     | '/observe/logs'
@@ -745,6 +826,11 @@ export interface FileRouteTypes {
     | '/skills/installed'
     | '/skills/marketplace'
     | '/skills/policies'
+    | '/settings/api-keys'
+    | '/settings/appearance'
+    | '/settings/notifications'
+    | '/settings/profile'
+    | '/settings/webhooks'
     | '/approvals/'
     | '/automations/'
     | '/briefing/'
@@ -800,7 +886,9 @@ export interface FileRouteTypes {
     | '/home'
     | '/chat/$agentId'
     | '/agents/new'
+    | '/audit/access'
     | '/audit/config-changes'
+    | '/audit/incidents'
     | '/audit/tools'
     | '/channels/connectors'
     | '/channels/health'
@@ -808,6 +896,7 @@ export interface FileRouteTypes {
     | '/configure/defaults'
     | '/configure/integrations'
     | '/configure/providers'
+    | '/configure/self-hosting'
     | '/observe/cost'
     | '/observe/live'
     | '/observe/logs'
@@ -819,6 +908,11 @@ export interface FileRouteTypes {
     | '/skills/installed'
     | '/skills/marketplace'
     | '/skills/policies'
+    | '/settings/api-keys'
+    | '/settings/appearance'
+    | '/settings/notifications'
+    | '/settings/profile'
+    | '/settings/webhooks'
     | '/approvals'
     | '/automations'
     | '/briefing'
@@ -876,7 +970,9 @@ export interface FileRouteTypes {
     | '/_app/home'
     | '/_app/chat/$agentId'
     | '/_dashboard/agents/new'
+    | '/_dashboard/audit/access'
     | '/_dashboard/audit/config-changes'
+    | '/_dashboard/audit/incidents'
     | '/_dashboard/audit/tools'
     | '/_dashboard/channels/connectors'
     | '/_dashboard/channels/health'
@@ -884,6 +980,7 @@ export interface FileRouteTypes {
     | '/_dashboard/configure/defaults'
     | '/_dashboard/configure/integrations'
     | '/_dashboard/configure/providers'
+    | '/_dashboard/configure/self-hosting'
     | '/_dashboard/observe/cost'
     | '/_dashboard/observe/live'
     | '/_dashboard/observe/logs'
@@ -895,6 +992,11 @@ export interface FileRouteTypes {
     | '/_dashboard/skills/installed'
     | '/_dashboard/skills/marketplace'
     | '/_dashboard/skills/policies'
+    | '/_dashboard/settings/api-keys'
+    | '/_dashboard/settings/appearance'
+    | '/_dashboard/settings/notifications'
+    | '/_dashboard/settings/profile'
+    | '/_dashboard/settings/webhooks'
     | '/_app/approvals/'
     | '/_app/automations/'
     | '/_app/briefing/'
@@ -1150,6 +1252,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardSkillsInstalledRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/_dashboard/settings/webhooks': {
+      id: '/_dashboard/settings/webhooks'
+      path: '/settings/webhooks'
+      fullPath: '/settings/webhooks'
+      preLoaderRoute: typeof DashboardSettingsWebhooksRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/settings/profile': {
+      id: '/_dashboard/settings/profile'
+      path: '/settings/profile'
+      fullPath: '/settings/profile'
+      preLoaderRoute: typeof DashboardSettingsProfileRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/settings/notifications': {
+      id: '/_dashboard/settings/notifications'
+      path: '/settings/notifications'
+      fullPath: '/settings/notifications'
+      preLoaderRoute: typeof DashboardSettingsNotificationsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/settings/appearance': {
+      id: '/_dashboard/settings/appearance'
+      path: '/settings/appearance'
+      fullPath: '/settings/appearance'
+      preLoaderRoute: typeof DashboardSettingsAppearanceRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/settings/api-keys': {
+      id: '/_dashboard/settings/api-keys'
+      path: '/settings/api-keys'
+      fullPath: '/settings/api-keys'
+      preLoaderRoute: typeof DashboardSettingsApiKeysRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/_dashboard/security/secrets': {
       id: '/_dashboard/security/secrets'
       path: '/security/secrets'
@@ -1227,6 +1364,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardConfigureDefaultsRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/_dashboard/configure/self-hosting': {
+      id: '/_dashboard/configure/self-hosting'
+      path: '/configure/self-hosting'
+      fullPath: '/configure/self-hosting'
+      preLoaderRoute: typeof DashboardConfigureSelfHostingRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/_dashboard/channels/routing': {
       id: '/_dashboard/channels/routing'
       path: '/channels/routing'
@@ -1255,11 +1399,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAuditToolsRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/_dashboard/audit/incidents': {
+      id: '/_dashboard/audit/incidents'
+      path: '/audit/incidents'
+      fullPath: '/audit/incidents'
+      preLoaderRoute: typeof DashboardAuditIncidentsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/_dashboard/audit/config-changes': {
       id: '/_dashboard/audit/config-changes'
       path: '/audit/config-changes'
       fullPath: '/audit/config-changes'
       preLoaderRoute: typeof DashboardAuditConfigChangesRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/audit/access': {
+      id: '/_dashboard/audit/access'
+      path: '/audit/access'
+      fullPath: '/audit/access'
+      preLoaderRoute: typeof DashboardAuditAccessRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/_dashboard/agents/new': {
@@ -1507,7 +1665,9 @@ const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
 interface DashboardRouteChildren {
   DashboardAgentsNewRoute: typeof DashboardAgentsNewRoute
+  DashboardAuditAccessRoute: typeof DashboardAuditAccessRoute
   DashboardAuditConfigChangesRoute: typeof DashboardAuditConfigChangesRoute
+  DashboardAuditIncidentsRoute: typeof DashboardAuditIncidentsRoute
   DashboardAuditToolsRoute: typeof DashboardAuditToolsRoute
   DashboardChannelsConnectorsRoute: typeof DashboardChannelsConnectorsRoute
   DashboardChannelsHealthRoute: typeof DashboardChannelsHealthRoute
@@ -1515,6 +1675,7 @@ interface DashboardRouteChildren {
   DashboardConfigureDefaultsRoute: typeof DashboardConfigureDefaultsRoute
   DashboardConfigureIntegrationsRoute: typeof DashboardConfigureIntegrationsRoute
   DashboardConfigureProvidersRoute: typeof DashboardConfigureProvidersRoute
+  DashboardConfigureSelfHostingRoute: typeof DashboardConfigureSelfHostingRoute
   DashboardObserveCostRoute: typeof DashboardObserveCostRoute
   DashboardObserveLiveRoute: typeof DashboardObserveLiveRoute
   DashboardObserveLogsRoute: typeof DashboardObserveLogsRoute
@@ -1526,6 +1687,11 @@ interface DashboardRouteChildren {
   DashboardSkillsInstalledRoute: typeof DashboardSkillsInstalledRoute
   DashboardSkillsMarketplaceRoute: typeof DashboardSkillsMarketplaceRoute
   DashboardSkillsPoliciesRoute: typeof DashboardSkillsPoliciesRoute
+  DashboardSettingsApiKeysRoute: typeof DashboardSettingsApiKeysRoute
+  DashboardSettingsAppearanceRoute: typeof DashboardSettingsAppearanceRoute
+  DashboardSettingsNotificationsRoute: typeof DashboardSettingsNotificationsRoute
+  DashboardSettingsProfileRoute: typeof DashboardSettingsProfileRoute
+  DashboardSettingsWebhooksRoute: typeof DashboardSettingsWebhooksRoute
   DashboardAgentsIndexRoute: typeof DashboardAgentsIndexRoute
   DashboardAuditIndexRoute: typeof DashboardAuditIndexRoute
   DashboardBlueprintsIndexRoute: typeof DashboardBlueprintsIndexRoute
@@ -1570,7 +1736,9 @@ interface DashboardRouteChildren {
 
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardAgentsNewRoute: DashboardAgentsNewRoute,
+  DashboardAuditAccessRoute: DashboardAuditAccessRoute,
   DashboardAuditConfigChangesRoute: DashboardAuditConfigChangesRoute,
+  DashboardAuditIncidentsRoute: DashboardAuditIncidentsRoute,
   DashboardAuditToolsRoute: DashboardAuditToolsRoute,
   DashboardChannelsConnectorsRoute: DashboardChannelsConnectorsRoute,
   DashboardChannelsHealthRoute: DashboardChannelsHealthRoute,
@@ -1578,6 +1746,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardConfigureDefaultsRoute: DashboardConfigureDefaultsRoute,
   DashboardConfigureIntegrationsRoute: DashboardConfigureIntegrationsRoute,
   DashboardConfigureProvidersRoute: DashboardConfigureProvidersRoute,
+  DashboardConfigureSelfHostingRoute: DashboardConfigureSelfHostingRoute,
   DashboardObserveCostRoute: DashboardObserveCostRoute,
   DashboardObserveLiveRoute: DashboardObserveLiveRoute,
   DashboardObserveLogsRoute: DashboardObserveLogsRoute,
@@ -1589,6 +1758,11 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardSkillsInstalledRoute: DashboardSkillsInstalledRoute,
   DashboardSkillsMarketplaceRoute: DashboardSkillsMarketplaceRoute,
   DashboardSkillsPoliciesRoute: DashboardSkillsPoliciesRoute,
+  DashboardSettingsApiKeysRoute: DashboardSettingsApiKeysRoute,
+  DashboardSettingsAppearanceRoute: DashboardSettingsAppearanceRoute,
+  DashboardSettingsNotificationsRoute: DashboardSettingsNotificationsRoute,
+  DashboardSettingsProfileRoute: DashboardSettingsProfileRoute,
+  DashboardSettingsWebhooksRoute: DashboardSettingsWebhooksRoute,
   DashboardAgentsIndexRoute: DashboardAgentsIndexRoute,
   DashboardAuditIndexRoute: DashboardAuditIndexRoute,
   DashboardBlueprintsIndexRoute: DashboardBlueprintsIndexRoute,
