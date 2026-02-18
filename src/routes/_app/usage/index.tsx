@@ -25,7 +25,11 @@ function UsageIndex() {
     totalCost += r.cost
   }
 
-  const fmtTokens = (t: number) => t >= 1_000_000 ? `${(t / 1_000_000).toFixed(2)}M` : t >= 1_000 ? `${(t / 1_000).toFixed(1)}k` : String(t)
+  function fmtTokens(t: number): string {
+    if (t >= 1_000_000) return `${(t / 1_000_000).toFixed(2)}M`
+    if (t >= 1_000) return `${(t / 1_000).toFixed(1)}k`
+    return String(t)
+  }
 
   const tokenBreakdown = Object.entries(byAgent)
     .sort((a, b) => b[1].tokens - a[1].tokens)

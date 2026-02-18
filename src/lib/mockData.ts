@@ -1,8 +1,8 @@
 // Mock data layer — mirrors Convex schema for easy swap to live queries.
 
 const now = Date.now();
-const hour = 3_600_000;
-const day = 86_400_000;
+const HOUR_MS = 3_600_000;
+const DAY_MS = 86_400_000;
 
 // ── Instances ────────────────────────────────────────────────────────────────
 
@@ -18,7 +18,7 @@ export const mockInstances = [
     cpuUsage: 42,
     memoryUsage: 67,
     lastHeartbeat: now - 12_000,
-    createdAt: now - 90 * day,
+    createdAt: now - 90 * DAY_MS,
   },
   {
     id: "instance_2",
@@ -31,7 +31,7 @@ export const mockInstances = [
     cpuUsage: 18,
     memoryUsage: 34,
     lastHeartbeat: now - 8_000,
-    createdAt: now - 45 * day,
+    createdAt: now - 45 * DAY_MS,
   },
   {
     id: "instance_3",
@@ -44,7 +44,7 @@ export const mockInstances = [
     cpuUsage: 5,
     memoryUsage: 12,
     lastHeartbeat: now - 120_000,
-    createdAt: now - 3 * day,
+    createdAt: now - 3 * DAY_MS,
   },
 ];
 
@@ -60,7 +60,7 @@ export const mockAgents = [
     sessionCount: 142,
     totalTokens: 2_870_400,
     totalCost: 34.12,
-    createdAt: now - 88 * day,
+    createdAt: now - 88 * DAY_MS,
   },
   {
     id: "agent_2",
@@ -71,7 +71,7 @@ export const mockAgents = [
     sessionCount: 67,
     totalTokens: 5_420_000,
     totalCost: 81.30,
-    createdAt: now - 60 * day,
+    createdAt: now - 60 * DAY_MS,
   },
   {
     id: "agent_3",
@@ -82,7 +82,7 @@ export const mockAgents = [
     sessionCount: 213,
     totalTokens: 1_150_000,
     totalCost: 13.80,
-    createdAt: now - 75 * day,
+    createdAt: now - 75 * DAY_MS,
   },
   {
     id: "agent_4",
@@ -93,7 +93,7 @@ export const mockAgents = [
     sessionCount: 89,
     totalTokens: 940_000,
     totalCost: 4.70,
-    createdAt: now - 30 * day,
+    createdAt: now - 30 * DAY_MS,
   },
   {
     id: "agent_5",
@@ -104,7 +104,7 @@ export const mockAgents = [
     sessionCount: 34,
     totalTokens: 1_680_000,
     totalCost: 25.20,
-    createdAt: now - 20 * day,
+    createdAt: now - 20 * DAY_MS,
   },
   {
     id: "agent_6",
@@ -115,7 +115,7 @@ export const mockAgents = [
     sessionCount: 5,
     totalTokens: 48_000,
     totalCost: 0.58,
-    createdAt: now - 2 * day,
+    createdAt: now - 2 * DAY_MS,
   },
 ];
 
@@ -130,7 +130,7 @@ export const mockTasks = [
     description: "Customer reports intermittent 502 errors on /api/v2/widgets endpoint",
     status: "running" as const,
     priority: "high" as const,
-    deadline: now + 2 * hour,
+    deadline: now + 2 * HOUR_MS,
     createdAt: now - 35 * 60_000,
   },
   {
@@ -141,8 +141,8 @@ export const mockTasks = [
     description: "Compile a summary of Q3 pricing updates from top 5 competitors",
     status: "done" as const,
     priority: "medium" as const,
-    deadline: now - 1 * day,
-    createdAt: now - 3 * day,
+    deadline: now - 1 * DAY_MS,
+    createdAt: now - 3 * DAY_MS,
   },
   {
     id: "task_3",
@@ -152,8 +152,8 @@ export const mockTasks = [
     description: "Automated code review for the authentication module refactor",
     status: "needs_review" as const,
     priority: "high" as const,
-    deadline: now + 4 * hour,
-    createdAt: now - 2 * hour,
+    deadline: now + 4 * HOUR_MS,
+    createdAt: now - 2 * HOUR_MS,
   },
   {
     id: "task_4",
@@ -163,7 +163,7 @@ export const mockTasks = [
     description: "Execute full E2E test suite against staging environment",
     status: "running" as const,
     priority: "high" as const,
-    deadline: now + 1 * hour,
+    deadline: now + 1 * HOUR_MS,
     createdAt: now - 45 * 60_000,
   },
   {
@@ -174,7 +174,7 @@ export const mockTasks = [
     description: "Create human-readable changelog from commit history",
     status: "queued" as const,
     priority: "low" as const,
-    deadline: now + 3 * day,
+    deadline: now + 3 * DAY_MS,
     createdAt: now - 10 * 60_000,
   },
   {
@@ -185,8 +185,8 @@ export const mockTasks = [
     description: "Aggregate ticket volume, resolution time, and CSAT scores",
     status: "done" as const,
     priority: "medium" as const,
-    deadline: now - 2 * day,
-    createdAt: now - 5 * day,
+    deadline: now - 2 * DAY_MS,
+    createdAt: now - 5 * DAY_MS,
   },
   {
     id: "task_7",
@@ -196,8 +196,8 @@ export const mockTasks = [
     description: "Write a 1,500-word blog post covering recent AI safety research",
     status: "failed" as const,
     priority: "low" as const,
-    deadline: now - 1 * day,
-    createdAt: now - 4 * day,
+    deadline: now - 1 * DAY_MS,
+    createdAt: now - 4 * DAY_MS,
   },
   {
     id: "task_8",
@@ -207,7 +207,7 @@ export const mockTasks = [
     description: "Set up boilerplate for the notifications microservice",
     status: "queued" as const,
     priority: "medium" as const,
-    deadline: now + 2 * day,
+    deadline: now + 2 * DAY_MS,
     createdAt: now - 5 * 60_000,
   },
   {
@@ -218,8 +218,8 @@ export const mockTasks = [
     description: "Scan all production dependencies and flag critical vulnerabilities",
     status: "needs_review" as const,
     priority: "high" as const,
-    deadline: now + 6 * hour,
-    createdAt: now - 3 * hour,
+    deadline: now + 6 * HOUR_MS,
+    createdAt: now - 3 * HOUR_MS,
   },
 ];
 
@@ -240,8 +240,8 @@ export const mockCanvases = [
       ],
     }),
     thumbnail: "/thumbnails/support-dashboard.png",
-    createdAt: now - 14 * day,
-    updatedAt: now - 1 * hour,
+    createdAt: now - 14 * DAY_MS,
+    updatedAt: now - 1 * HOUR_MS,
   },
   {
     id: "canvas_2",
@@ -258,8 +258,8 @@ export const mockCanvases = [
       ],
     }),
     thumbnail: "/thumbnails/competitor-board.png",
-    createdAt: now - 7 * day,
-    updatedAt: now - 3 * hour,
+    createdAt: now - 7 * DAY_MS,
+    updatedAt: now - 3 * HOUR_MS,
   },
   {
     id: "canvas_3",
@@ -275,7 +275,7 @@ export const mockCanvases = [
       ],
     }),
     thumbnail: "/thumbnails/pr-checklist.png",
-    createdAt: now - 2 * day,
+    createdAt: now - 2 * DAY_MS,
     updatedAt: now - 30 * 60_000,
   },
   {
@@ -290,8 +290,8 @@ export const mockCanvases = [
       values: [92, 78, 64, 100],
     }),
     thumbnail: "/thumbnails/test-coverage.png",
-    createdAt: now - 5 * day,
-    updatedAt: now - 12 * hour,
+    createdAt: now - 5 * DAY_MS,
+    updatedAt: now - 12 * HOUR_MS,
   },
   {
     id: "canvas_5",
@@ -304,8 +304,8 @@ export const mockCanvases = [
       code: "services:\n  api:\n    port: 3000\n  worker:\n    port: 3001\n  scheduler:\n    port: 3002",
     }),
     thumbnail: "/thumbnails/architecture.png",
-    createdAt: now - 1 * day,
-    updatedAt: now - 6 * hour,
+    createdAt: now - 1 * DAY_MS,
+    updatedAt: now - 6 * HOUR_MS,
   },
 ];
 
@@ -320,10 +320,10 @@ export const mockCronJobs = [
     schedule: "0 9 * * *",
     instruction: "Summarize open tickets and send digest to #support-team Slack channel",
     enabled: true,
-    lastRunAt: now - 3 * hour,
+    lastRunAt: now - 3 * HOUR_MS,
     lastRunStatus: "success" as const,
-    nextRunAt: now + 21 * hour,
-    createdAt: now - 60 * day,
+    nextRunAt: now + 21 * HOUR_MS,
+    createdAt: now - 60 * DAY_MS,
   },
   {
     id: "cron_2",
@@ -333,10 +333,10 @@ export const mockCronJobs = [
     schedule: "0 8 * * 1",
     instruction: "Search for competitor product launches and pricing changes published in the last 7 days",
     enabled: true,
-    lastRunAt: now - 2 * day,
+    lastRunAt: now - 2 * DAY_MS,
     lastRunStatus: "success" as const,
-    nextRunAt: now + 5 * day,
-    createdAt: now - 40 * day,
+    nextRunAt: now + 5 * DAY_MS,
+    createdAt: now - 40 * DAY_MS,
   },
   {
     id: "cron_3",
@@ -346,10 +346,10 @@ export const mockCronJobs = [
     schedule: "0 2 * * *",
     instruction: "Run npm audit on all repositories and report critical vulnerabilities",
     enabled: true,
-    lastRunAt: now - 8 * hour,
+    lastRunAt: now - 8 * HOUR_MS,
     lastRunStatus: "success" as const,
-    nextRunAt: now + 16 * hour,
-    createdAt: now - 50 * day,
+    nextRunAt: now + 16 * HOUR_MS,
+    createdAt: now - 50 * DAY_MS,
   },
   {
     id: "cron_4",
@@ -362,7 +362,7 @@ export const mockCronJobs = [
     lastRunAt: now - 18 * 60_000,
     lastRunStatus: "success" as const,
     nextRunAt: now + 12 * 60_000,
-    createdAt: now - 25 * day,
+    createdAt: now - 25 * DAY_MS,
   },
   {
     id: "cron_5",
@@ -372,10 +372,10 @@ export const mockCronJobs = [
     schedule: "0 6 * * 3",
     instruction: "Identify documentation pages not updated in the last 30 days",
     enabled: false,
-    lastRunAt: now - 10 * day,
+    lastRunAt: now - 10 * DAY_MS,
     lastRunStatus: "failed" as const,
     nextRunAt: undefined,
-    createdAt: now - 15 * day,
+    createdAt: now - 15 * DAY_MS,
   },
   {
     id: "cron_6",
@@ -385,10 +385,10 @@ export const mockCronJobs = [
     schedule: "0 0 1 * *",
     instruction: "Generate usage and cost report for all agents and email to admin@example.com",
     enabled: true,
-    lastRunAt: now - 18 * day,
+    lastRunAt: now - 18 * DAY_MS,
     lastRunStatus: "success" as const,
-    nextRunAt: now + 12 * day,
-    createdAt: now - 80 * day,
+    nextRunAt: now + 12 * DAY_MS,
+    createdAt: now - 80 * DAY_MS,
   },
 ];
 
@@ -429,7 +429,7 @@ export const mockApprovals = [
     status: "pending" as const,
     decidedBy: undefined,
     decidedAt: undefined,
-    createdAt: now - 1 * hour,
+    createdAt: now - 1 * HOUR_MS,
   },
   {
     id: "approval_4",
@@ -441,7 +441,7 @@ export const mockApprovals = [
     status: "pending" as const,
     decidedBy: undefined,
     decidedAt: undefined,
-    createdAt: now - 2 * hour,
+    createdAt: now - 2 * HOUR_MS,
   },
   {
     id: "approval_5",
@@ -453,7 +453,7 @@ export const mockApprovals = [
     status: "pending" as const,
     decidedBy: undefined,
     decidedAt: undefined,
-    createdAt: now - 3 * hour,
+    createdAt: now - 3 * HOUR_MS,
   },
   {
     id: "approval_6",
@@ -464,8 +464,8 @@ export const mockApprovals = [
     riskLevel: "low" as const,
     status: "approved" as const,
     decidedBy: "user_demo",
-    decidedAt: now - 1 * day,
-    createdAt: now - 1 * day - 30 * 60_000,
+    decidedAt: now - 1 * DAY_MS,
+    createdAt: now - 1 * DAY_MS - 30 * 60_000,
   },
   {
     id: "approval_7",
@@ -476,8 +476,8 @@ export const mockApprovals = [
     riskLevel: "high" as const,
     status: "rejected" as const,
     decidedBy: "user_demo",
-    decidedAt: now - 2 * day,
-    createdAt: now - 2 * day - 1 * hour,
+    decidedAt: now - 2 * DAY_MS,
+    createdAt: now - 2 * DAY_MS - 1 * HOUR_MS,
   },
 ];
 
@@ -492,8 +492,8 @@ export const mockUsageRecords = [
     tokensUsed: 48_200,
     cost: 0.58,
     taskType: "support",
-    date: new Date(now - 0 * day).toISOString().slice(0, 10),
-    createdAt: now - 0 * day,
+    date: new Date(now - 0 * DAY_MS).toISOString().slice(0, 10),
+    createdAt: now - 0 * DAY_MS,
   },
   {
     id: "usage_2",
@@ -503,8 +503,8 @@ export const mockUsageRecords = [
     tokensUsed: 124_000,
     cost: 1.86,
     taskType: "research",
-    date: new Date(now - 0 * day).toISOString().slice(0, 10),
-    createdAt: now - 0 * day,
+    date: new Date(now - 0 * DAY_MS).toISOString().slice(0, 10),
+    createdAt: now - 0 * DAY_MS,
   },
   {
     id: "usage_3",
@@ -514,8 +514,8 @@ export const mockUsageRecords = [
     tokensUsed: 31_400,
     cost: 0.38,
     taskType: "code_review",
-    date: new Date(now - 1 * day).toISOString().slice(0, 10),
-    createdAt: now - 1 * day,
+    date: new Date(now - 1 * DAY_MS).toISOString().slice(0, 10),
+    createdAt: now - 1 * DAY_MS,
   },
   {
     id: "usage_4",
@@ -525,8 +525,8 @@ export const mockUsageRecords = [
     tokensUsed: 67_800,
     cost: 0.34,
     taskType: "testing",
-    date: new Date(now - 1 * day).toISOString().slice(0, 10),
-    createdAt: now - 1 * day,
+    date: new Date(now - 1 * DAY_MS).toISOString().slice(0, 10),
+    createdAt: now - 1 * DAY_MS,
   },
   {
     id: "usage_5",
@@ -536,8 +536,8 @@ export const mockUsageRecords = [
     tokensUsed: 52_100,
     cost: 0.63,
     taskType: "support",
-    date: new Date(now - 2 * day).toISOString().slice(0, 10),
-    createdAt: now - 2 * day,
+    date: new Date(now - 2 * DAY_MS).toISOString().slice(0, 10),
+    createdAt: now - 2 * DAY_MS,
   },
   {
     id: "usage_6",
@@ -547,8 +547,8 @@ export const mockUsageRecords = [
     tokensUsed: 89_300,
     cost: 1.34,
     taskType: "documentation",
-    date: new Date(now - 2 * day).toISOString().slice(0, 10),
-    createdAt: now - 2 * day,
+    date: new Date(now - 2 * DAY_MS).toISOString().slice(0, 10),
+    createdAt: now - 2 * DAY_MS,
   },
   {
     id: "usage_7",
@@ -558,8 +558,8 @@ export const mockUsageRecords = [
     tokensUsed: 142_000,
     cost: 2.13,
     taskType: "research",
-    date: new Date(now - 3 * day).toISOString().slice(0, 10),
-    createdAt: now - 3 * day,
+    date: new Date(now - 3 * DAY_MS).toISOString().slice(0, 10),
+    createdAt: now - 3 * DAY_MS,
   },
   {
     id: "usage_8",
@@ -569,8 +569,8 @@ export const mockUsageRecords = [
     tokensUsed: 27_600,
     cost: 0.33,
     taskType: "code_review",
-    date: new Date(now - 4 * day).toISOString().slice(0, 10),
-    createdAt: now - 4 * day,
+    date: new Date(now - 4 * DAY_MS).toISOString().slice(0, 10),
+    createdAt: now - 4 * DAY_MS,
   },
   {
     id: "usage_9",
@@ -580,8 +580,8 @@ export const mockUsageRecords = [
     tokensUsed: 8_400,
     cost: 0.10,
     taskType: "development",
-    date: new Date(now - 5 * day).toISOString().slice(0, 10),
-    createdAt: now - 5 * day,
+    date: new Date(now - 5 * DAY_MS).toISOString().slice(0, 10),
+    createdAt: now - 5 * DAY_MS,
   },
   {
     id: "usage_10",
@@ -591,8 +591,8 @@ export const mockUsageRecords = [
     tokensUsed: 54_200,
     cost: 0.27,
     taskType: "testing",
-    date: new Date(now - 6 * day).toISOString().slice(0, 10),
-    createdAt: now - 6 * day,
+    date: new Date(now - 6 * DAY_MS).toISOString().slice(0, 10),
+    createdAt: now - 6 * DAY_MS,
   },
 ];
 
@@ -610,7 +610,7 @@ export const mockDiscoverItems = [
     tags: ["scraping", "data", "web"],
     installCount: 3_420,
     rating: 4.7,
-    createdAt: now - 120 * day,
+    createdAt: now - 120 * DAY_MS,
   },
   {
     id: "discover_2",
@@ -622,7 +622,7 @@ export const mockDiscoverItems = [
     tags: ["sql", "database", "query"],
     installCount: 8_150,
     rating: 4.9,
-    createdAt: now - 200 * day,
+    createdAt: now - 200 * DAY_MS,
   },
   {
     id: "discover_3",
@@ -634,7 +634,7 @@ export const mockDiscoverItems = [
     tags: ["vision", "ocr", "image"],
     installCount: 5_670,
     rating: 4.5,
-    createdAt: now - 90 * day,
+    createdAt: now - 90 * DAY_MS,
   },
   // Automations
   {
@@ -647,7 +647,7 @@ export const mockDiscoverItems = [
     tags: ["github", "code-review", "automation"],
     installCount: 12_300,
     rating: 4.8,
-    createdAt: now - 180 * day,
+    createdAt: now - 180 * DAY_MS,
   },
   {
     id: "discover_5",
@@ -659,7 +659,7 @@ export const mockDiscoverItems = [
     tags: ["onboarding", "crm", "email"],
     installCount: 2_890,
     rating: 4.4,
-    createdAt: now - 60 * day,
+    createdAt: now - 60 * DAY_MS,
   },
   {
     id: "discover_6",
@@ -671,7 +671,7 @@ export const mockDiscoverItems = [
     tags: ["incident", "monitoring", "sre"],
     installCount: 6_710,
     rating: 4.6,
-    createdAt: now - 150 * day,
+    createdAt: now - 150 * DAY_MS,
   },
   // Showcases
   {
@@ -684,7 +684,7 @@ export const mockDiscoverItems = [
     tags: ["helpdesk", "support", "ai"],
     installCount: 1_540,
     rating: 4.3,
-    createdAt: now - 30 * day,
+    createdAt: now - 30 * DAY_MS,
   },
   {
     id: "discover_8",
@@ -696,7 +696,7 @@ export const mockDiscoverItems = [
     tags: ["research", "citations", "academic"],
     installCount: 980,
     rating: 4.6,
-    createdAt: now - 45 * day,
+    createdAt: now - 45 * DAY_MS,
   },
   {
     id: "discover_9",
@@ -708,7 +708,7 @@ export const mockDiscoverItems = [
     tags: ["devops", "infrastructure", "monitoring"],
     installCount: 2_210,
     rating: 4.8,
-    createdAt: now - 75 * day,
+    createdAt: now - 75 * DAY_MS,
   },
 ];
 
@@ -728,7 +728,7 @@ export const mockBrowserSessions = [
       "https://news.ycombinator.com/item?id=39814567",
     ],
     outcome: "Found 5 AI-related articles; summary saved to memory file research/hn-digest.md",
-    createdAt: now - 4 * hour,
+    createdAt: now - 4 * HOUR_MS,
   },
   {
     id: "browser_2",
@@ -742,7 +742,7 @@ export const mockBrowserSessions = [
       "https://status.stripe.com/incidents/rk4m8y6nj92q",
     ],
     outcome: "All systems operational; one resolved incident from 6 hours ago (payments latency)",
-    createdAt: now - 6 * hour,
+    createdAt: now - 6 * HOUR_MS,
   },
   {
     id: "browser_3",
@@ -769,7 +769,7 @@ export const mockBrowserSessions = [
       "https://arxiv.org/list/cs.AI/recent",
     ],
     outcome: "Failed: rate-limited by arxiv.org after 3 requests; retrying in 60 minutes",
-    createdAt: now - 1 * hour,
+    createdAt: now - 1 * HOUR_MS,
   },
 ];
 
@@ -791,7 +791,7 @@ export const mockNodes = [
       voiceWake: true,
     },
     lastSeen: now - 30_000,
-    createdAt: now - 180 * day,
+    createdAt: now - 180 * DAY_MS,
   },
   {
     id: "node_2",
@@ -808,7 +808,7 @@ export const mockNodes = [
       voiceWake: true,
     },
     lastSeen: now - 120_000,
-    createdAt: now - 90 * day,
+    createdAt: now - 90 * DAY_MS,
   },
   {
     id: "node_3",
@@ -824,8 +824,8 @@ export const mockNodes = [
       notifications: true,
       voiceWake: false,
     },
-    lastSeen: now - 8 * hour,
-    createdAt: now - 365 * day,
+    lastSeen: now - 8 * HOUR_MS,
+    createdAt: now - 365 * DAY_MS,
   },
   {
     id: "node_4",
@@ -841,8 +841,8 @@ export const mockNodes = [
       notifications: true,
       voiceWake: false,
     },
-    lastSeen: now - 3 * day,
-    createdAt: now - 60 * day,
+    lastSeen: now - 3 * DAY_MS,
+    createdAt: now - 60 * DAY_MS,
   },
 ];
 
@@ -857,17 +857,17 @@ export const mockMemoryFiles = [
     content: "# Escalation Rules\n\n1. VIP customers → immediate human handoff\n2. Billing disputes > $500 → manager approval\n3. Security incidents → page on-call SRE",
     fileType: "markdown",
     tags: ["support", "rules", "escalation"],
-    createdAt: now - 60 * day,
+    createdAt: now - 60 * DAY_MS,
   },
   {
     id: "mem_2",
     userId: "user_demo",
     agentId: "agent_2",
     path: "research/competitor-profiles.json",
-    content: JSON.stringify({ competitors: ["AcmeCorp", "BetaInc", "GammaLtd"], lastUpdated: new Date(now - 2 * day).toISOString() }),
+    content: JSON.stringify({ competitors: ["AcmeCorp", "BetaInc", "GammaLtd"], lastUpdated: new Date(now - 2 * DAY_MS).toISOString() }),
     fileType: "json",
     tags: ["research", "competitors"],
-    createdAt: now - 30 * day,
+    createdAt: now - 30 * DAY_MS,
   },
   {
     id: "mem_3",
@@ -877,7 +877,7 @@ export const mockMemoryFiles = [
     content: "# Code Review Style Guide\n\n- Prefer `const` over `let`\n- Max function length: 40 lines\n- Always handle error cases\n- Use descriptive variable names",
     fileType: "markdown",
     tags: ["code-review", "style", "guidelines"],
-    createdAt: now - 45 * day,
+    createdAt: now - 45 * DAY_MS,
   },
   {
     id: "mem_4",
@@ -887,7 +887,7 @@ export const mockMemoryFiles = [
     content: "# Canned Responses\n\n## Billing\n- Refund processed: 'Your refund of {amount} has been initiated…'\n- Payment failed: 'We noticed your payment method…'",
     fileType: "markdown",
     tags: ["support", "templates", "billing"],
-    createdAt: now - 50 * day,
+    createdAt: now - 50 * DAY_MS,
   },
   {
     id: "mem_5",
@@ -897,7 +897,7 @@ export const mockMemoryFiles = [
     content: "browser,os,status\nChrome 120,macOS,pass\nFirefox 121,Ubuntu,pass\nSafari 17,macOS,fail\nEdge 120,Windows,pass",
     fileType: "csv",
     tags: ["qa", "testing", "matrix"],
-    createdAt: now - 10 * day,
+    createdAt: now - 10 * DAY_MS,
   },
   {
     id: "mem_6",
@@ -907,7 +907,7 @@ export const mockMemoryFiles = [
     content: "# HN Digest — Today\n\n1. **Multi-agent LLM orchestration** (342 points)\n2. **New GPT-4o benchmarks** (289 points)\n3. **Open-source voice assistant** (267 points)",
     fileType: "markdown",
     tags: ["research", "digest", "hackernews"],
-    createdAt: now - 4 * hour,
+    createdAt: now - 4 * HOUR_MS,
   },
 ];
 
@@ -922,5 +922,5 @@ export const mockVoiceSettings = {
   sttEngine: "whisper-v3",
   language: "en-US",
   enabled: true,
-  createdAt: now - 30 * day,
+  createdAt: now - 30 * DAY_MS,
 };
