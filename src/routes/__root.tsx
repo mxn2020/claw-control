@@ -1,6 +1,10 @@
 import { HeadContent, Outlet, Scripts, createRootRoute } from '@tanstack/react-router'
+import { ConvexProvider, ConvexReactClient } from 'convex/react'
 
 import appCss from '../styles.css?url'
+
+const convexUrl = import.meta.env.VITE_CONVEX_URL as string
+const convex = convexUrl ? new ConvexReactClient(convexUrl) : null
 
 export const Route = createRootRoute({
   head: () => ({
@@ -42,5 +46,12 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 }
 
 function RootComponent() {
+  if (convex) {
+    return (
+      <ConvexProvider client={convex}>
+        <Outlet />
+      </ConvexProvider>
+    )
+  }
   return <Outlet />
 }
