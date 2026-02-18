@@ -10,7 +10,9 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as DashboardRouteImport } from './routes/_dashboard'
+import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppHomeRouteImport } from './routes/_app/home'
 import { Route as DashboardSwarmsIndexRouteImport } from './routes/_dashboard/swarms/index'
 import { Route as DashboardSkillsIndexRouteImport } from './routes/_dashboard/skills/index'
 import { Route as DashboardSettingsIndexRouteImport } from './routes/_dashboard/settings/index'
@@ -23,6 +25,15 @@ import { Route as DashboardChannelsIndexRouteImport } from './routes/_dashboard/
 import { Route as DashboardBlueprintsIndexRouteImport } from './routes/_dashboard/blueprints/index'
 import { Route as DashboardAuditIndexRouteImport } from './routes/_dashboard/audit/index'
 import { Route as DashboardAgentsIndexRouteImport } from './routes/_dashboard/agents/index'
+import { Route as AppWorkIndexRouteImport } from './routes/_app/work/index'
+import { Route as AppTasksIndexRouteImport } from './routes/_app/tasks/index'
+import { Route as AppProjectsIndexRouteImport } from './routes/_app/projects/index'
+import { Route as AppPersonalIndexRouteImport } from './routes/_app/personal/index'
+import { Route as AppCronIndexRouteImport } from './routes/_app/cron/index'
+import { Route as AppChatIndexRouteImport } from './routes/_app/chat/index'
+import { Route as AppBriefingIndexRouteImport } from './routes/_app/briefing/index'
+import { Route as AppAutomationsIndexRouteImport } from './routes/_app/automations/index'
+import { Route as AppApprovalsIndexRouteImport } from './routes/_app/approvals/index'
 import { Route as DashboardSecuritySecretsRouteImport } from './routes/_dashboard/security/secrets'
 import { Route as DashboardSecurityQuarantineRouteImport } from './routes/_dashboard/security/quarantine'
 import { Route as DashboardSecurityPostureRouteImport } from './routes/_dashboard/security/posture'
@@ -34,6 +45,7 @@ import { Route as DashboardObserveCostRouteImport } from './routes/_dashboard/ob
 import { Route as DashboardAuditToolsRouteImport } from './routes/_dashboard/audit/tools'
 import { Route as DashboardAuditConfigChangesRouteImport } from './routes/_dashboard/audit/config-changes'
 import { Route as DashboardAgentsNewRouteImport } from './routes/_dashboard/agents/new'
+import { Route as AppChatAgentIdRouteImport } from './routes/_app/chat/$agentId'
 import { Route as DashboardSwarmsSwarmIdIndexRouteImport } from './routes/_dashboard/swarms/$swarmId/index'
 import { Route as DashboardSessionsSessionIdIndexRouteImport } from './routes/_dashboard/sessions/$sessionId/index'
 import { Route as DashboardFleetInstancesIndexRouteImport } from './routes/_dashboard/fleet/instances/index'
@@ -63,10 +75,19 @@ const DashboardRoute = DashboardRouteImport.update({
   id: '/_dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppRoute = AppRouteImport.update({
+  id: '/_app',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AppHomeRoute = AppHomeRouteImport.update({
+  id: '/home',
+  path: '/home',
+  getParentRoute: () => AppRoute,
 } as any)
 const DashboardSwarmsIndexRoute = DashboardSwarmsIndexRouteImport.update({
   id: '/swarms/',
@@ -129,6 +150,51 @@ const DashboardAgentsIndexRoute = DashboardAgentsIndexRouteImport.update({
   path: '/agents/',
   getParentRoute: () => DashboardRoute,
 } as any)
+const AppWorkIndexRoute = AppWorkIndexRouteImport.update({
+  id: '/work/',
+  path: '/work/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppTasksIndexRoute = AppTasksIndexRouteImport.update({
+  id: '/tasks/',
+  path: '/tasks/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppProjectsIndexRoute = AppProjectsIndexRouteImport.update({
+  id: '/projects/',
+  path: '/projects/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPersonalIndexRoute = AppPersonalIndexRouteImport.update({
+  id: '/personal/',
+  path: '/personal/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCronIndexRoute = AppCronIndexRouteImport.update({
+  id: '/cron/',
+  path: '/cron/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppChatIndexRoute = AppChatIndexRouteImport.update({
+  id: '/chat/',
+  path: '/chat/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppBriefingIndexRoute = AppBriefingIndexRouteImport.update({
+  id: '/briefing/',
+  path: '/briefing/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAutomationsIndexRoute = AppAutomationsIndexRouteImport.update({
+  id: '/automations/',
+  path: '/automations/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppApprovalsIndexRoute = AppApprovalsIndexRouteImport.update({
+  id: '/approvals/',
+  path: '/approvals/',
+  getParentRoute: () => AppRoute,
+} as any)
 const DashboardSecuritySecretsRoute =
   DashboardSecuritySecretsRouteImport.update({
     id: '/security/secrets',
@@ -188,6 +254,11 @@ const DashboardAgentsNewRoute = DashboardAgentsNewRouteImport.update({
   id: '/agents/new',
   path: '/agents/new',
   getParentRoute: () => DashboardRoute,
+} as any)
+const AppChatAgentIdRoute = AppChatAgentIdRouteImport.update({
+  id: '/chat/$agentId',
+  path: '/chat/$agentId',
+  getParentRoute: () => AppRoute,
 } as any)
 const DashboardSwarmsSwarmIdIndexRoute =
   DashboardSwarmsSwarmIdIndexRouteImport.update({
@@ -336,6 +407,8 @@ const DashboardFleetInstancesInstanceIdConfigEnvironmentRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/home': typeof AppHomeRoute
+  '/chat/$agentId': typeof AppChatAgentIdRoute
   '/agents/new': typeof DashboardAgentsNewRoute
   '/audit/config-changes': typeof DashboardAuditConfigChangesRoute
   '/audit/tools': typeof DashboardAuditToolsRoute
@@ -347,6 +420,15 @@ export interface FileRoutesByFullPath {
   '/security/posture': typeof DashboardSecurityPostureRoute
   '/security/quarantine': typeof DashboardSecurityQuarantineRoute
   '/security/secrets': typeof DashboardSecuritySecretsRoute
+  '/approvals/': typeof AppApprovalsIndexRoute
+  '/automations/': typeof AppAutomationsIndexRoute
+  '/briefing/': typeof AppBriefingIndexRoute
+  '/chat/': typeof AppChatIndexRoute
+  '/cron/': typeof AppCronIndexRoute
+  '/personal/': typeof AppPersonalIndexRoute
+  '/projects/': typeof AppProjectsIndexRoute
+  '/tasks/': typeof AppTasksIndexRoute
+  '/work/': typeof AppWorkIndexRoute
   '/agents/': typeof DashboardAgentsIndexRoute
   '/audit/': typeof DashboardAuditIndexRoute
   '/blueprints/': typeof DashboardBlueprintsIndexRoute
@@ -386,6 +468,8 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/home': typeof AppHomeRoute
+  '/chat/$agentId': typeof AppChatAgentIdRoute
   '/agents/new': typeof DashboardAgentsNewRoute
   '/audit/config-changes': typeof DashboardAuditConfigChangesRoute
   '/audit/tools': typeof DashboardAuditToolsRoute
@@ -397,6 +481,15 @@ export interface FileRoutesByTo {
   '/security/posture': typeof DashboardSecurityPostureRoute
   '/security/quarantine': typeof DashboardSecurityQuarantineRoute
   '/security/secrets': typeof DashboardSecuritySecretsRoute
+  '/approvals': typeof AppApprovalsIndexRoute
+  '/automations': typeof AppAutomationsIndexRoute
+  '/briefing': typeof AppBriefingIndexRoute
+  '/chat': typeof AppChatIndexRoute
+  '/cron': typeof AppCronIndexRoute
+  '/personal': typeof AppPersonalIndexRoute
+  '/projects': typeof AppProjectsIndexRoute
+  '/tasks': typeof AppTasksIndexRoute
+  '/work': typeof AppWorkIndexRoute
   '/agents': typeof DashboardAgentsIndexRoute
   '/audit': typeof DashboardAuditIndexRoute
   '/blueprints': typeof DashboardBlueprintsIndexRoute
@@ -437,7 +530,10 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_app': typeof AppRouteWithChildren
   '/_dashboard': typeof DashboardRouteWithChildren
+  '/_app/home': typeof AppHomeRoute
+  '/_app/chat/$agentId': typeof AppChatAgentIdRoute
   '/_dashboard/agents/new': typeof DashboardAgentsNewRoute
   '/_dashboard/audit/config-changes': typeof DashboardAuditConfigChangesRoute
   '/_dashboard/audit/tools': typeof DashboardAuditToolsRoute
@@ -449,6 +545,15 @@ export interface FileRoutesById {
   '/_dashboard/security/posture': typeof DashboardSecurityPostureRoute
   '/_dashboard/security/quarantine': typeof DashboardSecurityQuarantineRoute
   '/_dashboard/security/secrets': typeof DashboardSecuritySecretsRoute
+  '/_app/approvals/': typeof AppApprovalsIndexRoute
+  '/_app/automations/': typeof AppAutomationsIndexRoute
+  '/_app/briefing/': typeof AppBriefingIndexRoute
+  '/_app/chat/': typeof AppChatIndexRoute
+  '/_app/cron/': typeof AppCronIndexRoute
+  '/_app/personal/': typeof AppPersonalIndexRoute
+  '/_app/projects/': typeof AppProjectsIndexRoute
+  '/_app/tasks/': typeof AppTasksIndexRoute
+  '/_app/work/': typeof AppWorkIndexRoute
   '/_dashboard/agents/': typeof DashboardAgentsIndexRoute
   '/_dashboard/audit/': typeof DashboardAuditIndexRoute
   '/_dashboard/blueprints/': typeof DashboardBlueprintsIndexRoute
@@ -490,6 +595,8 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/home'
+    | '/chat/$agentId'
     | '/agents/new'
     | '/audit/config-changes'
     | '/audit/tools'
@@ -501,6 +608,15 @@ export interface FileRouteTypes {
     | '/security/posture'
     | '/security/quarantine'
     | '/security/secrets'
+    | '/approvals/'
+    | '/automations/'
+    | '/briefing/'
+    | '/chat/'
+    | '/cron/'
+    | '/personal/'
+    | '/projects/'
+    | '/tasks/'
+    | '/work/'
     | '/agents/'
     | '/audit/'
     | '/blueprints/'
@@ -540,6 +656,8 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/home'
+    | '/chat/$agentId'
     | '/agents/new'
     | '/audit/config-changes'
     | '/audit/tools'
@@ -551,6 +669,15 @@ export interface FileRouteTypes {
     | '/security/posture'
     | '/security/quarantine'
     | '/security/secrets'
+    | '/approvals'
+    | '/automations'
+    | '/briefing'
+    | '/chat'
+    | '/cron'
+    | '/personal'
+    | '/projects'
+    | '/tasks'
+    | '/work'
     | '/agents'
     | '/audit'
     | '/blueprints'
@@ -590,7 +717,10 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/_app'
     | '/_dashboard'
+    | '/_app/home'
+    | '/_app/chat/$agentId'
     | '/_dashboard/agents/new'
     | '/_dashboard/audit/config-changes'
     | '/_dashboard/audit/tools'
@@ -602,6 +732,15 @@ export interface FileRouteTypes {
     | '/_dashboard/security/posture'
     | '/_dashboard/security/quarantine'
     | '/_dashboard/security/secrets'
+    | '/_app/approvals/'
+    | '/_app/automations/'
+    | '/_app/briefing/'
+    | '/_app/chat/'
+    | '/_app/cron/'
+    | '/_app/personal/'
+    | '/_app/projects/'
+    | '/_app/tasks/'
+    | '/_app/work/'
     | '/_dashboard/agents/'
     | '/_dashboard/audit/'
     | '/_dashboard/blueprints/'
@@ -642,6 +781,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AppRoute: typeof AppRouteWithChildren
   DashboardRoute: typeof DashboardRouteWithChildren
 }
 
@@ -654,12 +794,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_app': {
+      id: '/_app'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_app/home': {
+      id: '/_app/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof AppHomeRouteImport
+      parentRoute: typeof AppRoute
     }
     '/_dashboard/swarms/': {
       id: '/_dashboard/swarms/'
@@ -745,6 +899,69 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAgentsIndexRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/_app/work/': {
+      id: '/_app/work/'
+      path: '/work'
+      fullPath: '/work/'
+      preLoaderRoute: typeof AppWorkIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/tasks/': {
+      id: '/_app/tasks/'
+      path: '/tasks'
+      fullPath: '/tasks/'
+      preLoaderRoute: typeof AppTasksIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/projects/': {
+      id: '/_app/projects/'
+      path: '/projects'
+      fullPath: '/projects/'
+      preLoaderRoute: typeof AppProjectsIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/personal/': {
+      id: '/_app/personal/'
+      path: '/personal'
+      fullPath: '/personal/'
+      preLoaderRoute: typeof AppPersonalIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/cron/': {
+      id: '/_app/cron/'
+      path: '/cron'
+      fullPath: '/cron/'
+      preLoaderRoute: typeof AppCronIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/chat/': {
+      id: '/_app/chat/'
+      path: '/chat'
+      fullPath: '/chat/'
+      preLoaderRoute: typeof AppChatIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/briefing/': {
+      id: '/_app/briefing/'
+      path: '/briefing'
+      fullPath: '/briefing/'
+      preLoaderRoute: typeof AppBriefingIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/automations/': {
+      id: '/_app/automations/'
+      path: '/automations'
+      fullPath: '/automations/'
+      preLoaderRoute: typeof AppAutomationsIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/approvals/': {
+      id: '/_app/approvals/'
+      path: '/approvals'
+      fullPath: '/approvals/'
+      preLoaderRoute: typeof AppApprovalsIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_dashboard/security/secrets': {
       id: '/_dashboard/security/secrets'
       path: '/security/secrets'
@@ -821,6 +1038,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/agents/new'
       preLoaderRoute: typeof DashboardAgentsNewRouteImport
       parentRoute: typeof DashboardRoute
+    }
+    '/_app/chat/$agentId': {
+      id: '/_app/chat/$agentId'
+      path: '/chat/$agentId'
+      fullPath: '/chat/$agentId'
+      preLoaderRoute: typeof AppChatAgentIdRouteImport
+      parentRoute: typeof AppRoute
     }
     '/_dashboard/swarms/$swarmId/': {
       id: '/_dashboard/swarms/$swarmId/'
@@ -993,6 +1217,36 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AppRouteChildren {
+  AppHomeRoute: typeof AppHomeRoute
+  AppChatAgentIdRoute: typeof AppChatAgentIdRoute
+  AppApprovalsIndexRoute: typeof AppApprovalsIndexRoute
+  AppAutomationsIndexRoute: typeof AppAutomationsIndexRoute
+  AppBriefingIndexRoute: typeof AppBriefingIndexRoute
+  AppChatIndexRoute: typeof AppChatIndexRoute
+  AppCronIndexRoute: typeof AppCronIndexRoute
+  AppPersonalIndexRoute: typeof AppPersonalIndexRoute
+  AppProjectsIndexRoute: typeof AppProjectsIndexRoute
+  AppTasksIndexRoute: typeof AppTasksIndexRoute
+  AppWorkIndexRoute: typeof AppWorkIndexRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppHomeRoute: AppHomeRoute,
+  AppChatAgentIdRoute: AppChatAgentIdRoute,
+  AppApprovalsIndexRoute: AppApprovalsIndexRoute,
+  AppAutomationsIndexRoute: AppAutomationsIndexRoute,
+  AppBriefingIndexRoute: AppBriefingIndexRoute,
+  AppChatIndexRoute: AppChatIndexRoute,
+  AppCronIndexRoute: AppCronIndexRoute,
+  AppPersonalIndexRoute: AppPersonalIndexRoute,
+  AppProjectsIndexRoute: AppProjectsIndexRoute,
+  AppTasksIndexRoute: AppTasksIndexRoute,
+  AppWorkIndexRoute: AppWorkIndexRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
 interface DashboardRouteChildren {
   DashboardAgentsNewRoute: typeof DashboardAgentsNewRoute
   DashboardAuditConfigChangesRoute: typeof DashboardAuditConfigChangesRoute
@@ -1116,6 +1370,7 @@ const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AppRoute: AppRouteWithChildren,
   DashboardRoute: DashboardRouteWithChildren,
 }
 export const routeTree = rootRouteImport
