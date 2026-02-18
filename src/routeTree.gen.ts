@@ -75,6 +75,20 @@ import { Route as DashboardAgentsNewRouteImport } from './routes/_dashboard/agen
 import { Route as AppCanvasCanvasIdRouteImport } from './routes/_app/canvas/$canvasId'
 import { Route as AppChatAgentIdRouteImport } from './routes/_app/chat/$agentId'
 import { Route as AppNodesNodeIdRouteImport } from './routes/_app/nodes/$nodeId'
+import { Route as AppPersonalCalendarRouteImport } from './routes/_app/personal/calendar'
+import { Route as AppPersonalHealthRouteImport } from './routes/_app/personal/health'
+import { Route as AppPersonalFinanceRouteImport } from './routes/_app/personal/finance'
+import { Route as AppPersonalTravelRouteImport } from './routes/_app/personal/travel'
+import { Route as AppPersonalLearningRouteImport } from './routes/_app/personal/learning'
+import { Route as AppPersonalSocialRouteImport } from './routes/_app/personal/social'
+import { Route as AppProjectsDevRouteImport } from './routes/_app/projects/dev'
+import { Route as AppProjectsCreativeRouteImport } from './routes/_app/projects/creative'
+import { Route as AppProjectsResearchRouteImport } from './routes/_app/projects/research'
+import { Route as AppProjectsProjectIdIndexRouteImport } from './routes/_app/projects/$projectId/index'
+import { Route as AppWorkMeetingsRouteImport } from './routes/_app/work/meetings'
+import { Route as AppWorkClientsRouteImport } from './routes/_app/work/clients'
+import { Route as AppWorkDocumentsRouteImport } from './routes/_app/work/documents'
+import { Route as AppWorkInboxRouteImport } from './routes/_app/work/inbox'
 import { Route as DashboardSwarmsSwarmIdIndexRouteImport } from './routes/_dashboard/swarms/$swarmId/index'
 import { Route as DashboardSessionsSessionIdIndexRouteImport } from './routes/_dashboard/sessions/$sessionId/index'
 import { Route as DashboardFleetInstancesIndexRouteImport } from './routes/_dashboard/fleet/instances/index'
@@ -293,6 +307,77 @@ const AppCanvasCanvasIdRoute = AppCanvasCanvasIdRouteImport.update({
 const AppNodesNodeIdRoute = AppNodesNodeIdRouteImport.update({
   id: '/nodes/$nodeId',
   path: '/nodes/$nodeId',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPersonalCalendarRoute = AppPersonalCalendarRouteImport.update({
+  id: '/personal/calendar',
+  path: '/personal/calendar',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPersonalHealthRoute = AppPersonalHealthRouteImport.update({
+  id: '/personal/health',
+  path: '/personal/health',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPersonalFinanceRoute = AppPersonalFinanceRouteImport.update({
+  id: '/personal/finance',
+  path: '/personal/finance',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPersonalTravelRoute = AppPersonalTravelRouteImport.update({
+  id: '/personal/travel',
+  path: '/personal/travel',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPersonalLearningRoute = AppPersonalLearningRouteImport.update({
+  id: '/personal/learning',
+  path: '/personal/learning',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPersonalSocialRoute = AppPersonalSocialRouteImport.update({
+  id: '/personal/social',
+  path: '/personal/social',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppProjectsDevRoute = AppProjectsDevRouteImport.update({
+  id: '/projects/dev',
+  path: '/projects/dev',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppProjectsCreativeRoute = AppProjectsCreativeRouteImport.update({
+  id: '/projects/creative',
+  path: '/projects/creative',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppProjectsResearchRoute = AppProjectsResearchRouteImport.update({
+  id: '/projects/research',
+  path: '/projects/research',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppProjectsProjectIdIndexRoute =
+  AppProjectsProjectIdIndexRouteImport.update({
+    id: '/projects/$projectId/',
+    path: '/projects/$projectId/',
+    getParentRoute: () => AppRoute,
+  } as any)
+const AppWorkMeetingsRoute = AppWorkMeetingsRouteImport.update({
+  id: '/work/meetings',
+  path: '/work/meetings',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppWorkClientsRoute = AppWorkClientsRouteImport.update({
+  id: '/work/clients',
+  path: '/work/clients',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppWorkDocumentsRoute = AppWorkDocumentsRouteImport.update({
+  id: '/work/documents',
+  path: '/work/documents',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppWorkInboxRoute = AppWorkInboxRouteImport.update({
+  id: '/work/inbox',
+  path: '/work/inbox',
   getParentRoute: () => AppRoute,
 } as any)
 const DashboardSkillsPoliciesRoute = DashboardSkillsPoliciesRouteImport.update({
@@ -675,6 +760,19 @@ export interface FileRoutesByFullPath {
   '/chat/$agentId': typeof AppChatAgentIdRoute
   '/canvas/$canvasId': typeof AppCanvasCanvasIdRoute
   '/nodes/$nodeId': typeof AppNodesNodeIdRoute
+  '/personal/calendar': typeof AppPersonalCalendarRoute
+  '/personal/health': typeof AppPersonalHealthRoute
+  '/personal/finance': typeof AppPersonalFinanceRoute
+  '/personal/travel': typeof AppPersonalTravelRoute
+  '/personal/learning': typeof AppPersonalLearningRoute
+  '/personal/social': typeof AppPersonalSocialRoute
+  '/projects/dev': typeof AppProjectsDevRoute
+  '/projects/creative': typeof AppProjectsCreativeRoute
+  '/projects/research': typeof AppProjectsResearchRoute
+  '/work/meetings': typeof AppWorkMeetingsRoute
+  '/work/clients': typeof AppWorkClientsRoute
+  '/work/documents': typeof AppWorkDocumentsRoute
+  '/work/inbox': typeof AppWorkInboxRoute
   '/browser/sessions': typeof AppBrowserSessionsRoute
   '/memory/browse': typeof AppMemoryBrowseRoute
   '/memory/search': typeof AppMemorySearchRoute
@@ -734,6 +832,7 @@ export interface FileRoutesByFullPath {
   '/settings/': typeof DashboardSettingsIndexRoute
   '/skills/': typeof DashboardSkillsIndexRoute
   '/swarms/': typeof DashboardSwarmsIndexRoute
+  '/projects/$projectId/': typeof AppProjectsProjectIdIndexRoute
   '/blueprints/$blueprintId/deploy': typeof DashboardBlueprintsBlueprintIdDeployRoute
   '/blueprints/$blueprintId/editor': typeof DashboardBlueprintsBlueprintIdEditorRoute
   '/fleet/instances/new': typeof DashboardFleetInstancesNewRoute
@@ -776,6 +875,19 @@ export interface FileRoutesByTo {
   '/chat/$agentId': typeof AppChatAgentIdRoute
   '/canvas/$canvasId': typeof AppCanvasCanvasIdRoute
   '/nodes/$nodeId': typeof AppNodesNodeIdRoute
+  '/personal/calendar': typeof AppPersonalCalendarRoute
+  '/personal/health': typeof AppPersonalHealthRoute
+  '/personal/finance': typeof AppPersonalFinanceRoute
+  '/personal/travel': typeof AppPersonalTravelRoute
+  '/personal/learning': typeof AppPersonalLearningRoute
+  '/personal/social': typeof AppPersonalSocialRoute
+  '/projects/dev': typeof AppProjectsDevRoute
+  '/projects/creative': typeof AppProjectsCreativeRoute
+  '/projects/research': typeof AppProjectsResearchRoute
+  '/work/meetings': typeof AppWorkMeetingsRoute
+  '/work/clients': typeof AppWorkClientsRoute
+  '/work/documents': typeof AppWorkDocumentsRoute
+  '/work/inbox': typeof AppWorkInboxRoute
   '/browser/sessions': typeof AppBrowserSessionsRoute
   '/memory/browse': typeof AppMemoryBrowseRoute
   '/memory/search': typeof AppMemorySearchRoute
@@ -835,6 +947,7 @@ export interface FileRoutesByTo {
   '/settings': typeof DashboardSettingsIndexRoute
   '/skills': typeof DashboardSkillsIndexRoute
   '/swarms': typeof DashboardSwarmsIndexRoute
+  '/projects/$projectId': typeof AppProjectsProjectIdIndexRoute
   '/blueprints/$blueprintId/deploy': typeof DashboardBlueprintsBlueprintIdDeployRoute
   '/blueprints/$blueprintId/editor': typeof DashboardBlueprintsBlueprintIdEditorRoute
   '/fleet/instances/new': typeof DashboardFleetInstancesNewRoute
@@ -880,6 +993,19 @@ export interface FileRoutesById {
   '/_app/chat/$agentId': typeof AppChatAgentIdRoute
   '/_app/canvas/$canvasId': typeof AppCanvasCanvasIdRoute
   '/_app/nodes/$nodeId': typeof AppNodesNodeIdRoute
+  '/_app/personal/calendar': typeof AppPersonalCalendarRoute
+  '/_app/personal/health': typeof AppPersonalHealthRoute
+  '/_app/personal/finance': typeof AppPersonalFinanceRoute
+  '/_app/personal/travel': typeof AppPersonalTravelRoute
+  '/_app/personal/learning': typeof AppPersonalLearningRoute
+  '/_app/personal/social': typeof AppPersonalSocialRoute
+  '/_app/projects/dev': typeof AppProjectsDevRoute
+  '/_app/projects/creative': typeof AppProjectsCreativeRoute
+  '/_app/projects/research': typeof AppProjectsResearchRoute
+  '/_app/work/meetings': typeof AppWorkMeetingsRoute
+  '/_app/work/clients': typeof AppWorkClientsRoute
+  '/_app/work/documents': typeof AppWorkDocumentsRoute
+  '/_app/work/inbox': typeof AppWorkInboxRoute
   '/_app/browser/sessions': typeof AppBrowserSessionsRoute
   '/_app/memory/browse': typeof AppMemoryBrowseRoute
   '/_app/memory/search': typeof AppMemorySearchRoute
@@ -939,6 +1065,7 @@ export interface FileRoutesById {
   '/_dashboard/settings/': typeof DashboardSettingsIndexRoute
   '/_dashboard/skills/': typeof DashboardSkillsIndexRoute
   '/_dashboard/swarms/': typeof DashboardSwarmsIndexRoute
+  '/_app/projects/$projectId/': typeof AppProjectsProjectIdIndexRoute
   '/_dashboard/blueprints/$blueprintId/deploy': typeof DashboardBlueprintsBlueprintIdDeployRoute
   '/_dashboard/blueprints/$blueprintId/editor': typeof DashboardBlueprintsBlueprintIdEditorRoute
   '/_dashboard/fleet/instances/new': typeof DashboardFleetInstancesNewRoute
@@ -983,6 +1110,19 @@ export interface FileRouteTypes {
     | '/chat/$agentId'
     | '/canvas/$canvasId'
     | '/nodes/$nodeId'
+    | '/personal/calendar'
+    | '/personal/health'
+    | '/personal/finance'
+    | '/personal/travel'
+    | '/personal/learning'
+    | '/personal/social'
+    | '/projects/dev'
+    | '/projects/creative'
+    | '/projects/research'
+    | '/work/meetings'
+    | '/work/clients'
+    | '/work/documents'
+    | '/work/inbox'
     | '/browser/sessions'
     | '/memory/browse'
     | '/memory/search'
@@ -1042,6 +1182,7 @@ export interface FileRouteTypes {
     | '/settings/'
     | '/skills/'
     | '/swarms/'
+    | '/projects/$projectId/'
     | '/blueprints/$blueprintId/deploy'
     | '/blueprints/$blueprintId/editor'
     | '/fleet/instances/new'
@@ -1084,6 +1225,19 @@ export interface FileRouteTypes {
     | '/chat/$agentId'
     | '/canvas/$canvasId'
     | '/nodes/$nodeId'
+    | '/personal/calendar'
+    | '/personal/health'
+    | '/personal/finance'
+    | '/personal/travel'
+    | '/personal/learning'
+    | '/personal/social'
+    | '/projects/dev'
+    | '/projects/creative'
+    | '/projects/research'
+    | '/work/meetings'
+    | '/work/clients'
+    | '/work/documents'
+    | '/work/inbox'
     | '/browser/sessions'
     | '/memory/browse'
     | '/memory/search'
@@ -1143,6 +1297,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/skills'
     | '/swarms'
+    | '/projects/$projectId'
     | '/blueprints/$blueprintId/deploy'
     | '/blueprints/$blueprintId/editor'
     | '/fleet/instances/new'
@@ -1187,6 +1342,19 @@ export interface FileRouteTypes {
     | '/_app/chat/$agentId'
     | '/_app/canvas/$canvasId'
     | '/_app/nodes/$nodeId'
+    | '/_app/personal/calendar'
+    | '/_app/personal/health'
+    | '/_app/personal/finance'
+    | '/_app/personal/travel'
+    | '/_app/personal/learning'
+    | '/_app/personal/social'
+    | '/_app/projects/dev'
+    | '/_app/projects/creative'
+    | '/_app/projects/research'
+    | '/_app/work/meetings'
+    | '/_app/work/clients'
+    | '/_app/work/documents'
+    | '/_app/work/inbox'
     | '/_app/browser/sessions'
     | '/_app/memory/browse'
     | '/_app/memory/search'
@@ -1246,6 +1414,7 @@ export interface FileRouteTypes {
     | '/_dashboard/settings/'
     | '/_dashboard/skills/'
     | '/_dashboard/swarms/'
+    | '/_app/projects/$projectId/'
     | '/_dashboard/blueprints/$blueprintId/deploy'
     | '/_dashboard/blueprints/$blueprintId/editor'
     | '/_dashboard/fleet/instances/new'
@@ -1753,6 +1922,104 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppNodesNodeIdRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/personal/calendar': {
+      id: '/_app/personal/calendar'
+      path: '/personal/calendar'
+      fullPath: '/personal/calendar'
+      preLoaderRoute: typeof AppPersonalCalendarRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/personal/health': {
+      id: '/_app/personal/health'
+      path: '/personal/health'
+      fullPath: '/personal/health'
+      preLoaderRoute: typeof AppPersonalHealthRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/personal/finance': {
+      id: '/_app/personal/finance'
+      path: '/personal/finance'
+      fullPath: '/personal/finance'
+      preLoaderRoute: typeof AppPersonalFinanceRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/personal/travel': {
+      id: '/_app/personal/travel'
+      path: '/personal/travel'
+      fullPath: '/personal/travel'
+      preLoaderRoute: typeof AppPersonalTravelRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/personal/learning': {
+      id: '/_app/personal/learning'
+      path: '/personal/learning'
+      fullPath: '/personal/learning'
+      preLoaderRoute: typeof AppPersonalLearningRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/personal/social': {
+      id: '/_app/personal/social'
+      path: '/personal/social'
+      fullPath: '/personal/social'
+      preLoaderRoute: typeof AppPersonalSocialRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/projects/dev': {
+      id: '/_app/projects/dev'
+      path: '/projects/dev'
+      fullPath: '/projects/dev'
+      preLoaderRoute: typeof AppProjectsDevRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/projects/creative': {
+      id: '/_app/projects/creative'
+      path: '/projects/creative'
+      fullPath: '/projects/creative'
+      preLoaderRoute: typeof AppProjectsCreativeRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/projects/research': {
+      id: '/_app/projects/research'
+      path: '/projects/research'
+      fullPath: '/projects/research'
+      preLoaderRoute: typeof AppProjectsResearchRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/projects/$projectId/': {
+      id: '/_app/projects/$projectId/'
+      path: '/projects/$projectId'
+      fullPath: '/projects/$projectId/'
+      preLoaderRoute: typeof AppProjectsProjectIdIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/work/meetings': {
+      id: '/_app/work/meetings'
+      path: '/work/meetings'
+      fullPath: '/work/meetings'
+      preLoaderRoute: typeof AppWorkMeetingsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/work/clients': {
+      id: '/_app/work/clients'
+      path: '/work/clients'
+      fullPath: '/work/clients'
+      preLoaderRoute: typeof AppWorkClientsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/work/documents': {
+      id: '/_app/work/documents'
+      path: '/work/documents'
+      fullPath: '/work/documents'
+      preLoaderRoute: typeof AppWorkDocumentsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/work/inbox': {
+      id: '/_app/work/inbox'
+      path: '/work/inbox'
+      fullPath: '/work/inbox'
+      preLoaderRoute: typeof AppWorkInboxRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_dashboard/swarms/$swarmId/': {
       id: '/_dashboard/swarms/$swarmId/'
       path: '/swarms/$swarmId'
@@ -2006,6 +2273,20 @@ interface AppRouteChildren {
   AppChatAgentIdRoute: typeof AppChatAgentIdRoute
   AppCanvasCanvasIdRoute: typeof AppCanvasCanvasIdRoute
   AppNodesNodeIdRoute: typeof AppNodesNodeIdRoute
+  AppPersonalCalendarRoute: typeof AppPersonalCalendarRoute
+  AppPersonalHealthRoute: typeof AppPersonalHealthRoute
+  AppPersonalFinanceRoute: typeof AppPersonalFinanceRoute
+  AppPersonalTravelRoute: typeof AppPersonalTravelRoute
+  AppPersonalLearningRoute: typeof AppPersonalLearningRoute
+  AppPersonalSocialRoute: typeof AppPersonalSocialRoute
+  AppProjectsDevRoute: typeof AppProjectsDevRoute
+  AppProjectsCreativeRoute: typeof AppProjectsCreativeRoute
+  AppProjectsResearchRoute: typeof AppProjectsResearchRoute
+  AppProjectsProjectIdIndexRoute: typeof AppProjectsProjectIdIndexRoute
+  AppWorkMeetingsRoute: typeof AppWorkMeetingsRoute
+  AppWorkClientsRoute: typeof AppWorkClientsRoute
+  AppWorkDocumentsRoute: typeof AppWorkDocumentsRoute
+  AppWorkInboxRoute: typeof AppWorkInboxRoute
   AppBrowserSessionsRoute: typeof AppBrowserSessionsRoute
   AppMemoryBrowseRoute: typeof AppMemoryBrowseRoute
   AppMemorySearchRoute: typeof AppMemorySearchRoute
@@ -2032,6 +2313,20 @@ const AppRouteChildren: AppRouteChildren = {
   AppChatAgentIdRoute: AppChatAgentIdRoute,
   AppCanvasCanvasIdRoute: AppCanvasCanvasIdRoute,
   AppNodesNodeIdRoute: AppNodesNodeIdRoute,
+  AppPersonalCalendarRoute: AppPersonalCalendarRoute,
+  AppPersonalHealthRoute: AppPersonalHealthRoute,
+  AppPersonalFinanceRoute: AppPersonalFinanceRoute,
+  AppPersonalTravelRoute: AppPersonalTravelRoute,
+  AppPersonalLearningRoute: AppPersonalLearningRoute,
+  AppPersonalSocialRoute: AppPersonalSocialRoute,
+  AppProjectsDevRoute: AppProjectsDevRoute,
+  AppProjectsCreativeRoute: AppProjectsCreativeRoute,
+  AppProjectsResearchRoute: AppProjectsResearchRoute,
+  AppProjectsProjectIdIndexRoute: AppProjectsProjectIdIndexRoute,
+  AppWorkMeetingsRoute: AppWorkMeetingsRoute,
+  AppWorkClientsRoute: AppWorkClientsRoute,
+  AppWorkDocumentsRoute: AppWorkDocumentsRoute,
+  AppWorkInboxRoute: AppWorkInboxRoute,
   AppBrowserSessionsRoute: AppBrowserSessionsRoute,
   AppMemoryBrowseRoute: AppMemoryBrowseRoute,
   AppMemorySearchRoute: AppMemorySearchRoute,
