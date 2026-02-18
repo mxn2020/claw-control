@@ -23,6 +23,16 @@ import { Route as DashboardChannelsIndexRouteImport } from './routes/_dashboard/
 import { Route as DashboardBlueprintsIndexRouteImport } from './routes/_dashboard/blueprints/index'
 import { Route as DashboardAuditIndexRouteImport } from './routes/_dashboard/audit/index'
 import { Route as DashboardAgentsIndexRouteImport } from './routes/_dashboard/agents/index'
+import { Route as DashboardSecuritySecretsRouteImport } from './routes/_dashboard/security/secrets'
+import { Route as DashboardSecurityQuarantineRouteImport } from './routes/_dashboard/security/quarantine'
+import { Route as DashboardSecurityPostureRouteImport } from './routes/_dashboard/security/posture'
+import { Route as DashboardSecurityIncidentsRouteImport } from './routes/_dashboard/security/incidents'
+import { Route as DashboardObserveTracesRouteImport } from './routes/_dashboard/observe/traces'
+import { Route as DashboardObserveLogsRouteImport } from './routes/_dashboard/observe/logs'
+import { Route as DashboardObserveLiveRouteImport } from './routes/_dashboard/observe/live'
+import { Route as DashboardObserveCostRouteImport } from './routes/_dashboard/observe/cost'
+import { Route as DashboardAuditToolsRouteImport } from './routes/_dashboard/audit/tools'
+import { Route as DashboardAuditConfigChangesRouteImport } from './routes/_dashboard/audit/config-changes'
 import { Route as DashboardAgentsNewRouteImport } from './routes/_dashboard/agents/new'
 import { Route as DashboardSwarmsSwarmIdIndexRouteImport } from './routes/_dashboard/swarms/$swarmId/index'
 import { Route as DashboardSessionsSessionIdIndexRouteImport } from './routes/_dashboard/sessions/$sessionId/index'
@@ -119,6 +129,61 @@ const DashboardAgentsIndexRoute = DashboardAgentsIndexRouteImport.update({
   path: '/agents/',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardSecuritySecretsRoute =
+  DashboardSecuritySecretsRouteImport.update({
+    id: '/security/secrets',
+    path: '/security/secrets',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardSecurityQuarantineRoute =
+  DashboardSecurityQuarantineRouteImport.update({
+    id: '/security/quarantine',
+    path: '/security/quarantine',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardSecurityPostureRoute =
+  DashboardSecurityPostureRouteImport.update({
+    id: '/security/posture',
+    path: '/security/posture',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardSecurityIncidentsRoute =
+  DashboardSecurityIncidentsRouteImport.update({
+    id: '/security/incidents',
+    path: '/security/incidents',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardObserveTracesRoute = DashboardObserveTracesRouteImport.update({
+  id: '/observe/traces',
+  path: '/observe/traces',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardObserveLogsRoute = DashboardObserveLogsRouteImport.update({
+  id: '/observe/logs',
+  path: '/observe/logs',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardObserveLiveRoute = DashboardObserveLiveRouteImport.update({
+  id: '/observe/live',
+  path: '/observe/live',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardObserveCostRoute = DashboardObserveCostRouteImport.update({
+  id: '/observe/cost',
+  path: '/observe/cost',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardAuditToolsRoute = DashboardAuditToolsRouteImport.update({
+  id: '/audit/tools',
+  path: '/audit/tools',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardAuditConfigChangesRoute =
+  DashboardAuditConfigChangesRouteImport.update({
+    id: '/audit/config-changes',
+    path: '/audit/config-changes',
+    getParentRoute: () => DashboardRoute,
+  } as any)
 const DashboardAgentsNewRoute = DashboardAgentsNewRouteImport.update({
   id: '/agents/new',
   path: '/agents/new',
@@ -272,6 +337,16 @@ const DashboardFleetInstancesInstanceIdConfigEnvironmentRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/agents/new': typeof DashboardAgentsNewRoute
+  '/audit/config-changes': typeof DashboardAuditConfigChangesRoute
+  '/audit/tools': typeof DashboardAuditToolsRoute
+  '/observe/cost': typeof DashboardObserveCostRoute
+  '/observe/live': typeof DashboardObserveLiveRoute
+  '/observe/logs': typeof DashboardObserveLogsRoute
+  '/observe/traces': typeof DashboardObserveTracesRoute
+  '/security/incidents': typeof DashboardSecurityIncidentsRoute
+  '/security/posture': typeof DashboardSecurityPostureRoute
+  '/security/quarantine': typeof DashboardSecurityQuarantineRoute
+  '/security/secrets': typeof DashboardSecuritySecretsRoute
   '/agents/': typeof DashboardAgentsIndexRoute
   '/audit/': typeof DashboardAuditIndexRoute
   '/blueprints/': typeof DashboardBlueprintsIndexRoute
@@ -312,6 +387,16 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/agents/new': typeof DashboardAgentsNewRoute
+  '/audit/config-changes': typeof DashboardAuditConfigChangesRoute
+  '/audit/tools': typeof DashboardAuditToolsRoute
+  '/observe/cost': typeof DashboardObserveCostRoute
+  '/observe/live': typeof DashboardObserveLiveRoute
+  '/observe/logs': typeof DashboardObserveLogsRoute
+  '/observe/traces': typeof DashboardObserveTracesRoute
+  '/security/incidents': typeof DashboardSecurityIncidentsRoute
+  '/security/posture': typeof DashboardSecurityPostureRoute
+  '/security/quarantine': typeof DashboardSecurityQuarantineRoute
+  '/security/secrets': typeof DashboardSecuritySecretsRoute
   '/agents': typeof DashboardAgentsIndexRoute
   '/audit': typeof DashboardAuditIndexRoute
   '/blueprints': typeof DashboardBlueprintsIndexRoute
@@ -354,6 +439,16 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_dashboard': typeof DashboardRouteWithChildren
   '/_dashboard/agents/new': typeof DashboardAgentsNewRoute
+  '/_dashboard/audit/config-changes': typeof DashboardAuditConfigChangesRoute
+  '/_dashboard/audit/tools': typeof DashboardAuditToolsRoute
+  '/_dashboard/observe/cost': typeof DashboardObserveCostRoute
+  '/_dashboard/observe/live': typeof DashboardObserveLiveRoute
+  '/_dashboard/observe/logs': typeof DashboardObserveLogsRoute
+  '/_dashboard/observe/traces': typeof DashboardObserveTracesRoute
+  '/_dashboard/security/incidents': typeof DashboardSecurityIncidentsRoute
+  '/_dashboard/security/posture': typeof DashboardSecurityPostureRoute
+  '/_dashboard/security/quarantine': typeof DashboardSecurityQuarantineRoute
+  '/_dashboard/security/secrets': typeof DashboardSecuritySecretsRoute
   '/_dashboard/agents/': typeof DashboardAgentsIndexRoute
   '/_dashboard/audit/': typeof DashboardAuditIndexRoute
   '/_dashboard/blueprints/': typeof DashboardBlueprintsIndexRoute
@@ -396,6 +491,16 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/agents/new'
+    | '/audit/config-changes'
+    | '/audit/tools'
+    | '/observe/cost'
+    | '/observe/live'
+    | '/observe/logs'
+    | '/observe/traces'
+    | '/security/incidents'
+    | '/security/posture'
+    | '/security/quarantine'
+    | '/security/secrets'
     | '/agents/'
     | '/audit/'
     | '/blueprints/'
@@ -436,6 +541,16 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/agents/new'
+    | '/audit/config-changes'
+    | '/audit/tools'
+    | '/observe/cost'
+    | '/observe/live'
+    | '/observe/logs'
+    | '/observe/traces'
+    | '/security/incidents'
+    | '/security/posture'
+    | '/security/quarantine'
+    | '/security/secrets'
     | '/agents'
     | '/audit'
     | '/blueprints'
@@ -477,6 +592,16 @@ export interface FileRouteTypes {
     | '/'
     | '/_dashboard'
     | '/_dashboard/agents/new'
+    | '/_dashboard/audit/config-changes'
+    | '/_dashboard/audit/tools'
+    | '/_dashboard/observe/cost'
+    | '/_dashboard/observe/live'
+    | '/_dashboard/observe/logs'
+    | '/_dashboard/observe/traces'
+    | '/_dashboard/security/incidents'
+    | '/_dashboard/security/posture'
+    | '/_dashboard/security/quarantine'
+    | '/_dashboard/security/secrets'
     | '/_dashboard/agents/'
     | '/_dashboard/audit/'
     | '/_dashboard/blueprints/'
@@ -618,6 +743,76 @@ declare module '@tanstack/react-router' {
       path: '/agents'
       fullPath: '/agents/'
       preLoaderRoute: typeof DashboardAgentsIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/security/secrets': {
+      id: '/_dashboard/security/secrets'
+      path: '/security/secrets'
+      fullPath: '/security/secrets'
+      preLoaderRoute: typeof DashboardSecuritySecretsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/security/quarantine': {
+      id: '/_dashboard/security/quarantine'
+      path: '/security/quarantine'
+      fullPath: '/security/quarantine'
+      preLoaderRoute: typeof DashboardSecurityQuarantineRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/security/posture': {
+      id: '/_dashboard/security/posture'
+      path: '/security/posture'
+      fullPath: '/security/posture'
+      preLoaderRoute: typeof DashboardSecurityPostureRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/security/incidents': {
+      id: '/_dashboard/security/incidents'
+      path: '/security/incidents'
+      fullPath: '/security/incidents'
+      preLoaderRoute: typeof DashboardSecurityIncidentsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/observe/traces': {
+      id: '/_dashboard/observe/traces'
+      path: '/observe/traces'
+      fullPath: '/observe/traces'
+      preLoaderRoute: typeof DashboardObserveTracesRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/observe/logs': {
+      id: '/_dashboard/observe/logs'
+      path: '/observe/logs'
+      fullPath: '/observe/logs'
+      preLoaderRoute: typeof DashboardObserveLogsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/observe/live': {
+      id: '/_dashboard/observe/live'
+      path: '/observe/live'
+      fullPath: '/observe/live'
+      preLoaderRoute: typeof DashboardObserveLiveRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/observe/cost': {
+      id: '/_dashboard/observe/cost'
+      path: '/observe/cost'
+      fullPath: '/observe/cost'
+      preLoaderRoute: typeof DashboardObserveCostRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/audit/tools': {
+      id: '/_dashboard/audit/tools'
+      path: '/audit/tools'
+      fullPath: '/audit/tools'
+      preLoaderRoute: typeof DashboardAuditToolsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/audit/config-changes': {
+      id: '/_dashboard/audit/config-changes'
+      path: '/audit/config-changes'
+      fullPath: '/audit/config-changes'
+      preLoaderRoute: typeof DashboardAuditConfigChangesRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/_dashboard/agents/new': {
@@ -800,6 +995,16 @@ declare module '@tanstack/react-router' {
 
 interface DashboardRouteChildren {
   DashboardAgentsNewRoute: typeof DashboardAgentsNewRoute
+  DashboardAuditConfigChangesRoute: typeof DashboardAuditConfigChangesRoute
+  DashboardAuditToolsRoute: typeof DashboardAuditToolsRoute
+  DashboardObserveCostRoute: typeof DashboardObserveCostRoute
+  DashboardObserveLiveRoute: typeof DashboardObserveLiveRoute
+  DashboardObserveLogsRoute: typeof DashboardObserveLogsRoute
+  DashboardObserveTracesRoute: typeof DashboardObserveTracesRoute
+  DashboardSecurityIncidentsRoute: typeof DashboardSecurityIncidentsRoute
+  DashboardSecurityPostureRoute: typeof DashboardSecurityPostureRoute
+  DashboardSecurityQuarantineRoute: typeof DashboardSecurityQuarantineRoute
+  DashboardSecuritySecretsRoute: typeof DashboardSecuritySecretsRoute
   DashboardAgentsIndexRoute: typeof DashboardAgentsIndexRoute
   DashboardAuditIndexRoute: typeof DashboardAuditIndexRoute
   DashboardBlueprintsIndexRoute: typeof DashboardBlueprintsIndexRoute
@@ -840,6 +1045,16 @@ interface DashboardRouteChildren {
 
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardAgentsNewRoute: DashboardAgentsNewRoute,
+  DashboardAuditConfigChangesRoute: DashboardAuditConfigChangesRoute,
+  DashboardAuditToolsRoute: DashboardAuditToolsRoute,
+  DashboardObserveCostRoute: DashboardObserveCostRoute,
+  DashboardObserveLiveRoute: DashboardObserveLiveRoute,
+  DashboardObserveLogsRoute: DashboardObserveLogsRoute,
+  DashboardObserveTracesRoute: DashboardObserveTracesRoute,
+  DashboardSecurityIncidentsRoute: DashboardSecurityIncidentsRoute,
+  DashboardSecurityPostureRoute: DashboardSecurityPostureRoute,
+  DashboardSecurityQuarantineRoute: DashboardSecurityQuarantineRoute,
+  DashboardSecuritySecretsRoute: DashboardSecuritySecretsRoute,
   DashboardAgentsIndexRoute: DashboardAgentsIndexRoute,
   DashboardAuditIndexRoute: DashboardAuditIndexRoute,
   DashboardBlueprintsIndexRoute: DashboardBlueprintsIndexRoute,
