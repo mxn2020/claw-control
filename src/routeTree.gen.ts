@@ -125,11 +125,35 @@ import { Route as DashboardFleetInstancesInstanceIdSecurityRouteImport } from '.
 import { Route as DashboardFleetInstancesInstanceIdObserveRouteImport } from './routes/_dashboard/fleet/instances/$instanceId/observe'
 import { Route as DashboardFleetInstancesInstanceIdFilesRouteImport } from './routes/_dashboard/fleet/instances/$instanceId/files'
 import { Route as DashboardFleetInstancesInstanceIdChannelsRouteImport } from './routes/_dashboard/fleet/instances/$instanceId/channels'
+import { Route as DashboardAgentsAgentIdToolsSimulatorRouteImport } from './routes/_dashboard/agents/$agentId/tools/simulator'
+import { Route as DashboardAgentsAgentIdToolsSandboxRouteImport } from './routes/_dashboard/agents/$agentId/tools/sandbox'
+import { Route as DashboardAgentsAgentIdToolsPoliciesRouteImport } from './routes/_dashboard/agents/$agentId/tools/policies'
+import { Route as DashboardAgentsAgentIdToolsAllowedRouteImport } from './routes/_dashboard/agents/$agentId/tools/allowed'
+import { Route as DashboardAgentsAgentIdSkillsPermissionsRouteImport } from './routes/_dashboard/agents/$agentId/skills/permissions'
+import { Route as DashboardAgentsAgentIdSkillsMarketplaceRouteImport } from './routes/_dashboard/agents/$agentId/skills/marketplace'
+import { Route as DashboardAgentsAgentIdSkillsInstalledRouteImport } from './routes/_dashboard/agents/$agentId/skills/installed'
+import { Route as DashboardAgentsAgentIdSessionsInboxRouteImport } from './routes/_dashboard/agents/$agentId/sessions/inbox'
+import { Route as DashboardAgentsAgentIdSessionsSessionIdRouteImport } from './routes/_dashboard/agents/$agentId/sessions/$sessionId'
+import { Route as DashboardAgentsAgentIdSecurityQuarantineRouteImport } from './routes/_dashboard/agents/$agentId/security/quarantine'
+import { Route as DashboardAgentsAgentIdSecurityPostureRouteImport } from './routes/_dashboard/agents/$agentId/security/posture'
+import { Route as DashboardAgentsAgentIdSecurityAuditRouteImport } from './routes/_dashboard/agents/$agentId/security/audit'
 import { Route as DashboardAgentsAgentIdPersonalityVariablesRouteImport } from './routes/_dashboard/agents/$agentId/personality/variables'
 import { Route as DashboardAgentsAgentIdPersonalityUserMdRouteImport } from './routes/_dashboard/agents/$agentId/personality/user-md'
 import { Route as DashboardAgentsAgentIdPersonalitySoulRouteImport } from './routes/_dashboard/agents/$agentId/personality/soul'
 import { Route as DashboardAgentsAgentIdPersonalityHistoryRouteImport } from './routes/_dashboard/agents/$agentId/personality/history'
 import { Route as DashboardAgentsAgentIdPersonalityAgentsMdRouteImport } from './routes/_dashboard/agents/$agentId/personality/agents-md'
+import { Route as DashboardAgentsAgentIdObserveTracesRouteImport } from './routes/_dashboard/agents/$agentId/observe/traces'
+import { Route as DashboardAgentsAgentIdObserveLogsRouteImport } from './routes/_dashboard/agents/$agentId/observe/logs'
+import { Route as DashboardAgentsAgentIdObserveCostRouteImport } from './routes/_dashboard/agents/$agentId/observe/cost'
+import { Route as DashboardAgentsAgentIdModelScheduleRouteImport } from './routes/_dashboard/agents/$agentId/model/schedule'
+import { Route as DashboardAgentsAgentIdModelProviderRouteImport } from './routes/_dashboard/agents/$agentId/model/provider'
+import { Route as DashboardAgentsAgentIdModelLimitsRouteImport } from './routes/_dashboard/agents/$agentId/model/limits'
+import { Route as DashboardAgentsAgentIdMemoryInjectRouteImport } from './routes/_dashboard/agents/$agentId/memory/inject'
+import { Route as DashboardAgentsAgentIdMemoryHealthRouteImport } from './routes/_dashboard/agents/$agentId/memory/health'
+import { Route as DashboardAgentsAgentIdMemoryEditorRouteImport } from './routes/_dashboard/agents/$agentId/memory/editor'
+import { Route as DashboardAgentsAgentIdMemoryBrowserRouteImport } from './routes/_dashboard/agents/$agentId/memory/browser'
+import { Route as DashboardAgentsAgentIdChannelsOverridesRouteImport } from './routes/_dashboard/agents/$agentId/channels/overrides'
+import { Route as DashboardAgentsAgentIdChannelsBindingsRouteImport } from './routes/_dashboard/agents/$agentId/channels/bindings'
 import { Route as DashboardFleetInstancesInstanceIdPersonalitiesIndexRouteImport } from './routes/_dashboard/fleet/instances/$instanceId/personalities/index'
 import { Route as DashboardFleetInstancesInstanceIdConfigIndexRouteImport } from './routes/_dashboard/fleet/instances/$instanceId/config/index'
 import { Route as DashboardFleetInstancesInstanceIdPersonalitiesUserMdRouteImport } from './routes/_dashboard/fleet/instances/$instanceId/personalities/user-md'
@@ -772,6 +796,78 @@ const DashboardFleetInstancesInstanceIdChannelsRoute =
     path: '/fleet/instances/$instanceId/channels',
     getParentRoute: () => DashboardRoute,
   } as any)
+const DashboardAgentsAgentIdToolsSimulatorRoute =
+  DashboardAgentsAgentIdToolsSimulatorRouteImport.update({
+    id: '/agents/$agentId/tools/simulator',
+    path: '/agents/$agentId/tools/simulator',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardAgentsAgentIdToolsSandboxRoute =
+  DashboardAgentsAgentIdToolsSandboxRouteImport.update({
+    id: '/agents/$agentId/tools/sandbox',
+    path: '/agents/$agentId/tools/sandbox',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardAgentsAgentIdToolsPoliciesRoute =
+  DashboardAgentsAgentIdToolsPoliciesRouteImport.update({
+    id: '/agents/$agentId/tools/policies',
+    path: '/agents/$agentId/tools/policies',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardAgentsAgentIdToolsAllowedRoute =
+  DashboardAgentsAgentIdToolsAllowedRouteImport.update({
+    id: '/agents/$agentId/tools/allowed',
+    path: '/agents/$agentId/tools/allowed',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardAgentsAgentIdSkillsPermissionsRoute =
+  DashboardAgentsAgentIdSkillsPermissionsRouteImport.update({
+    id: '/agents/$agentId/skills/permissions',
+    path: '/agents/$agentId/skills/permissions',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardAgentsAgentIdSkillsMarketplaceRoute =
+  DashboardAgentsAgentIdSkillsMarketplaceRouteImport.update({
+    id: '/agents/$agentId/skills/marketplace',
+    path: '/agents/$agentId/skills/marketplace',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardAgentsAgentIdSkillsInstalledRoute =
+  DashboardAgentsAgentIdSkillsInstalledRouteImport.update({
+    id: '/agents/$agentId/skills/installed',
+    path: '/agents/$agentId/skills/installed',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardAgentsAgentIdSessionsInboxRoute =
+  DashboardAgentsAgentIdSessionsInboxRouteImport.update({
+    id: '/agents/$agentId/sessions/inbox',
+    path: '/agents/$agentId/sessions/inbox',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardAgentsAgentIdSessionsSessionIdRoute =
+  DashboardAgentsAgentIdSessionsSessionIdRouteImport.update({
+    id: '/agents/$agentId/sessions/$sessionId',
+    path: '/agents/$agentId/sessions/$sessionId',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardAgentsAgentIdSecurityQuarantineRoute =
+  DashboardAgentsAgentIdSecurityQuarantineRouteImport.update({
+    id: '/agents/$agentId/security/quarantine',
+    path: '/agents/$agentId/security/quarantine',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardAgentsAgentIdSecurityPostureRoute =
+  DashboardAgentsAgentIdSecurityPostureRouteImport.update({
+    id: '/agents/$agentId/security/posture',
+    path: '/agents/$agentId/security/posture',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardAgentsAgentIdSecurityAuditRoute =
+  DashboardAgentsAgentIdSecurityAuditRouteImport.update({
+    id: '/agents/$agentId/security/audit',
+    path: '/agents/$agentId/security/audit',
+    getParentRoute: () => DashboardRoute,
+  } as any)
 const DashboardAgentsAgentIdPersonalityVariablesRoute =
   DashboardAgentsAgentIdPersonalityVariablesRouteImport.update({
     id: '/agents/$agentId/personality/variables',
@@ -800,6 +896,78 @@ const DashboardAgentsAgentIdPersonalityAgentsMdRoute =
   DashboardAgentsAgentIdPersonalityAgentsMdRouteImport.update({
     id: '/agents/$agentId/personality/agents-md',
     path: '/agents/$agentId/personality/agents-md',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardAgentsAgentIdObserveTracesRoute =
+  DashboardAgentsAgentIdObserveTracesRouteImport.update({
+    id: '/agents/$agentId/observe/traces',
+    path: '/agents/$agentId/observe/traces',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardAgentsAgentIdObserveLogsRoute =
+  DashboardAgentsAgentIdObserveLogsRouteImport.update({
+    id: '/agents/$agentId/observe/logs',
+    path: '/agents/$agentId/observe/logs',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardAgentsAgentIdObserveCostRoute =
+  DashboardAgentsAgentIdObserveCostRouteImport.update({
+    id: '/agents/$agentId/observe/cost',
+    path: '/agents/$agentId/observe/cost',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardAgentsAgentIdModelScheduleRoute =
+  DashboardAgentsAgentIdModelScheduleRouteImport.update({
+    id: '/agents/$agentId/model/schedule',
+    path: '/agents/$agentId/model/schedule',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardAgentsAgentIdModelProviderRoute =
+  DashboardAgentsAgentIdModelProviderRouteImport.update({
+    id: '/agents/$agentId/model/provider',
+    path: '/agents/$agentId/model/provider',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardAgentsAgentIdModelLimitsRoute =
+  DashboardAgentsAgentIdModelLimitsRouteImport.update({
+    id: '/agents/$agentId/model/limits',
+    path: '/agents/$agentId/model/limits',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardAgentsAgentIdMemoryInjectRoute =
+  DashboardAgentsAgentIdMemoryInjectRouteImport.update({
+    id: '/agents/$agentId/memory/inject',
+    path: '/agents/$agentId/memory/inject',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardAgentsAgentIdMemoryHealthRoute =
+  DashboardAgentsAgentIdMemoryHealthRouteImport.update({
+    id: '/agents/$agentId/memory/health',
+    path: '/agents/$agentId/memory/health',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardAgentsAgentIdMemoryEditorRoute =
+  DashboardAgentsAgentIdMemoryEditorRouteImport.update({
+    id: '/agents/$agentId/memory/editor',
+    path: '/agents/$agentId/memory/editor',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardAgentsAgentIdMemoryBrowserRoute =
+  DashboardAgentsAgentIdMemoryBrowserRouteImport.update({
+    id: '/agents/$agentId/memory/browser',
+    path: '/agents/$agentId/memory/browser',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardAgentsAgentIdChannelsOverridesRoute =
+  DashboardAgentsAgentIdChannelsOverridesRouteImport.update({
+    id: '/agents/$agentId/channels/overrides',
+    path: '/agents/$agentId/channels/overrides',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardAgentsAgentIdChannelsBindingsRoute =
+  DashboardAgentsAgentIdChannelsBindingsRouteImport.update({
+    id: '/agents/$agentId/channels/bindings',
+    path: '/agents/$agentId/channels/bindings',
     getParentRoute: () => DashboardRoute,
   } as any)
 const DashboardFleetInstancesInstanceIdPersonalitiesIndexRoute =
@@ -979,11 +1147,35 @@ export interface FileRoutesByFullPath {
   '/fleet/instances/': typeof DashboardFleetInstancesIndexRoute
   '/sessions/$sessionId/': typeof DashboardSessionsSessionIdIndexRoute
   '/swarms/$swarmId/': typeof DashboardSwarmsSwarmIdIndexRoute
+  '/agents/$agentId/channels/bindings': typeof DashboardAgentsAgentIdChannelsBindingsRoute
+  '/agents/$agentId/channels/overrides': typeof DashboardAgentsAgentIdChannelsOverridesRoute
+  '/agents/$agentId/memory/browser': typeof DashboardAgentsAgentIdMemoryBrowserRoute
+  '/agents/$agentId/memory/editor': typeof DashboardAgentsAgentIdMemoryEditorRoute
+  '/agents/$agentId/memory/health': typeof DashboardAgentsAgentIdMemoryHealthRoute
+  '/agents/$agentId/memory/inject': typeof DashboardAgentsAgentIdMemoryInjectRoute
+  '/agents/$agentId/model/limits': typeof DashboardAgentsAgentIdModelLimitsRoute
+  '/agents/$agentId/model/provider': typeof DashboardAgentsAgentIdModelProviderRoute
+  '/agents/$agentId/model/schedule': typeof DashboardAgentsAgentIdModelScheduleRoute
+  '/agents/$agentId/observe/cost': typeof DashboardAgentsAgentIdObserveCostRoute
+  '/agents/$agentId/observe/logs': typeof DashboardAgentsAgentIdObserveLogsRoute
+  '/agents/$agentId/observe/traces': typeof DashboardAgentsAgentIdObserveTracesRoute
   '/agents/$agentId/personality/agents-md': typeof DashboardAgentsAgentIdPersonalityAgentsMdRoute
   '/agents/$agentId/personality/history': typeof DashboardAgentsAgentIdPersonalityHistoryRoute
   '/agents/$agentId/personality/soul': typeof DashboardAgentsAgentIdPersonalitySoulRoute
   '/agents/$agentId/personality/user-md': typeof DashboardAgentsAgentIdPersonalityUserMdRoute
   '/agents/$agentId/personality/variables': typeof DashboardAgentsAgentIdPersonalityVariablesRoute
+  '/agents/$agentId/security/audit': typeof DashboardAgentsAgentIdSecurityAuditRoute
+  '/agents/$agentId/security/posture': typeof DashboardAgentsAgentIdSecurityPostureRoute
+  '/agents/$agentId/security/quarantine': typeof DashboardAgentsAgentIdSecurityQuarantineRoute
+  '/agents/$agentId/sessions/$sessionId': typeof DashboardAgentsAgentIdSessionsSessionIdRoute
+  '/agents/$agentId/sessions/inbox': typeof DashboardAgentsAgentIdSessionsInboxRoute
+  '/agents/$agentId/skills/installed': typeof DashboardAgentsAgentIdSkillsInstalledRoute
+  '/agents/$agentId/skills/marketplace': typeof DashboardAgentsAgentIdSkillsMarketplaceRoute
+  '/agents/$agentId/skills/permissions': typeof DashboardAgentsAgentIdSkillsPermissionsRoute
+  '/agents/$agentId/tools/allowed': typeof DashboardAgentsAgentIdToolsAllowedRoute
+  '/agents/$agentId/tools/policies': typeof DashboardAgentsAgentIdToolsPoliciesRoute
+  '/agents/$agentId/tools/sandbox': typeof DashboardAgentsAgentIdToolsSandboxRoute
+  '/agents/$agentId/tools/simulator': typeof DashboardAgentsAgentIdToolsSimulatorRoute
   '/fleet/instances/$instanceId/channels': typeof DashboardFleetInstancesInstanceIdChannelsRoute
   '/fleet/instances/$instanceId/files': typeof DashboardFleetInstancesInstanceIdFilesRoute
   '/fleet/instances/$instanceId/observe': typeof DashboardFleetInstancesInstanceIdObserveRoute
@@ -1113,11 +1305,35 @@ export interface FileRoutesByTo {
   '/fleet/instances': typeof DashboardFleetInstancesIndexRoute
   '/sessions/$sessionId': typeof DashboardSessionsSessionIdIndexRoute
   '/swarms/$swarmId': typeof DashboardSwarmsSwarmIdIndexRoute
+  '/agents/$agentId/channels/bindings': typeof DashboardAgentsAgentIdChannelsBindingsRoute
+  '/agents/$agentId/channels/overrides': typeof DashboardAgentsAgentIdChannelsOverridesRoute
+  '/agents/$agentId/memory/browser': typeof DashboardAgentsAgentIdMemoryBrowserRoute
+  '/agents/$agentId/memory/editor': typeof DashboardAgentsAgentIdMemoryEditorRoute
+  '/agents/$agentId/memory/health': typeof DashboardAgentsAgentIdMemoryHealthRoute
+  '/agents/$agentId/memory/inject': typeof DashboardAgentsAgentIdMemoryInjectRoute
+  '/agents/$agentId/model/limits': typeof DashboardAgentsAgentIdModelLimitsRoute
+  '/agents/$agentId/model/provider': typeof DashboardAgentsAgentIdModelProviderRoute
+  '/agents/$agentId/model/schedule': typeof DashboardAgentsAgentIdModelScheduleRoute
+  '/agents/$agentId/observe/cost': typeof DashboardAgentsAgentIdObserveCostRoute
+  '/agents/$agentId/observe/logs': typeof DashboardAgentsAgentIdObserveLogsRoute
+  '/agents/$agentId/observe/traces': typeof DashboardAgentsAgentIdObserveTracesRoute
   '/agents/$agentId/personality/agents-md': typeof DashboardAgentsAgentIdPersonalityAgentsMdRoute
   '/agents/$agentId/personality/history': typeof DashboardAgentsAgentIdPersonalityHistoryRoute
   '/agents/$agentId/personality/soul': typeof DashboardAgentsAgentIdPersonalitySoulRoute
   '/agents/$agentId/personality/user-md': typeof DashboardAgentsAgentIdPersonalityUserMdRoute
   '/agents/$agentId/personality/variables': typeof DashboardAgentsAgentIdPersonalityVariablesRoute
+  '/agents/$agentId/security/audit': typeof DashboardAgentsAgentIdSecurityAuditRoute
+  '/agents/$agentId/security/posture': typeof DashboardAgentsAgentIdSecurityPostureRoute
+  '/agents/$agentId/security/quarantine': typeof DashboardAgentsAgentIdSecurityQuarantineRoute
+  '/agents/$agentId/sessions/$sessionId': typeof DashboardAgentsAgentIdSessionsSessionIdRoute
+  '/agents/$agentId/sessions/inbox': typeof DashboardAgentsAgentIdSessionsInboxRoute
+  '/agents/$agentId/skills/installed': typeof DashboardAgentsAgentIdSkillsInstalledRoute
+  '/agents/$agentId/skills/marketplace': typeof DashboardAgentsAgentIdSkillsMarketplaceRoute
+  '/agents/$agentId/skills/permissions': typeof DashboardAgentsAgentIdSkillsPermissionsRoute
+  '/agents/$agentId/tools/allowed': typeof DashboardAgentsAgentIdToolsAllowedRoute
+  '/agents/$agentId/tools/policies': typeof DashboardAgentsAgentIdToolsPoliciesRoute
+  '/agents/$agentId/tools/sandbox': typeof DashboardAgentsAgentIdToolsSandboxRoute
+  '/agents/$agentId/tools/simulator': typeof DashboardAgentsAgentIdToolsSimulatorRoute
   '/fleet/instances/$instanceId/channels': typeof DashboardFleetInstancesInstanceIdChannelsRoute
   '/fleet/instances/$instanceId/files': typeof DashboardFleetInstancesInstanceIdFilesRoute
   '/fleet/instances/$instanceId/observe': typeof DashboardFleetInstancesInstanceIdObserveRoute
@@ -1250,11 +1466,35 @@ export interface FileRoutesById {
   '/_dashboard/fleet/instances/': typeof DashboardFleetInstancesIndexRoute
   '/_dashboard/sessions/$sessionId/': typeof DashboardSessionsSessionIdIndexRoute
   '/_dashboard/swarms/$swarmId/': typeof DashboardSwarmsSwarmIdIndexRoute
+  '/_dashboard/agents/$agentId/channels/bindings': typeof DashboardAgentsAgentIdChannelsBindingsRoute
+  '/_dashboard/agents/$agentId/channels/overrides': typeof DashboardAgentsAgentIdChannelsOverridesRoute
+  '/_dashboard/agents/$agentId/memory/browser': typeof DashboardAgentsAgentIdMemoryBrowserRoute
+  '/_dashboard/agents/$agentId/memory/editor': typeof DashboardAgentsAgentIdMemoryEditorRoute
+  '/_dashboard/agents/$agentId/memory/health': typeof DashboardAgentsAgentIdMemoryHealthRoute
+  '/_dashboard/agents/$agentId/memory/inject': typeof DashboardAgentsAgentIdMemoryInjectRoute
+  '/_dashboard/agents/$agentId/model/limits': typeof DashboardAgentsAgentIdModelLimitsRoute
+  '/_dashboard/agents/$agentId/model/provider': typeof DashboardAgentsAgentIdModelProviderRoute
+  '/_dashboard/agents/$agentId/model/schedule': typeof DashboardAgentsAgentIdModelScheduleRoute
+  '/_dashboard/agents/$agentId/observe/cost': typeof DashboardAgentsAgentIdObserveCostRoute
+  '/_dashboard/agents/$agentId/observe/logs': typeof DashboardAgentsAgentIdObserveLogsRoute
+  '/_dashboard/agents/$agentId/observe/traces': typeof DashboardAgentsAgentIdObserveTracesRoute
   '/_dashboard/agents/$agentId/personality/agents-md': typeof DashboardAgentsAgentIdPersonalityAgentsMdRoute
   '/_dashboard/agents/$agentId/personality/history': typeof DashboardAgentsAgentIdPersonalityHistoryRoute
   '/_dashboard/agents/$agentId/personality/soul': typeof DashboardAgentsAgentIdPersonalitySoulRoute
   '/_dashboard/agents/$agentId/personality/user-md': typeof DashboardAgentsAgentIdPersonalityUserMdRoute
   '/_dashboard/agents/$agentId/personality/variables': typeof DashboardAgentsAgentIdPersonalityVariablesRoute
+  '/_dashboard/agents/$agentId/security/audit': typeof DashboardAgentsAgentIdSecurityAuditRoute
+  '/_dashboard/agents/$agentId/security/posture': typeof DashboardAgentsAgentIdSecurityPostureRoute
+  '/_dashboard/agents/$agentId/security/quarantine': typeof DashboardAgentsAgentIdSecurityQuarantineRoute
+  '/_dashboard/agents/$agentId/sessions/$sessionId': typeof DashboardAgentsAgentIdSessionsSessionIdRoute
+  '/_dashboard/agents/$agentId/sessions/inbox': typeof DashboardAgentsAgentIdSessionsInboxRoute
+  '/_dashboard/agents/$agentId/skills/installed': typeof DashboardAgentsAgentIdSkillsInstalledRoute
+  '/_dashboard/agents/$agentId/skills/marketplace': typeof DashboardAgentsAgentIdSkillsMarketplaceRoute
+  '/_dashboard/agents/$agentId/skills/permissions': typeof DashboardAgentsAgentIdSkillsPermissionsRoute
+  '/_dashboard/agents/$agentId/tools/allowed': typeof DashboardAgentsAgentIdToolsAllowedRoute
+  '/_dashboard/agents/$agentId/tools/policies': typeof DashboardAgentsAgentIdToolsPoliciesRoute
+  '/_dashboard/agents/$agentId/tools/sandbox': typeof DashboardAgentsAgentIdToolsSandboxRoute
+  '/_dashboard/agents/$agentId/tools/simulator': typeof DashboardAgentsAgentIdToolsSimulatorRoute
   '/_dashboard/fleet/instances/$instanceId/channels': typeof DashboardFleetInstancesInstanceIdChannelsRoute
   '/_dashboard/fleet/instances/$instanceId/files': typeof DashboardFleetInstancesInstanceIdFilesRoute
   '/_dashboard/fleet/instances/$instanceId/observe': typeof DashboardFleetInstancesInstanceIdObserveRoute
@@ -1386,11 +1626,35 @@ export interface FileRouteTypes {
     | '/fleet/instances/'
     | '/sessions/$sessionId/'
     | '/swarms/$swarmId/'
+    | '/agents/$agentId/channels/bindings'
+    | '/agents/$agentId/channels/overrides'
+    | '/agents/$agentId/memory/browser'
+    | '/agents/$agentId/memory/editor'
+    | '/agents/$agentId/memory/health'
+    | '/agents/$agentId/memory/inject'
+    | '/agents/$agentId/model/limits'
+    | '/agents/$agentId/model/provider'
+    | '/agents/$agentId/model/schedule'
+    | '/agents/$agentId/observe/cost'
+    | '/agents/$agentId/observe/logs'
+    | '/agents/$agentId/observe/traces'
     | '/agents/$agentId/personality/agents-md'
     | '/agents/$agentId/personality/history'
     | '/agents/$agentId/personality/soul'
     | '/agents/$agentId/personality/user-md'
     | '/agents/$agentId/personality/variables'
+    | '/agents/$agentId/security/audit'
+    | '/agents/$agentId/security/posture'
+    | '/agents/$agentId/security/quarantine'
+    | '/agents/$agentId/sessions/$sessionId'
+    | '/agents/$agentId/sessions/inbox'
+    | '/agents/$agentId/skills/installed'
+    | '/agents/$agentId/skills/marketplace'
+    | '/agents/$agentId/skills/permissions'
+    | '/agents/$agentId/tools/allowed'
+    | '/agents/$agentId/tools/policies'
+    | '/agents/$agentId/tools/sandbox'
+    | '/agents/$agentId/tools/simulator'
     | '/fleet/instances/$instanceId/channels'
     | '/fleet/instances/$instanceId/files'
     | '/fleet/instances/$instanceId/observe'
@@ -1520,11 +1784,35 @@ export interface FileRouteTypes {
     | '/fleet/instances'
     | '/sessions/$sessionId'
     | '/swarms/$swarmId'
+    | '/agents/$agentId/channels/bindings'
+    | '/agents/$agentId/channels/overrides'
+    | '/agents/$agentId/memory/browser'
+    | '/agents/$agentId/memory/editor'
+    | '/agents/$agentId/memory/health'
+    | '/agents/$agentId/memory/inject'
+    | '/agents/$agentId/model/limits'
+    | '/agents/$agentId/model/provider'
+    | '/agents/$agentId/model/schedule'
+    | '/agents/$agentId/observe/cost'
+    | '/agents/$agentId/observe/logs'
+    | '/agents/$agentId/observe/traces'
     | '/agents/$agentId/personality/agents-md'
     | '/agents/$agentId/personality/history'
     | '/agents/$agentId/personality/soul'
     | '/agents/$agentId/personality/user-md'
     | '/agents/$agentId/personality/variables'
+    | '/agents/$agentId/security/audit'
+    | '/agents/$agentId/security/posture'
+    | '/agents/$agentId/security/quarantine'
+    | '/agents/$agentId/sessions/$sessionId'
+    | '/agents/$agentId/sessions/inbox'
+    | '/agents/$agentId/skills/installed'
+    | '/agents/$agentId/skills/marketplace'
+    | '/agents/$agentId/skills/permissions'
+    | '/agents/$agentId/tools/allowed'
+    | '/agents/$agentId/tools/policies'
+    | '/agents/$agentId/tools/sandbox'
+    | '/agents/$agentId/tools/simulator'
     | '/fleet/instances/$instanceId/channels'
     | '/fleet/instances/$instanceId/files'
     | '/fleet/instances/$instanceId/observe'
@@ -1656,11 +1944,35 @@ export interface FileRouteTypes {
     | '/_dashboard/fleet/instances/'
     | '/_dashboard/sessions/$sessionId/'
     | '/_dashboard/swarms/$swarmId/'
+    | '/_dashboard/agents/$agentId/channels/bindings'
+    | '/_dashboard/agents/$agentId/channels/overrides'
+    | '/_dashboard/agents/$agentId/memory/browser'
+    | '/_dashboard/agents/$agentId/memory/editor'
+    | '/_dashboard/agents/$agentId/memory/health'
+    | '/_dashboard/agents/$agentId/memory/inject'
+    | '/_dashboard/agents/$agentId/model/limits'
+    | '/_dashboard/agents/$agentId/model/provider'
+    | '/_dashboard/agents/$agentId/model/schedule'
+    | '/_dashboard/agents/$agentId/observe/cost'
+    | '/_dashboard/agents/$agentId/observe/logs'
+    | '/_dashboard/agents/$agentId/observe/traces'
     | '/_dashboard/agents/$agentId/personality/agents-md'
     | '/_dashboard/agents/$agentId/personality/history'
     | '/_dashboard/agents/$agentId/personality/soul'
     | '/_dashboard/agents/$agentId/personality/user-md'
     | '/_dashboard/agents/$agentId/personality/variables'
+    | '/_dashboard/agents/$agentId/security/audit'
+    | '/_dashboard/agents/$agentId/security/posture'
+    | '/_dashboard/agents/$agentId/security/quarantine'
+    | '/_dashboard/agents/$agentId/sessions/$sessionId'
+    | '/_dashboard/agents/$agentId/sessions/inbox'
+    | '/_dashboard/agents/$agentId/skills/installed'
+    | '/_dashboard/agents/$agentId/skills/marketplace'
+    | '/_dashboard/agents/$agentId/skills/permissions'
+    | '/_dashboard/agents/$agentId/tools/allowed'
+    | '/_dashboard/agents/$agentId/tools/policies'
+    | '/_dashboard/agents/$agentId/tools/sandbox'
+    | '/_dashboard/agents/$agentId/tools/simulator'
     | '/_dashboard/fleet/instances/$instanceId/channels'
     | '/_dashboard/fleet/instances/$instanceId/files'
     | '/_dashboard/fleet/instances/$instanceId/observe'
@@ -2513,6 +2825,90 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardFleetInstancesInstanceIdChannelsRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/_dashboard/agents/$agentId/tools/simulator': {
+      id: '/_dashboard/agents/$agentId/tools/simulator'
+      path: '/agents/$agentId/tools/simulator'
+      fullPath: '/agents/$agentId/tools/simulator'
+      preLoaderRoute: typeof DashboardAgentsAgentIdToolsSimulatorRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/agents/$agentId/tools/sandbox': {
+      id: '/_dashboard/agents/$agentId/tools/sandbox'
+      path: '/agents/$agentId/tools/sandbox'
+      fullPath: '/agents/$agentId/tools/sandbox'
+      preLoaderRoute: typeof DashboardAgentsAgentIdToolsSandboxRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/agents/$agentId/tools/policies': {
+      id: '/_dashboard/agents/$agentId/tools/policies'
+      path: '/agents/$agentId/tools/policies'
+      fullPath: '/agents/$agentId/tools/policies'
+      preLoaderRoute: typeof DashboardAgentsAgentIdToolsPoliciesRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/agents/$agentId/tools/allowed': {
+      id: '/_dashboard/agents/$agentId/tools/allowed'
+      path: '/agents/$agentId/tools/allowed'
+      fullPath: '/agents/$agentId/tools/allowed'
+      preLoaderRoute: typeof DashboardAgentsAgentIdToolsAllowedRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/agents/$agentId/skills/permissions': {
+      id: '/_dashboard/agents/$agentId/skills/permissions'
+      path: '/agents/$agentId/skills/permissions'
+      fullPath: '/agents/$agentId/skills/permissions'
+      preLoaderRoute: typeof DashboardAgentsAgentIdSkillsPermissionsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/agents/$agentId/skills/marketplace': {
+      id: '/_dashboard/agents/$agentId/skills/marketplace'
+      path: '/agents/$agentId/skills/marketplace'
+      fullPath: '/agents/$agentId/skills/marketplace'
+      preLoaderRoute: typeof DashboardAgentsAgentIdSkillsMarketplaceRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/agents/$agentId/skills/installed': {
+      id: '/_dashboard/agents/$agentId/skills/installed'
+      path: '/agents/$agentId/skills/installed'
+      fullPath: '/agents/$agentId/skills/installed'
+      preLoaderRoute: typeof DashboardAgentsAgentIdSkillsInstalledRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/agents/$agentId/sessions/inbox': {
+      id: '/_dashboard/agents/$agentId/sessions/inbox'
+      path: '/agents/$agentId/sessions/inbox'
+      fullPath: '/agents/$agentId/sessions/inbox'
+      preLoaderRoute: typeof DashboardAgentsAgentIdSessionsInboxRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/agents/$agentId/sessions/$sessionId': {
+      id: '/_dashboard/agents/$agentId/sessions/$sessionId'
+      path: '/agents/$agentId/sessions/$sessionId'
+      fullPath: '/agents/$agentId/sessions/$sessionId'
+      preLoaderRoute: typeof DashboardAgentsAgentIdSessionsSessionIdRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/agents/$agentId/security/quarantine': {
+      id: '/_dashboard/agents/$agentId/security/quarantine'
+      path: '/agents/$agentId/security/quarantine'
+      fullPath: '/agents/$agentId/security/quarantine'
+      preLoaderRoute: typeof DashboardAgentsAgentIdSecurityQuarantineRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/agents/$agentId/security/posture': {
+      id: '/_dashboard/agents/$agentId/security/posture'
+      path: '/agents/$agentId/security/posture'
+      fullPath: '/agents/$agentId/security/posture'
+      preLoaderRoute: typeof DashboardAgentsAgentIdSecurityPostureRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/agents/$agentId/security/audit': {
+      id: '/_dashboard/agents/$agentId/security/audit'
+      path: '/agents/$agentId/security/audit'
+      fullPath: '/agents/$agentId/security/audit'
+      preLoaderRoute: typeof DashboardAgentsAgentIdSecurityAuditRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/_dashboard/agents/$agentId/personality/variables': {
       id: '/_dashboard/agents/$agentId/personality/variables'
       path: '/agents/$agentId/personality/variables'
@@ -2546,6 +2942,90 @@ declare module '@tanstack/react-router' {
       path: '/agents/$agentId/personality/agents-md'
       fullPath: '/agents/$agentId/personality/agents-md'
       preLoaderRoute: typeof DashboardAgentsAgentIdPersonalityAgentsMdRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/agents/$agentId/observe/traces': {
+      id: '/_dashboard/agents/$agentId/observe/traces'
+      path: '/agents/$agentId/observe/traces'
+      fullPath: '/agents/$agentId/observe/traces'
+      preLoaderRoute: typeof DashboardAgentsAgentIdObserveTracesRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/agents/$agentId/observe/logs': {
+      id: '/_dashboard/agents/$agentId/observe/logs'
+      path: '/agents/$agentId/observe/logs'
+      fullPath: '/agents/$agentId/observe/logs'
+      preLoaderRoute: typeof DashboardAgentsAgentIdObserveLogsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/agents/$agentId/observe/cost': {
+      id: '/_dashboard/agents/$agentId/observe/cost'
+      path: '/agents/$agentId/observe/cost'
+      fullPath: '/agents/$agentId/observe/cost'
+      preLoaderRoute: typeof DashboardAgentsAgentIdObserveCostRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/agents/$agentId/model/schedule': {
+      id: '/_dashboard/agents/$agentId/model/schedule'
+      path: '/agents/$agentId/model/schedule'
+      fullPath: '/agents/$agentId/model/schedule'
+      preLoaderRoute: typeof DashboardAgentsAgentIdModelScheduleRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/agents/$agentId/model/provider': {
+      id: '/_dashboard/agents/$agentId/model/provider'
+      path: '/agents/$agentId/model/provider'
+      fullPath: '/agents/$agentId/model/provider'
+      preLoaderRoute: typeof DashboardAgentsAgentIdModelProviderRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/agents/$agentId/model/limits': {
+      id: '/_dashboard/agents/$agentId/model/limits'
+      path: '/agents/$agentId/model/limits'
+      fullPath: '/agents/$agentId/model/limits'
+      preLoaderRoute: typeof DashboardAgentsAgentIdModelLimitsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/agents/$agentId/memory/inject': {
+      id: '/_dashboard/agents/$agentId/memory/inject'
+      path: '/agents/$agentId/memory/inject'
+      fullPath: '/agents/$agentId/memory/inject'
+      preLoaderRoute: typeof DashboardAgentsAgentIdMemoryInjectRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/agents/$agentId/memory/health': {
+      id: '/_dashboard/agents/$agentId/memory/health'
+      path: '/agents/$agentId/memory/health'
+      fullPath: '/agents/$agentId/memory/health'
+      preLoaderRoute: typeof DashboardAgentsAgentIdMemoryHealthRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/agents/$agentId/memory/editor': {
+      id: '/_dashboard/agents/$agentId/memory/editor'
+      path: '/agents/$agentId/memory/editor'
+      fullPath: '/agents/$agentId/memory/editor'
+      preLoaderRoute: typeof DashboardAgentsAgentIdMemoryEditorRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/agents/$agentId/memory/browser': {
+      id: '/_dashboard/agents/$agentId/memory/browser'
+      path: '/agents/$agentId/memory/browser'
+      fullPath: '/agents/$agentId/memory/browser'
+      preLoaderRoute: typeof DashboardAgentsAgentIdMemoryBrowserRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/agents/$agentId/channels/overrides': {
+      id: '/_dashboard/agents/$agentId/channels/overrides'
+      path: '/agents/$agentId/channels/overrides'
+      fullPath: '/agents/$agentId/channels/overrides'
+      preLoaderRoute: typeof DashboardAgentsAgentIdChannelsOverridesRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/agents/$agentId/channels/bindings': {
+      id: '/_dashboard/agents/$agentId/channels/bindings'
+      path: '/agents/$agentId/channels/bindings'
+      fullPath: '/agents/$agentId/channels/bindings'
+      preLoaderRoute: typeof DashboardAgentsAgentIdChannelsBindingsRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/_dashboard/fleet/instances/$instanceId/personalities/': {
@@ -2788,11 +3268,35 @@ interface DashboardRouteChildren {
   DashboardFleetInstancesIndexRoute: typeof DashboardFleetInstancesIndexRoute
   DashboardSessionsSessionIdIndexRoute: typeof DashboardSessionsSessionIdIndexRoute
   DashboardSwarmsSwarmIdIndexRoute: typeof DashboardSwarmsSwarmIdIndexRoute
+  DashboardAgentsAgentIdChannelsBindingsRoute: typeof DashboardAgentsAgentIdChannelsBindingsRoute
+  DashboardAgentsAgentIdChannelsOverridesRoute: typeof DashboardAgentsAgentIdChannelsOverridesRoute
+  DashboardAgentsAgentIdMemoryBrowserRoute: typeof DashboardAgentsAgentIdMemoryBrowserRoute
+  DashboardAgentsAgentIdMemoryEditorRoute: typeof DashboardAgentsAgentIdMemoryEditorRoute
+  DashboardAgentsAgentIdMemoryHealthRoute: typeof DashboardAgentsAgentIdMemoryHealthRoute
+  DashboardAgentsAgentIdMemoryInjectRoute: typeof DashboardAgentsAgentIdMemoryInjectRoute
+  DashboardAgentsAgentIdModelLimitsRoute: typeof DashboardAgentsAgentIdModelLimitsRoute
+  DashboardAgentsAgentIdModelProviderRoute: typeof DashboardAgentsAgentIdModelProviderRoute
+  DashboardAgentsAgentIdModelScheduleRoute: typeof DashboardAgentsAgentIdModelScheduleRoute
+  DashboardAgentsAgentIdObserveCostRoute: typeof DashboardAgentsAgentIdObserveCostRoute
+  DashboardAgentsAgentIdObserveLogsRoute: typeof DashboardAgentsAgentIdObserveLogsRoute
+  DashboardAgentsAgentIdObserveTracesRoute: typeof DashboardAgentsAgentIdObserveTracesRoute
   DashboardAgentsAgentIdPersonalityAgentsMdRoute: typeof DashboardAgentsAgentIdPersonalityAgentsMdRoute
   DashboardAgentsAgentIdPersonalityHistoryRoute: typeof DashboardAgentsAgentIdPersonalityHistoryRoute
   DashboardAgentsAgentIdPersonalitySoulRoute: typeof DashboardAgentsAgentIdPersonalitySoulRoute
   DashboardAgentsAgentIdPersonalityUserMdRoute: typeof DashboardAgentsAgentIdPersonalityUserMdRoute
   DashboardAgentsAgentIdPersonalityVariablesRoute: typeof DashboardAgentsAgentIdPersonalityVariablesRoute
+  DashboardAgentsAgentIdSecurityAuditRoute: typeof DashboardAgentsAgentIdSecurityAuditRoute
+  DashboardAgentsAgentIdSecurityPostureRoute: typeof DashboardAgentsAgentIdSecurityPostureRoute
+  DashboardAgentsAgentIdSecurityQuarantineRoute: typeof DashboardAgentsAgentIdSecurityQuarantineRoute
+  DashboardAgentsAgentIdSessionsSessionIdRoute: typeof DashboardAgentsAgentIdSessionsSessionIdRoute
+  DashboardAgentsAgentIdSessionsInboxRoute: typeof DashboardAgentsAgentIdSessionsInboxRoute
+  DashboardAgentsAgentIdSkillsInstalledRoute: typeof DashboardAgentsAgentIdSkillsInstalledRoute
+  DashboardAgentsAgentIdSkillsMarketplaceRoute: typeof DashboardAgentsAgentIdSkillsMarketplaceRoute
+  DashboardAgentsAgentIdSkillsPermissionsRoute: typeof DashboardAgentsAgentIdSkillsPermissionsRoute
+  DashboardAgentsAgentIdToolsAllowedRoute: typeof DashboardAgentsAgentIdToolsAllowedRoute
+  DashboardAgentsAgentIdToolsPoliciesRoute: typeof DashboardAgentsAgentIdToolsPoliciesRoute
+  DashboardAgentsAgentIdToolsSandboxRoute: typeof DashboardAgentsAgentIdToolsSandboxRoute
+  DashboardAgentsAgentIdToolsSimulatorRoute: typeof DashboardAgentsAgentIdToolsSimulatorRoute
   DashboardFleetInstancesInstanceIdChannelsRoute: typeof DashboardFleetInstancesInstanceIdChannelsRoute
   DashboardFleetInstancesInstanceIdFilesRoute: typeof DashboardFleetInstancesInstanceIdFilesRoute
   DashboardFleetInstancesInstanceIdObserveRoute: typeof DashboardFleetInstancesInstanceIdObserveRoute
@@ -2885,6 +3389,30 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardFleetInstancesIndexRoute: DashboardFleetInstancesIndexRoute,
   DashboardSessionsSessionIdIndexRoute: DashboardSessionsSessionIdIndexRoute,
   DashboardSwarmsSwarmIdIndexRoute: DashboardSwarmsSwarmIdIndexRoute,
+  DashboardAgentsAgentIdChannelsBindingsRoute:
+    DashboardAgentsAgentIdChannelsBindingsRoute,
+  DashboardAgentsAgentIdChannelsOverridesRoute:
+    DashboardAgentsAgentIdChannelsOverridesRoute,
+  DashboardAgentsAgentIdMemoryBrowserRoute:
+    DashboardAgentsAgentIdMemoryBrowserRoute,
+  DashboardAgentsAgentIdMemoryEditorRoute:
+    DashboardAgentsAgentIdMemoryEditorRoute,
+  DashboardAgentsAgentIdMemoryHealthRoute:
+    DashboardAgentsAgentIdMemoryHealthRoute,
+  DashboardAgentsAgentIdMemoryInjectRoute:
+    DashboardAgentsAgentIdMemoryInjectRoute,
+  DashboardAgentsAgentIdModelLimitsRoute:
+    DashboardAgentsAgentIdModelLimitsRoute,
+  DashboardAgentsAgentIdModelProviderRoute:
+    DashboardAgentsAgentIdModelProviderRoute,
+  DashboardAgentsAgentIdModelScheduleRoute:
+    DashboardAgentsAgentIdModelScheduleRoute,
+  DashboardAgentsAgentIdObserveCostRoute:
+    DashboardAgentsAgentIdObserveCostRoute,
+  DashboardAgentsAgentIdObserveLogsRoute:
+    DashboardAgentsAgentIdObserveLogsRoute,
+  DashboardAgentsAgentIdObserveTracesRoute:
+    DashboardAgentsAgentIdObserveTracesRoute,
   DashboardAgentsAgentIdPersonalityAgentsMdRoute:
     DashboardAgentsAgentIdPersonalityAgentsMdRoute,
   DashboardAgentsAgentIdPersonalityHistoryRoute:
@@ -2895,6 +3423,30 @@ const DashboardRouteChildren: DashboardRouteChildren = {
     DashboardAgentsAgentIdPersonalityUserMdRoute,
   DashboardAgentsAgentIdPersonalityVariablesRoute:
     DashboardAgentsAgentIdPersonalityVariablesRoute,
+  DashboardAgentsAgentIdSecurityAuditRoute:
+    DashboardAgentsAgentIdSecurityAuditRoute,
+  DashboardAgentsAgentIdSecurityPostureRoute:
+    DashboardAgentsAgentIdSecurityPostureRoute,
+  DashboardAgentsAgentIdSecurityQuarantineRoute:
+    DashboardAgentsAgentIdSecurityQuarantineRoute,
+  DashboardAgentsAgentIdSessionsSessionIdRoute:
+    DashboardAgentsAgentIdSessionsSessionIdRoute,
+  DashboardAgentsAgentIdSessionsInboxRoute:
+    DashboardAgentsAgentIdSessionsInboxRoute,
+  DashboardAgentsAgentIdSkillsInstalledRoute:
+    DashboardAgentsAgentIdSkillsInstalledRoute,
+  DashboardAgentsAgentIdSkillsMarketplaceRoute:
+    DashboardAgentsAgentIdSkillsMarketplaceRoute,
+  DashboardAgentsAgentIdSkillsPermissionsRoute:
+    DashboardAgentsAgentIdSkillsPermissionsRoute,
+  DashboardAgentsAgentIdToolsAllowedRoute:
+    DashboardAgentsAgentIdToolsAllowedRoute,
+  DashboardAgentsAgentIdToolsPoliciesRoute:
+    DashboardAgentsAgentIdToolsPoliciesRoute,
+  DashboardAgentsAgentIdToolsSandboxRoute:
+    DashboardAgentsAgentIdToolsSandboxRoute,
+  DashboardAgentsAgentIdToolsSimulatorRoute:
+    DashboardAgentsAgentIdToolsSimulatorRoute,
   DashboardFleetInstancesInstanceIdChannelsRoute:
     DashboardFleetInstancesInstanceIdChannelsRoute,
   DashboardFleetInstancesInstanceIdFilesRoute:
@@ -2967,12 +3519,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
