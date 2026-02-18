@@ -31,6 +31,15 @@ import { Route as DashboardBlueprintsBlueprintIdIndexRouteImport } from './route
 import { Route as DashboardAgentsAgentIdIndexRouteImport } from './routes/_dashboard/agents/$agentId/index'
 import { Route as DashboardFleetInstancesNewRouteImport } from './routes/_dashboard/fleet/instances/new'
 import { Route as DashboardFleetInstancesInstanceIdIndexRouteImport } from './routes/_dashboard/fleet/instances/$instanceId/index'
+import { Route as DashboardFleetInstancesInstanceIdPersonalitiesIndexRouteImport } from './routes/_dashboard/fleet/instances/$instanceId/personalities/index'
+import { Route as DashboardFleetInstancesInstanceIdConfigIndexRouteImport } from './routes/_dashboard/fleet/instances/$instanceId/config/index'
+import { Route as DashboardFleetInstancesInstanceIdPersonalitiesSoulRouteImport } from './routes/_dashboard/fleet/instances/$instanceId/personalities/soul'
+import { Route as DashboardFleetInstancesInstanceIdPersonalitiesAgentsMdRouteImport } from './routes/_dashboard/fleet/instances/$instanceId/personalities/agents-md'
+import { Route as DashboardFleetInstancesInstanceIdConfigToolsRouteImport } from './routes/_dashboard/fleet/instances/$instanceId/config/tools'
+import { Route as DashboardFleetInstancesInstanceIdConfigProvidersRouteImport } from './routes/_dashboard/fleet/instances/$instanceId/config/providers'
+import { Route as DashboardFleetInstancesInstanceIdConfigPoliciesRouteImport } from './routes/_dashboard/fleet/instances/$instanceId/config/policies'
+import { Route as DashboardFleetInstancesInstanceIdConfigGeneralRouteImport } from './routes/_dashboard/fleet/instances/$instanceId/config/general'
+import { Route as DashboardFleetInstancesInstanceIdConfigEnvironmentRouteImport } from './routes/_dashboard/fleet/instances/$instanceId/config/environment'
 
 const DashboardRoute = DashboardRouteImport.update({
   id: '/_dashboard',
@@ -149,6 +158,60 @@ const DashboardFleetInstancesInstanceIdIndexRoute =
     path: '/fleet/instances/$instanceId/',
     getParentRoute: () => DashboardRoute,
   } as any)
+const DashboardFleetInstancesInstanceIdPersonalitiesIndexRoute =
+  DashboardFleetInstancesInstanceIdPersonalitiesIndexRouteImport.update({
+    id: '/fleet/instances/$instanceId/personalities/',
+    path: '/fleet/instances/$instanceId/personalities/',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardFleetInstancesInstanceIdConfigIndexRoute =
+  DashboardFleetInstancesInstanceIdConfigIndexRouteImport.update({
+    id: '/fleet/instances/$instanceId/config/',
+    path: '/fleet/instances/$instanceId/config/',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardFleetInstancesInstanceIdPersonalitiesSoulRoute =
+  DashboardFleetInstancesInstanceIdPersonalitiesSoulRouteImport.update({
+    id: '/fleet/instances/$instanceId/personalities/soul',
+    path: '/fleet/instances/$instanceId/personalities/soul',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardFleetInstancesInstanceIdPersonalitiesAgentsMdRoute =
+  DashboardFleetInstancesInstanceIdPersonalitiesAgentsMdRouteImport.update({
+    id: '/fleet/instances/$instanceId/personalities/agents-md',
+    path: '/fleet/instances/$instanceId/personalities/agents-md',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardFleetInstancesInstanceIdConfigToolsRoute =
+  DashboardFleetInstancesInstanceIdConfigToolsRouteImport.update({
+    id: '/fleet/instances/$instanceId/config/tools',
+    path: '/fleet/instances/$instanceId/config/tools',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardFleetInstancesInstanceIdConfigProvidersRoute =
+  DashboardFleetInstancesInstanceIdConfigProvidersRouteImport.update({
+    id: '/fleet/instances/$instanceId/config/providers',
+    path: '/fleet/instances/$instanceId/config/providers',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardFleetInstancesInstanceIdConfigPoliciesRoute =
+  DashboardFleetInstancesInstanceIdConfigPoliciesRouteImport.update({
+    id: '/fleet/instances/$instanceId/config/policies',
+    path: '/fleet/instances/$instanceId/config/policies',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardFleetInstancesInstanceIdConfigGeneralRoute =
+  DashboardFleetInstancesInstanceIdConfigGeneralRouteImport.update({
+    id: '/fleet/instances/$instanceId/config/general',
+    path: '/fleet/instances/$instanceId/config/general',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardFleetInstancesInstanceIdConfigEnvironmentRoute =
+  DashboardFleetInstancesInstanceIdConfigEnvironmentRouteImport.update({
+    id: '/fleet/instances/$instanceId/config/environment',
+    path: '/fleet/instances/$instanceId/config/environment',
+    getParentRoute: () => DashboardRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -172,6 +235,15 @@ export interface FileRoutesByFullPath {
   '/sessions/$sessionId/': typeof DashboardSessionsSessionIdIndexRoute
   '/swarms/$swarmId/': typeof DashboardSwarmsSwarmIdIndexRoute
   '/fleet/instances/$instanceId/': typeof DashboardFleetInstancesInstanceIdIndexRoute
+  '/fleet/instances/$instanceId/config/environment': typeof DashboardFleetInstancesInstanceIdConfigEnvironmentRoute
+  '/fleet/instances/$instanceId/config/general': typeof DashboardFleetInstancesInstanceIdConfigGeneralRoute
+  '/fleet/instances/$instanceId/config/policies': typeof DashboardFleetInstancesInstanceIdConfigPoliciesRoute
+  '/fleet/instances/$instanceId/config/providers': typeof DashboardFleetInstancesInstanceIdConfigProvidersRoute
+  '/fleet/instances/$instanceId/config/tools': typeof DashboardFleetInstancesInstanceIdConfigToolsRoute
+  '/fleet/instances/$instanceId/personalities/agents-md': typeof DashboardFleetInstancesInstanceIdPersonalitiesAgentsMdRoute
+  '/fleet/instances/$instanceId/personalities/soul': typeof DashboardFleetInstancesInstanceIdPersonalitiesSoulRoute
+  '/fleet/instances/$instanceId/config/': typeof DashboardFleetInstancesInstanceIdConfigIndexRoute
+  '/fleet/instances/$instanceId/personalities/': typeof DashboardFleetInstancesInstanceIdPersonalitiesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -195,6 +267,15 @@ export interface FileRoutesByTo {
   '/sessions/$sessionId': typeof DashboardSessionsSessionIdIndexRoute
   '/swarms/$swarmId': typeof DashboardSwarmsSwarmIdIndexRoute
   '/fleet/instances/$instanceId': typeof DashboardFleetInstancesInstanceIdIndexRoute
+  '/fleet/instances/$instanceId/config/environment': typeof DashboardFleetInstancesInstanceIdConfigEnvironmentRoute
+  '/fleet/instances/$instanceId/config/general': typeof DashboardFleetInstancesInstanceIdConfigGeneralRoute
+  '/fleet/instances/$instanceId/config/policies': typeof DashboardFleetInstancesInstanceIdConfigPoliciesRoute
+  '/fleet/instances/$instanceId/config/providers': typeof DashboardFleetInstancesInstanceIdConfigProvidersRoute
+  '/fleet/instances/$instanceId/config/tools': typeof DashboardFleetInstancesInstanceIdConfigToolsRoute
+  '/fleet/instances/$instanceId/personalities/agents-md': typeof DashboardFleetInstancesInstanceIdPersonalitiesAgentsMdRoute
+  '/fleet/instances/$instanceId/personalities/soul': typeof DashboardFleetInstancesInstanceIdPersonalitiesSoulRoute
+  '/fleet/instances/$instanceId/config': typeof DashboardFleetInstancesInstanceIdConfigIndexRoute
+  '/fleet/instances/$instanceId/personalities': typeof DashboardFleetInstancesInstanceIdPersonalitiesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -220,6 +301,15 @@ export interface FileRoutesById {
   '/_dashboard/sessions/$sessionId/': typeof DashboardSessionsSessionIdIndexRoute
   '/_dashboard/swarms/$swarmId/': typeof DashboardSwarmsSwarmIdIndexRoute
   '/_dashboard/fleet/instances/$instanceId/': typeof DashboardFleetInstancesInstanceIdIndexRoute
+  '/_dashboard/fleet/instances/$instanceId/config/environment': typeof DashboardFleetInstancesInstanceIdConfigEnvironmentRoute
+  '/_dashboard/fleet/instances/$instanceId/config/general': typeof DashboardFleetInstancesInstanceIdConfigGeneralRoute
+  '/_dashboard/fleet/instances/$instanceId/config/policies': typeof DashboardFleetInstancesInstanceIdConfigPoliciesRoute
+  '/_dashboard/fleet/instances/$instanceId/config/providers': typeof DashboardFleetInstancesInstanceIdConfigProvidersRoute
+  '/_dashboard/fleet/instances/$instanceId/config/tools': typeof DashboardFleetInstancesInstanceIdConfigToolsRoute
+  '/_dashboard/fleet/instances/$instanceId/personalities/agents-md': typeof DashboardFleetInstancesInstanceIdPersonalitiesAgentsMdRoute
+  '/_dashboard/fleet/instances/$instanceId/personalities/soul': typeof DashboardFleetInstancesInstanceIdPersonalitiesSoulRoute
+  '/_dashboard/fleet/instances/$instanceId/config/': typeof DashboardFleetInstancesInstanceIdConfigIndexRoute
+  '/_dashboard/fleet/instances/$instanceId/personalities/': typeof DashboardFleetInstancesInstanceIdPersonalitiesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -245,6 +335,15 @@ export interface FileRouteTypes {
     | '/sessions/$sessionId/'
     | '/swarms/$swarmId/'
     | '/fleet/instances/$instanceId/'
+    | '/fleet/instances/$instanceId/config/environment'
+    | '/fleet/instances/$instanceId/config/general'
+    | '/fleet/instances/$instanceId/config/policies'
+    | '/fleet/instances/$instanceId/config/providers'
+    | '/fleet/instances/$instanceId/config/tools'
+    | '/fleet/instances/$instanceId/personalities/agents-md'
+    | '/fleet/instances/$instanceId/personalities/soul'
+    | '/fleet/instances/$instanceId/config/'
+    | '/fleet/instances/$instanceId/personalities/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -268,6 +367,15 @@ export interface FileRouteTypes {
     | '/sessions/$sessionId'
     | '/swarms/$swarmId'
     | '/fleet/instances/$instanceId'
+    | '/fleet/instances/$instanceId/config/environment'
+    | '/fleet/instances/$instanceId/config/general'
+    | '/fleet/instances/$instanceId/config/policies'
+    | '/fleet/instances/$instanceId/config/providers'
+    | '/fleet/instances/$instanceId/config/tools'
+    | '/fleet/instances/$instanceId/personalities/agents-md'
+    | '/fleet/instances/$instanceId/personalities/soul'
+    | '/fleet/instances/$instanceId/config'
+    | '/fleet/instances/$instanceId/personalities'
   id:
     | '__root__'
     | '/'
@@ -292,6 +400,15 @@ export interface FileRouteTypes {
     | '/_dashboard/sessions/$sessionId/'
     | '/_dashboard/swarms/$swarmId/'
     | '/_dashboard/fleet/instances/$instanceId/'
+    | '/_dashboard/fleet/instances/$instanceId/config/environment'
+    | '/_dashboard/fleet/instances/$instanceId/config/general'
+    | '/_dashboard/fleet/instances/$instanceId/config/policies'
+    | '/_dashboard/fleet/instances/$instanceId/config/providers'
+    | '/_dashboard/fleet/instances/$instanceId/config/tools'
+    | '/_dashboard/fleet/instances/$instanceId/personalities/agents-md'
+    | '/_dashboard/fleet/instances/$instanceId/personalities/soul'
+    | '/_dashboard/fleet/instances/$instanceId/config/'
+    | '/_dashboard/fleet/instances/$instanceId/personalities/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -455,6 +572,69 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardFleetInstancesInstanceIdIndexRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/_dashboard/fleet/instances/$instanceId/personalities/': {
+      id: '/_dashboard/fleet/instances/$instanceId/personalities/'
+      path: '/fleet/instances/$instanceId/personalities'
+      fullPath: '/fleet/instances/$instanceId/personalities/'
+      preLoaderRoute: typeof DashboardFleetInstancesInstanceIdPersonalitiesIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/fleet/instances/$instanceId/config/': {
+      id: '/_dashboard/fleet/instances/$instanceId/config/'
+      path: '/fleet/instances/$instanceId/config'
+      fullPath: '/fleet/instances/$instanceId/config/'
+      preLoaderRoute: typeof DashboardFleetInstancesInstanceIdConfigIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/fleet/instances/$instanceId/personalities/soul': {
+      id: '/_dashboard/fleet/instances/$instanceId/personalities/soul'
+      path: '/fleet/instances/$instanceId/personalities/soul'
+      fullPath: '/fleet/instances/$instanceId/personalities/soul'
+      preLoaderRoute: typeof DashboardFleetInstancesInstanceIdPersonalitiesSoulRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/fleet/instances/$instanceId/personalities/agents-md': {
+      id: '/_dashboard/fleet/instances/$instanceId/personalities/agents-md'
+      path: '/fleet/instances/$instanceId/personalities/agents-md'
+      fullPath: '/fleet/instances/$instanceId/personalities/agents-md'
+      preLoaderRoute: typeof DashboardFleetInstancesInstanceIdPersonalitiesAgentsMdRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/fleet/instances/$instanceId/config/tools': {
+      id: '/_dashboard/fleet/instances/$instanceId/config/tools'
+      path: '/fleet/instances/$instanceId/config/tools'
+      fullPath: '/fleet/instances/$instanceId/config/tools'
+      preLoaderRoute: typeof DashboardFleetInstancesInstanceIdConfigToolsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/fleet/instances/$instanceId/config/providers': {
+      id: '/_dashboard/fleet/instances/$instanceId/config/providers'
+      path: '/fleet/instances/$instanceId/config/providers'
+      fullPath: '/fleet/instances/$instanceId/config/providers'
+      preLoaderRoute: typeof DashboardFleetInstancesInstanceIdConfigProvidersRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/fleet/instances/$instanceId/config/policies': {
+      id: '/_dashboard/fleet/instances/$instanceId/config/policies'
+      path: '/fleet/instances/$instanceId/config/policies'
+      fullPath: '/fleet/instances/$instanceId/config/policies'
+      preLoaderRoute: typeof DashboardFleetInstancesInstanceIdConfigPoliciesRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/fleet/instances/$instanceId/config/general': {
+      id: '/_dashboard/fleet/instances/$instanceId/config/general'
+      path: '/fleet/instances/$instanceId/config/general'
+      fullPath: '/fleet/instances/$instanceId/config/general'
+      preLoaderRoute: typeof DashboardFleetInstancesInstanceIdConfigGeneralRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/fleet/instances/$instanceId/config/environment': {
+      id: '/_dashboard/fleet/instances/$instanceId/config/environment'
+      path: '/fleet/instances/$instanceId/config/environment'
+      fullPath: '/fleet/instances/$instanceId/config/environment'
+      preLoaderRoute: typeof DashboardFleetInstancesInstanceIdConfigEnvironmentRouteImport
+      parentRoute: typeof DashboardRoute
+    }
   }
 }
 
@@ -479,6 +659,15 @@ interface DashboardRouteChildren {
   DashboardSessionsSessionIdIndexRoute: typeof DashboardSessionsSessionIdIndexRoute
   DashboardSwarmsSwarmIdIndexRoute: typeof DashboardSwarmsSwarmIdIndexRoute
   DashboardFleetInstancesInstanceIdIndexRoute: typeof DashboardFleetInstancesInstanceIdIndexRoute
+  DashboardFleetInstancesInstanceIdConfigEnvironmentRoute: typeof DashboardFleetInstancesInstanceIdConfigEnvironmentRoute
+  DashboardFleetInstancesInstanceIdConfigGeneralRoute: typeof DashboardFleetInstancesInstanceIdConfigGeneralRoute
+  DashboardFleetInstancesInstanceIdConfigPoliciesRoute: typeof DashboardFleetInstancesInstanceIdConfigPoliciesRoute
+  DashboardFleetInstancesInstanceIdConfigProvidersRoute: typeof DashboardFleetInstancesInstanceIdConfigProvidersRoute
+  DashboardFleetInstancesInstanceIdConfigToolsRoute: typeof DashboardFleetInstancesInstanceIdConfigToolsRoute
+  DashboardFleetInstancesInstanceIdPersonalitiesAgentsMdRoute: typeof DashboardFleetInstancesInstanceIdPersonalitiesAgentsMdRoute
+  DashboardFleetInstancesInstanceIdPersonalitiesSoulRoute: typeof DashboardFleetInstancesInstanceIdPersonalitiesSoulRoute
+  DashboardFleetInstancesInstanceIdConfigIndexRoute: typeof DashboardFleetInstancesInstanceIdConfigIndexRoute
+  DashboardFleetInstancesInstanceIdPersonalitiesIndexRoute: typeof DashboardFleetInstancesInstanceIdPersonalitiesIndexRoute
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
@@ -504,6 +693,24 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardSwarmsSwarmIdIndexRoute: DashboardSwarmsSwarmIdIndexRoute,
   DashboardFleetInstancesInstanceIdIndexRoute:
     DashboardFleetInstancesInstanceIdIndexRoute,
+  DashboardFleetInstancesInstanceIdConfigEnvironmentRoute:
+    DashboardFleetInstancesInstanceIdConfigEnvironmentRoute,
+  DashboardFleetInstancesInstanceIdConfigGeneralRoute:
+    DashboardFleetInstancesInstanceIdConfigGeneralRoute,
+  DashboardFleetInstancesInstanceIdConfigPoliciesRoute:
+    DashboardFleetInstancesInstanceIdConfigPoliciesRoute,
+  DashboardFleetInstancesInstanceIdConfigProvidersRoute:
+    DashboardFleetInstancesInstanceIdConfigProvidersRoute,
+  DashboardFleetInstancesInstanceIdConfigToolsRoute:
+    DashboardFleetInstancesInstanceIdConfigToolsRoute,
+  DashboardFleetInstancesInstanceIdPersonalitiesAgentsMdRoute:
+    DashboardFleetInstancesInstanceIdPersonalitiesAgentsMdRoute,
+  DashboardFleetInstancesInstanceIdPersonalitiesSoulRoute:
+    DashboardFleetInstancesInstanceIdPersonalitiesSoulRoute,
+  DashboardFleetInstancesInstanceIdConfigIndexRoute:
+    DashboardFleetInstancesInstanceIdConfigIndexRoute,
+  DashboardFleetInstancesInstanceIdPersonalitiesIndexRoute:
+    DashboardFleetInstancesInstanceIdPersonalitiesIndexRoute,
 }
 
 const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
