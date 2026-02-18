@@ -13,6 +13,11 @@ import {
   FolderKanban,
   Briefcase,
   Workflow,
+  Brain,
+  Globe,
+  Cpu,
+  Compass,
+  BarChart3,
   ArrowRightLeft,
   Search,
   ChevronDown,
@@ -37,8 +42,8 @@ const navSections: NavSection[] = [
     items: [
       { label: 'Home', to: '/home', icon: <Home size={16} /> },
       { label: 'Chat', to: '/chat', icon: <MessageSquare size={16} /> },
-      { label: 'Canvas', to: '/home', icon: <Paintbrush size={16} /> },
-      { label: 'Voice', to: '/home', icon: <Mic size={16} /> },
+      { label: 'Canvas', to: '/canvas', icon: <Paintbrush size={16} /> },
+      { label: 'Voice', to: '/voice', icon: <Mic size={16} /> },
     ],
   },
   {
@@ -57,6 +62,16 @@ const navSections: NavSection[] = [
       { label: 'Projects', to: '/projects', icon: <FolderKanban size={16} /> },
       { label: 'Work', to: '/work', icon: <Briefcase size={16} /> },
       { label: 'Automations', to: '/automations', icon: <Workflow size={16} /> },
+    ],
+  },
+  {
+    title: 'MORE',
+    items: [
+      { label: 'Memory', to: '/memory', icon: <Brain size={16} /> },
+      { label: 'Browser', to: '/browser', icon: <Globe size={16} /> },
+      { label: 'Nodes', to: '/nodes', icon: <Cpu size={16} /> },
+      { label: 'Discover', to: '/discover', icon: <Compass size={16} /> },
+      { label: 'Usage', to: '/usage', icon: <BarChart3 size={16} /> },
     ],
   },
 ]

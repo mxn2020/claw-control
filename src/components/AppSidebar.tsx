@@ -62,17 +62,17 @@ const navSections: NavSection[] = [
   {
     title: 'OBSERVE',
     items: [
-      { label: 'Live', to: '/observe', icon: <Activity size={18} /> },
-      { label: 'Traces', to: '/observe', icon: <GitBranch size={18} /> },
-      { label: 'Logs', to: '/observe', icon: <FileText size={18} /> },
-      { label: 'Cost', to: '/observe', icon: <DollarSign size={18} /> },
+      { label: 'Live', to: '/observe/live', icon: <Activity size={18} /> },
+      { label: 'Traces', to: '/observe/traces', icon: <GitBranch size={18} /> },
+      { label: 'Logs', to: '/observe/logs', icon: <FileText size={18} /> },
+      { label: 'Cost', to: '/observe/cost', icon: <DollarSign size={18} /> },
     ],
   },
   {
     title: 'SECURITY',
     items: [
-      { label: 'Posture', to: '/security', icon: <Shield size={18} /> },
-      { label: 'Quarantine', to: '/security', icon: <AlertTriangle size={18} /> },
+      { label: 'Posture', to: '/security/posture', icon: <Shield size={18} /> },
+      { label: 'Quarantine', to: '/security/quarantine', icon: <AlertTriangle size={18} /> },
       { label: 'Audit', to: '/audit', icon: <ClipboardList size={18} /> },
     ],
   },
