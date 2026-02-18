@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import {
   Card,
@@ -114,6 +115,9 @@ function formatInstalls(n: number) {
 }
 
 function AgentCatalogPage() {
+  const [activeCategory, setActiveCategory] = useState('All')
+  const filtered = activeCategory === 'All' ? mockTemplates : mockTemplates.filter((t) => t.category === activeCategory)
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -131,12 +135,13 @@ function AgentCatalogPage() {
           <Input placeholder="Search templates…" className="pl-9" />
         </div>
         <div className="flex gap-2 flex-wrap">
-          {categories.map((cat, i) => (
+          {categories.map((cat) => (
             <button
               key={cat.label}
               type="button"
+              onClick={() => setActiveCategory(cat.label)}
               className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                i === 0
+                cat.label === activeCategory
                   ? 'bg-cyan-600 text-white'
                   : 'border border-slate-600 text-slate-300 hover:bg-slate-700'
               }`}
@@ -150,7 +155,7 @@ function AgentCatalogPage() {
 
       {/* Template Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {mockTemplates.map((tpl) => (
+        {filtered.map((tpl) => (
           <Card key={tpl.name} className="flex flex-col">
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">

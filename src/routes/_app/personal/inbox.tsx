@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import {
   Card,
@@ -103,6 +104,9 @@ const mockMessages = [
 ]
 
 function PersonalInbox() {
+  const [activeTab, setActiveTab] = useState('All')
+  const filtered = activeTab === 'All' ? mockMessages : mockMessages.filter((m) => m.tab === activeTab)
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -127,12 +131,13 @@ function PersonalInbox() {
 
       {/* Tabs */}
       <div className="flex gap-1 border-b border-slate-700">
-        {tabs.map((tab, i) => (
+        {tabs.map((tab) => (
           <button
             key={tab.label}
             type="button"
+            onClick={() => setActiveTab(tab.label)}
             className={`inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
-              i === 0
+              tab.label === activeTab
                 ? 'text-cyan-400 border-cyan-400'
                 : 'text-slate-400 border-transparent hover:text-white hover:border-slate-500'
             }`}
@@ -150,12 +155,12 @@ function PersonalInbox() {
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-sm text-slate-400">
-            {mockMessages.length} messages
+            {filtered.length} messages
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="divide-y divide-slate-700/50">
-            {mockMessages.map((msg) => (
+            {filtered.map((msg) => (
               <div
                 key={msg.id}
                 className={`flex items-start gap-3 py-3 px-2 rounded-md transition-colors cursor-pointer hover:bg-slate-700/30 ${

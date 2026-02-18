@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import {
   Card,
@@ -118,8 +119,10 @@ function formatCount(n: number) {
 }
 
 function AutomationTriggers() {
-  const activeCount = mockTriggers.filter((t) => t.status === 'active').length
-  const pausedCount = mockTriggers.filter((t) => t.status === 'paused').length
+  const [activeType, setActiveType] = useState('All')
+  const filtered = activeType === 'All' ? mockTriggers : mockTriggers.filter((t) => t.type === activeType)
+  const activeCount = filtered.filter((t) => t.status === 'active').length
+  const pausedCount = filtered.filter((t) => t.status === 'paused').length
 
   return (
     <div className="space-y-6">
@@ -180,12 +183,13 @@ function AutomationTriggers() {
       {/* Filter */}
       <div className="flex items-center gap-2">
         <Filter className="w-4 h-4 text-slate-400" />
-        {triggerTypes.map((tt, i) => (
+        {triggerTypes.map((tt) => (
           <button
             key={tt.label}
             type="button"
+            onClick={() => setActiveType(tt.label)}
             className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
-              i === 0
+              tt.label === activeType
                 ? 'bg-cyan-600 text-white'
                 : 'border border-slate-600 text-slate-300 hover:bg-slate-700'
             }`}
@@ -198,7 +202,7 @@ function AutomationTriggers() {
 
       {/* Trigger List */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {mockTriggers.map((trigger) => (
+        {filtered.map((trigger) => (
           <Card
             key={trigger.id}
             className="hover:border-cyan-500/50 transition-colors"

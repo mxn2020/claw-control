@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import {
   Card,
@@ -61,7 +62,8 @@ const mockFiles = [
   },
 ]
 
-const mockFileContent = `# SOUL.md
+const mockFileContents: Record<string, string> = {
+  'SOUL.md': `# SOUL.md
 
 You are **support-bot**, a helpful customer support agent deployed on OpenClaw.
 
@@ -79,10 +81,39 @@ You are **support-bot**, a helpful customer support agent deployed on OpenClaw.
 - Product documentation (auto-synced)
 - FAQ database
 - Recent release notes
-`
+`,
+  'AGENTS.md': `# AGENTS.md
+
+Registered agents for this instance:
+
+| Name             | Model              | Status |
+|------------------|--------------------|--------|
+| support-bot      | gpt-4o             | active |
+| sales-assistant  | gpt-4o-mini        | active |
+| internal-ops     | claude-3.5-sonnet  | idle   |
+`,
+  'USER.md': `# USER.md
+
+Owner: admin@example.com
+Role: Fleet Administrator
+Created: 2024-11-01
+`,
+  'config.json': `{
+  "version": "0.9.2",
+  "max_tokens": 4096,
+  "log_level": "info",
+  "auto_restart": true,
+  "health_check_interval": 30
+}
+`,
+}
 
 function InstanceFiles() {
   const { instanceId } = Route.useParams()
+  const [selectedFile, setSelectedFile] = useState('SOUL.md')
+  const selectedMeta = mockFiles.find((f) => f.name === selectedFile)
+  const fileContent = mockFileContents[selectedFile] ?? '(binary or empty file)'
+  const isFolder = selectedMeta?.type === 'folder'
 
   return (
     <div className="space-y-6">
@@ -104,7 +135,7 @@ function InstanceFiles() {
           .openclaw
         </span>
         <ChevronRight className="w-3.5 h-3.5" />
-        <span className="text-cyan-400">SOUL.md</span>
+        <span className="text-cyan-400">{selectedFile}</span>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -119,8 +150,9 @@ function InstanceFiles() {
                 <button
                   key={file.name}
                   type="button"
+                  onClick={() => setSelectedFile(file.name)}
                   className={`w-full flex items-center gap-2 rounded-md px-2.5 py-1.5 text-sm text-left transition-colors ${
-                    file.name === 'SOUL.md'
+                    file.name === selectedFile
                       ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20'
                       : 'text-slate-300 hover:bg-slate-700/50 border border-transparent'
                   }`}
@@ -142,8 +174,8 @@ function InstanceFiles() {
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <CardTitle className="text-sm font-mono">SOUL.md</CardTitle>
-                <Badge variant="info">Markdown</Badge>
+                <CardTitle className="text-sm font-mono">{selectedFile}</CardTitle>
+                {!isFolder && <Badge variant="info">{selectedFile.endsWith('.json') ? 'JSON' : 'Markdown'}</Badge>}
               </div>
               <div className="flex items-center gap-2">
                 <Button variant="outline" size="sm">
@@ -163,16 +195,16 @@ function InstanceFiles() {
           </CardHeader>
           <CardContent>
             <pre className="bg-slate-950 rounded-lg p-4 text-sm text-slate-300 font-mono whitespace-pre-wrap overflow-x-auto min-h-[300px]">
-              {mockFileContent}
+              {isFolder ? '(directory)' : fileContent}
             </pre>
           </CardContent>
 
           {/* File Metadata */}
           <div className="border-t border-slate-700 px-6 py-3">
             <div className="flex items-center gap-4 text-xs text-slate-500">
-              <span>Size: 2.4 KB</span>
+              <span>Size: {selectedMeta?.size ?? '—'}</span>
               <span>·</span>
-              <span>Modified: 2025-01-14 08:30</span>
+              <span>Modified: {selectedMeta?.modified ?? '—'}</span>
               <span>·</span>
               <span>Encoding: UTF-8</span>
             </div>
