@@ -91,6 +91,13 @@ import { Route as DashboardFleetInstancesInstanceIdConfigProvidersRouteImport } 
 import { Route as DashboardFleetInstancesInstanceIdConfigPoliciesRouteImport } from './routes/_dashboard/fleet/instances/$instanceId/config/policies'
 import { Route as DashboardFleetInstancesInstanceIdConfigGeneralRouteImport } from './routes/_dashboard/fleet/instances/$instanceId/config/general'
 import { Route as DashboardFleetInstancesInstanceIdConfigEnvironmentRouteImport } from './routes/_dashboard/fleet/instances/$instanceId/config/environment'
+import { Route as DashboardSessionsSessionIdConversationRouteImport } from './routes/_dashboard/sessions/$sessionId/conversation'
+import { Route as DashboardSessionsSessionIdTraceRouteImport } from './routes/_dashboard/sessions/$sessionId/trace'
+import { Route as DashboardSessionsSessionIdReplayRouteImport } from './routes/_dashboard/sessions/$sessionId/replay'
+import { Route as DashboardAgentsAgentIdSkillsIndexRouteImport } from './routes/_dashboard/agents/$agentId/skills/index'
+import { Route as DashboardAgentsAgentIdChannelsIndexRouteImport } from './routes/_dashboard/agents/$agentId/channels/index'
+import { Route as DashboardAgentsAgentIdSessionsIndexRouteImport } from './routes/_dashboard/agents/$agentId/sessions/index'
+import { Route as DashboardAgentsAgentIdSecurityIndexRouteImport } from './routes/_dashboard/agents/$agentId/security/index'
 
 const DashboardRoute = DashboardRouteImport.update({
   id: '/_dashboard',
@@ -547,6 +554,48 @@ const DashboardFleetInstancesInstanceIdConfigEnvironmentRoute =
     path: '/fleet/instances/$instanceId/config/environment',
     getParentRoute: () => DashboardRoute,
   } as any)
+const DashboardSessionsSessionIdConversationRoute =
+  DashboardSessionsSessionIdConversationRouteImport.update({
+    id: '/sessions/$sessionId/conversation',
+    path: '/sessions/$sessionId/conversation',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardSessionsSessionIdTraceRoute =
+  DashboardSessionsSessionIdTraceRouteImport.update({
+    id: '/sessions/$sessionId/trace',
+    path: '/sessions/$sessionId/trace',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardSessionsSessionIdReplayRoute =
+  DashboardSessionsSessionIdReplayRouteImport.update({
+    id: '/sessions/$sessionId/replay',
+    path: '/sessions/$sessionId/replay',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardAgentsAgentIdSkillsIndexRoute =
+  DashboardAgentsAgentIdSkillsIndexRouteImport.update({
+    id: '/agents/$agentId/skills/',
+    path: '/agents/$agentId/skills/',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardAgentsAgentIdChannelsIndexRoute =
+  DashboardAgentsAgentIdChannelsIndexRouteImport.update({
+    id: '/agents/$agentId/channels/',
+    path: '/agents/$agentId/channels/',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardAgentsAgentIdSessionsIndexRoute =
+  DashboardAgentsAgentIdSessionsIndexRouteImport.update({
+    id: '/agents/$agentId/sessions/',
+    path: '/agents/$agentId/sessions/',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardAgentsAgentIdSecurityIndexRoute =
+  DashboardAgentsAgentIdSecurityIndexRouteImport.update({
+    id: '/agents/$agentId/security/',
+    path: '/agents/$agentId/security/',
+    getParentRoute: () => DashboardRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -619,6 +668,13 @@ export interface FileRoutesByFullPath {
   '/agents/$agentId/observe/': typeof DashboardAgentsAgentIdObserveIndexRoute
   '/agents/$agentId/personality/': typeof DashboardAgentsAgentIdPersonalityIndexRoute
   '/agents/$agentId/tools/': typeof DashboardAgentsAgentIdToolsIndexRoute
+  '/agents/$agentId/channels/': typeof DashboardAgentsAgentIdChannelsIndexRoute
+  '/agents/$agentId/sessions/': typeof DashboardAgentsAgentIdSessionsIndexRoute
+  '/agents/$agentId/skills/': typeof DashboardAgentsAgentIdSkillsIndexRoute
+  '/agents/$agentId/security/': typeof DashboardAgentsAgentIdSecurityIndexRoute
+  '/sessions/$sessionId/conversation': typeof DashboardSessionsSessionIdConversationRoute
+  '/sessions/$sessionId/trace': typeof DashboardSessionsSessionIdTraceRoute
+  '/sessions/$sessionId/replay': typeof DashboardSessionsSessionIdReplayRoute
   '/fleet/instances/$instanceId/': typeof DashboardFleetInstancesInstanceIdIndexRoute
   '/fleet/instances/$instanceId/config/environment': typeof DashboardFleetInstancesInstanceIdConfigEnvironmentRoute
   '/fleet/instances/$instanceId/config/general': typeof DashboardFleetInstancesInstanceIdConfigGeneralRoute
@@ -701,6 +757,13 @@ export interface FileRoutesByTo {
   '/agents/$agentId/observe': typeof DashboardAgentsAgentIdObserveIndexRoute
   '/agents/$agentId/personality': typeof DashboardAgentsAgentIdPersonalityIndexRoute
   '/agents/$agentId/tools': typeof DashboardAgentsAgentIdToolsIndexRoute
+  '/agents/$agentId/channels': typeof DashboardAgentsAgentIdChannelsIndexRoute
+  '/agents/$agentId/sessions': typeof DashboardAgentsAgentIdSessionsIndexRoute
+  '/agents/$agentId/skills': typeof DashboardAgentsAgentIdSkillsIndexRoute
+  '/agents/$agentId/security': typeof DashboardAgentsAgentIdSecurityIndexRoute
+  '/sessions/$sessionId/conversation': typeof DashboardSessionsSessionIdConversationRoute
+  '/sessions/$sessionId/trace': typeof DashboardSessionsSessionIdTraceRoute
+  '/sessions/$sessionId/replay': typeof DashboardSessionsSessionIdReplayRoute
   '/fleet/instances/$instanceId': typeof DashboardFleetInstancesInstanceIdIndexRoute
   '/fleet/instances/$instanceId/config/environment': typeof DashboardFleetInstancesInstanceIdConfigEnvironmentRoute
   '/fleet/instances/$instanceId/config/general': typeof DashboardFleetInstancesInstanceIdConfigGeneralRoute
@@ -786,6 +849,13 @@ export interface FileRoutesById {
   '/_dashboard/agents/$agentId/observe/': typeof DashboardAgentsAgentIdObserveIndexRoute
   '/_dashboard/agents/$agentId/personality/': typeof DashboardAgentsAgentIdPersonalityIndexRoute
   '/_dashboard/agents/$agentId/tools/': typeof DashboardAgentsAgentIdToolsIndexRoute
+  '/_dashboard/agents/$agentId/channels/': typeof DashboardAgentsAgentIdChannelsIndexRoute
+  '/_dashboard/agents/$agentId/sessions/': typeof DashboardAgentsAgentIdSessionsIndexRoute
+  '/_dashboard/agents/$agentId/skills/': typeof DashboardAgentsAgentIdSkillsIndexRoute
+  '/_dashboard/agents/$agentId/security/': typeof DashboardAgentsAgentIdSecurityIndexRoute
+  '/_dashboard/sessions/$sessionId/conversation': typeof DashboardSessionsSessionIdConversationRoute
+  '/_dashboard/sessions/$sessionId/trace': typeof DashboardSessionsSessionIdTraceRoute
+  '/_dashboard/sessions/$sessionId/replay': typeof DashboardSessionsSessionIdReplayRoute
   '/_dashboard/fleet/instances/$instanceId/': typeof DashboardFleetInstancesInstanceIdIndexRoute
   '/_dashboard/fleet/instances/$instanceId/config/environment': typeof DashboardFleetInstancesInstanceIdConfigEnvironmentRoute
   '/_dashboard/fleet/instances/$instanceId/config/general': typeof DashboardFleetInstancesInstanceIdConfigGeneralRoute
@@ -870,6 +940,13 @@ export interface FileRouteTypes {
     | '/agents/$agentId/observe/'
     | '/agents/$agentId/personality/'
     | '/agents/$agentId/tools/'
+    | '/agents/$agentId/channels/'
+    | '/agents/$agentId/sessions/'
+    | '/agents/$agentId/skills/'
+    | '/agents/$agentId/security/'
+    | '/sessions/$sessionId/conversation'
+    | '/sessions/$sessionId/trace'
+    | '/sessions/$sessionId/replay'
     | '/fleet/instances/$instanceId/'
     | '/fleet/instances/$instanceId/config/environment'
     | '/fleet/instances/$instanceId/config/general'
@@ -952,6 +1029,13 @@ export interface FileRouteTypes {
     | '/agents/$agentId/observe'
     | '/agents/$agentId/personality'
     | '/agents/$agentId/tools'
+    | '/agents/$agentId/channels'
+    | '/agents/$agentId/sessions'
+    | '/agents/$agentId/skills'
+    | '/agents/$agentId/security'
+    | '/sessions/$sessionId/conversation'
+    | '/sessions/$sessionId/trace'
+    | '/sessions/$sessionId/replay'
     | '/fleet/instances/$instanceId'
     | '/fleet/instances/$instanceId/config/environment'
     | '/fleet/instances/$instanceId/config/general'
@@ -1036,6 +1120,13 @@ export interface FileRouteTypes {
     | '/_dashboard/agents/$agentId/observe/'
     | '/_dashboard/agents/$agentId/personality/'
     | '/_dashboard/agents/$agentId/tools/'
+    | '/_dashboard/agents/$agentId/channels/'
+    | '/_dashboard/agents/$agentId/sessions/'
+    | '/_dashboard/agents/$agentId/skills/'
+    | '/_dashboard/agents/$agentId/security/'
+    | '/_dashboard/sessions/$sessionId/conversation'
+    | '/_dashboard/sessions/$sessionId/trace'
+    | '/_dashboard/sessions/$sessionId/replay'
     | '/_dashboard/fleet/instances/$instanceId/'
     | '/_dashboard/fleet/instances/$instanceId/config/environment'
     | '/_dashboard/fleet/instances/$instanceId/config/general'
@@ -1546,6 +1637,55 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAgentsAgentIdMemoryIndexRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/_dashboard/agents/$agentId/channels/': {
+      id: '/_dashboard/agents/$agentId/channels/'
+      path: '/agents/$agentId/channels'
+      fullPath: '/agents/$agentId/channels/'
+      preLoaderRoute: typeof DashboardAgentsAgentIdChannelsIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/agents/$agentId/sessions/': {
+      id: '/_dashboard/agents/$agentId/sessions/'
+      path: '/agents/$agentId/sessions'
+      fullPath: '/agents/$agentId/sessions/'
+      preLoaderRoute: typeof DashboardAgentsAgentIdSessionsIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/agents/$agentId/skills/': {
+      id: '/_dashboard/agents/$agentId/skills/'
+      path: '/agents/$agentId/skills'
+      fullPath: '/agents/$agentId/skills/'
+      preLoaderRoute: typeof DashboardAgentsAgentIdSkillsIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/agents/$agentId/security/': {
+      id: '/_dashboard/agents/$agentId/security/'
+      path: '/agents/$agentId/security'
+      fullPath: '/agents/$agentId/security/'
+      preLoaderRoute: typeof DashboardAgentsAgentIdSecurityIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/sessions/$sessionId/conversation': {
+      id: '/_dashboard/sessions/$sessionId/conversation'
+      path: '/sessions/$sessionId/conversation'
+      fullPath: '/sessions/$sessionId/conversation'
+      preLoaderRoute: typeof DashboardSessionsSessionIdConversationRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/sessions/$sessionId/trace': {
+      id: '/_dashboard/sessions/$sessionId/trace'
+      path: '/sessions/$sessionId/trace'
+      fullPath: '/sessions/$sessionId/trace'
+      preLoaderRoute: typeof DashboardSessionsSessionIdTraceRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/sessions/$sessionId/replay': {
+      id: '/_dashboard/sessions/$sessionId/replay'
+      path: '/sessions/$sessionId/replay'
+      fullPath: '/sessions/$sessionId/replay'
+      preLoaderRoute: typeof DashboardSessionsSessionIdReplayRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/_dashboard/agents/$agentId/personality/user-md': {
       id: '/_dashboard/agents/$agentId/personality/user-md'
       path: '/agents/$agentId/personality/user-md'
@@ -1722,6 +1862,13 @@ interface DashboardRouteChildren {
   DashboardAgentsAgentIdObserveIndexRoute: typeof DashboardAgentsAgentIdObserveIndexRoute
   DashboardAgentsAgentIdPersonalityIndexRoute: typeof DashboardAgentsAgentIdPersonalityIndexRoute
   DashboardAgentsAgentIdToolsIndexRoute: typeof DashboardAgentsAgentIdToolsIndexRoute
+  DashboardAgentsAgentIdChannelsIndexRoute: typeof DashboardAgentsAgentIdChannelsIndexRoute
+  DashboardAgentsAgentIdSessionsIndexRoute: typeof DashboardAgentsAgentIdSessionsIndexRoute
+  DashboardAgentsAgentIdSkillsIndexRoute: typeof DashboardAgentsAgentIdSkillsIndexRoute
+  DashboardAgentsAgentIdSecurityIndexRoute: typeof DashboardAgentsAgentIdSecurityIndexRoute
+  DashboardSessionsSessionIdConversationRoute: typeof DashboardSessionsSessionIdConversationRoute
+  DashboardSessionsSessionIdTraceRoute: typeof DashboardSessionsSessionIdTraceRoute
+  DashboardSessionsSessionIdReplayRoute: typeof DashboardSessionsSessionIdReplayRoute
   DashboardFleetInstancesInstanceIdIndexRoute: typeof DashboardFleetInstancesInstanceIdIndexRoute
   DashboardFleetInstancesInstanceIdConfigEnvironmentRoute: typeof DashboardFleetInstancesInstanceIdConfigEnvironmentRoute
   DashboardFleetInstancesInstanceIdConfigGeneralRoute: typeof DashboardFleetInstancesInstanceIdConfigGeneralRoute
@@ -1802,6 +1949,13 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardAgentsAgentIdPersonalityIndexRoute:
     DashboardAgentsAgentIdPersonalityIndexRoute,
   DashboardAgentsAgentIdToolsIndexRoute: DashboardAgentsAgentIdToolsIndexRoute,
+  DashboardAgentsAgentIdChannelsIndexRoute: DashboardAgentsAgentIdChannelsIndexRoute,
+  DashboardAgentsAgentIdSessionsIndexRoute: DashboardAgentsAgentIdSessionsIndexRoute,
+  DashboardAgentsAgentIdSkillsIndexRoute: DashboardAgentsAgentIdSkillsIndexRoute,
+  DashboardAgentsAgentIdSecurityIndexRoute: DashboardAgentsAgentIdSecurityIndexRoute,
+  DashboardSessionsSessionIdConversationRoute: DashboardSessionsSessionIdConversationRoute,
+  DashboardSessionsSessionIdTraceRoute: DashboardSessionsSessionIdTraceRoute,
+  DashboardSessionsSessionIdReplayRoute: DashboardSessionsSessionIdReplayRoute,
   DashboardFleetInstancesInstanceIdIndexRoute:
     DashboardFleetInstancesInstanceIdIndexRoute,
   DashboardFleetInstancesInstanceIdConfigEnvironmentRoute:
