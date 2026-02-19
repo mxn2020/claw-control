@@ -1,9 +1,15 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { Card, CardContent } from '#/components/ui/card'
 import { Badge } from '#/components/ui/badge'
+import { Button } from '#/components/ui/button'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '#/components/ui/tabs'
-import { Bot, CheckSquare, Clock, AlertCircle, CheckCircle2 } from 'lucide-react'
+import { Bot, CheckSquare, Clock, AlertCircle, CheckCircle2, Play, Trash2 } from 'lucide-react'
 import { useTasks } from '#/lib/dataHooks'
+import { useMutation } from 'convex/react'
+import { api } from '../../../../convex/_generated/api'
+import type { Id } from '../../../../convex/_generated/dataModel'
+import { useDataContext } from '#/lib/dataContext'
+import type { MockTask } from '#/lib/dataContext'
 
 export const Route = createFileRoute('/_app/tasks/')({
   component: Tasks,
@@ -25,7 +31,17 @@ const formatDeadline = (ts: number) => {
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 }
 
-function TaskCard({ task }: { task: { id: string; title: string; agentId: string; status: string; priority: 'high' | 'medium' | 'low'; deadline: number; description: string } }) {
+function TaskCard({
+  task,
+  onStart,
+  onComplete,
+  onDelete,
+}: {
+  task: MockTask
+  onStart?: (id: string) => Promise<void>
+  onComplete?: (id: string) => Promise<void>
+  onDelete?: (id: string) => Promise<void>
+}) {
   return (
     <Card className="hover:border-cyan-500/30 transition-all">
       <CardContent className="py-4">
@@ -47,14 +63,112 @@ function TaskCard({ task }: { task: { id: string; title: string; agentId: string
               </div>
             </div>
           </div>
+          {(onStart || onComplete || onDelete) && (
+            <div className="flex items-center gap-1 ml-3 shrink-0">
+              {task.status === 'queued' && onStart && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-7 px-2 text-xs border-cyan-500/40 text-cyan-400 hover:bg-cyan-500/10"
+                  onClick={() => onStart(task.id)}
+                >
+                  <Play size={11} className="mr-1" /> Start
+                </Button>
+              )}
+              {(task.status === 'running' || task.status === 'needs_review') && onComplete && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-7 px-2 text-xs border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/10"
+                  onClick={() => onComplete(task.id)}
+                >
+                  <CheckCircle2 size={11} className="mr-1" /> Done
+                </Button>
+              )}
+              {onDelete && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-7 px-2 text-xs border-red-500/40 text-red-400 hover:bg-red-500/10"
+                  onClick={() => onDelete(task.id)}
+                >
+                  <Trash2 size={11} />
+                </Button>
+              )}
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
   )
 }
 
+// Connected variant — useMutation safe here (inside ConvexProvider)
+function TasksConnected({ allTasks }: { allTasks: MockTask[] }) {
+  const updateTask = useMutation(api.tasks.update)
+  const deleteTask = useMutation(api.tasks.remove)
+
+  const handleStart = async (id: string) => {
+    await updateTask({ id: id as Id<'tasks'>, status: 'running' })
+  }
+  const handleComplete = async (id: string) => {
+    await updateTask({ id: id as Id<'tasks'>, status: 'done' })
+  }
+  const handleDelete = async (id: string) => {
+    await deleteTask({ id: id as Id<'tasks'> })
+  }
+
+  return <TaskTabView
+    allTasks={allTasks}
+    onStart={handleStart}
+    onComplete={handleComplete}
+    onDelete={handleDelete}
+  />
+}
+
+function TaskTabView({
+  allTasks,
+  onStart,
+  onComplete,
+  onDelete,
+}: {
+  allTasks: MockTask[]
+  onStart?: (id: string) => Promise<void>
+  onComplete?: (id: string) => Promise<void>
+  onDelete?: (id: string) => Promise<void>
+}) {
+  const inbox = allTasks.filter((t) => t.status === 'queued')
+  const active = allTasks.filter((t) => t.status === 'running')
+  const pending = allTasks.filter((t) => t.status === 'needs_review')
+  const completed = allTasks.filter((t) => t.status === 'done')
+
+  return (
+    <Tabs defaultValue="inbox">
+      <TabsList>
+        <TabsTrigger value="inbox">Inbox ({inbox.length})</TabsTrigger>
+        <TabsTrigger value="active">Active ({active.length})</TabsTrigger>
+        <TabsTrigger value="pending">Pending Approval ({pending.length})</TabsTrigger>
+        <TabsTrigger value="completed">Completed ({completed.length})</TabsTrigger>
+      </TabsList>
+      <TabsContent value="inbox">
+        <div className="space-y-2 mt-4">{inbox.map((t) => <TaskCard key={t.id} task={t} onStart={onStart} onDelete={onDelete} />)}</div>
+      </TabsContent>
+      <TabsContent value="active">
+        <div className="space-y-2 mt-4">{active.map((t) => <TaskCard key={t.id} task={t} onComplete={onComplete} onDelete={onDelete} />)}</div>
+      </TabsContent>
+      <TabsContent value="pending">
+        <div className="space-y-2 mt-4">{pending.map((t) => <TaskCard key={t.id} task={t} onComplete={onComplete} onDelete={onDelete} />)}</div>
+      </TabsContent>
+      <TabsContent value="completed">
+        <div className="space-y-2 mt-4">{completed.map((t) => <TaskCard key={t.id} task={t} />)}</div>
+      </TabsContent>
+    </Tabs>
+  )
+}
+
 function Tasks() {
   const allTasks = useTasks()
+  const ctx = useDataContext()
 
   const inbox = allTasks.filter((t) => t.status === 'queued')
   const active = allTasks.filter((t) => t.status === 'running')
@@ -110,26 +224,11 @@ function Tasks() {
         </Card>
       </div>
 
-      <Tabs defaultValue="inbox">
-        <TabsList>
-          <TabsTrigger value="inbox">Inbox ({inbox.length})</TabsTrigger>
-          <TabsTrigger value="active">Active ({active.length})</TabsTrigger>
-          <TabsTrigger value="pending">Pending Approval ({pending.length})</TabsTrigger>
-          <TabsTrigger value="completed">Completed ({completed.length})</TabsTrigger>
-        </TabsList>
-        <TabsContent value="inbox">
-          <div className="space-y-2 mt-4">{inbox.map((t) => <TaskCard key={t.id} task={t} />)}</div>
-        </TabsContent>
-        <TabsContent value="active">
-          <div className="space-y-2 mt-4">{active.map((t) => <TaskCard key={t.id} task={t} />)}</div>
-        </TabsContent>
-        <TabsContent value="pending">
-          <div className="space-y-2 mt-4">{pending.map((t) => <TaskCard key={t.id} task={t} />)}</div>
-        </TabsContent>
-        <TabsContent value="completed">
-          <div className="space-y-2 mt-4">{completed.map((t) => <TaskCard key={t.id} task={t} />)}</div>
-        </TabsContent>
-      </Tabs>
+      {ctx ? (
+        <TasksConnected allTasks={allTasks} />
+      ) : (
+        <TaskTabView allTasks={allTasks} />
+      )}
     </div>
   )
 }

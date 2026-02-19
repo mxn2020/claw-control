@@ -4,6 +4,11 @@ import { Badge } from '#/components/ui/badge'
 import { Button } from '#/components/ui/button'
 import { ShieldCheck, Bot, Clock, CheckCircle2, XCircle } from 'lucide-react'
 import { useApprovals } from '#/lib/dataHooks'
+import { useMutation } from 'convex/react'
+import { api } from '../../../../convex/_generated/api'
+import type { Id } from '../../../../convex/_generated/dataModel'
+import { useDataContext } from '#/lib/dataContext'
+import type { MockApproval } from '#/lib/dataContext'
 
 export const Route = createFileRoute('/_app/approvals/')({
   component: Approvals,
@@ -23,27 +28,49 @@ const formatRelativeTime = (ts: number) => {
   return Math.floor(diff / 86400000) + ' days ago'
 }
 
-function Approvals() {
-  const approvals = useApprovals()
+// Isolated component so useMutation is only called when ConvexProvider is present
+function ApprovalsConnected({ approvals }: { approvals: MockApproval[] }) {
+  const decide = useMutation(api.approvals.decide)
+
+  const handleDecide = async (
+    id: string,
+    status: 'approved' | 'rejected' | 'deferred',
+  ) => {
+    await decide({ id: id as Id<'approvals'>, status, decidedBy: 'user_demo' })
+  }
 
   const pendingApprovals = approvals.filter((a) => a.status === 'pending')
   const pastDecisions = approvals.filter((a) => a.status !== 'pending')
+
+  return <ApprovalsView
+    pendingApprovals={pendingApprovals}
+    pastDecisions={pastDecisions}
+    onDecide={handleDecide}
+  />
+}
+
+// Static view used when Convex is not configured
+function ApprovalsStatic({ approvals }: { approvals: MockApproval[] }) {
+  const pendingApprovals = approvals.filter((a) => a.status === 'pending')
+  const pastDecisions = approvals.filter((a) => a.status !== 'pending')
+  return <ApprovalsView
+    pendingApprovals={pendingApprovals}
+    pastDecisions={pastDecisions}
+    onDecide={undefined}
+  />
+}
+
+function ApprovalsView({
+  pendingApprovals,
+  pastDecisions,
+  onDecide,
+}: {
+  pendingApprovals: MockApproval[]
+  pastDecisions: MockApproval[]
+  onDecide: ((id: string, status: 'approved' | 'rejected' | 'deferred') => Promise<void>) | undefined
+}) {
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-white">Approvals</h1>
-          <p className="text-sm text-slate-400 mt-1">
-            Human-in-the-loop approval queue — review agent actions before execution
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Badge className="bg-amber-500/10 text-amber-400 border-amber-500/20 text-sm px-3 py-1">
-            {pendingApprovals.length} pending
-          </Badge>
-        </div>
-      </div>
-
       {/* Pending Approvals */}
       <div className="space-y-3">
         {pendingApprovals.map((req) => (
@@ -71,11 +98,22 @@ function Approvals() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2 ml-4">
-                  <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white">
+                  <Button
+                    size="sm"
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white disabled:opacity-50"
+                    disabled={!onDecide}
+                    onClick={() => onDecide?.(req.id, 'approved')}
+                  >
                     <CheckCircle2 size={14} className="mr-1" />
                     Approve
                   </Button>
-                  <Button size="sm" variant="outline" className="border-red-500/50 text-red-400 hover:bg-red-500/10">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="border-red-500/50 text-red-400 hover:bg-red-500/10 disabled:opacity-50"
+                    disabled={!onDecide}
+                    onClick={() => onDecide?.(req.id, 'rejected')}
+                  >
                     <XCircle size={14} className="mr-1" />
                     Deny
                   </Button>
@@ -119,6 +157,35 @@ function Approvals() {
           </div>
         </CardContent>
       </Card>
+    </div>
+  )
+}
+
+function Approvals() {
+  const approvals = useApprovals()
+  const ctx = useDataContext()
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-white">Approvals</h1>
+          <p className="text-sm text-slate-400 mt-1">
+            Human-in-the-loop approval queue — review agent actions before execution
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Badge className="bg-amber-500/10 text-amber-400 border-amber-500/20 text-sm px-3 py-1">
+            {approvals.filter((a) => a.status === 'pending').length} pending
+          </Badge>
+        </div>
+      </div>
+
+      {ctx ? (
+        <ApprovalsConnected approvals={approvals} />
+      ) : (
+        <ApprovalsStatic approvals={approvals} />
+      )}
     </div>
   )
 }

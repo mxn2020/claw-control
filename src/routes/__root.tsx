@@ -1,5 +1,6 @@
 import { HeadContent, Outlet, Scripts, createRootRoute } from '@tanstack/react-router'
 import { ConvexProvider, ConvexReactClient } from 'convex/react'
+import { ConvexDataProvider } from '../lib/ConvexDataProvider'
 
 import appCss from '../styles.css?url'
 
@@ -49,9 +50,12 @@ function RootComponent() {
   if (convex) {
     return (
       <ConvexProvider client={convex}>
-        <Outlet />
+        <ConvexDataProvider>
+          <Outlet />
+        </ConvexDataProvider>
       </ConvexProvider>
     )
   }
+  // No VITE_CONVEX_URL — render without Convex; data hooks fall back to mock data
   return <Outlet />
 }
