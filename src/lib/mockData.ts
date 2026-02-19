@@ -911,6 +911,83 @@ export const mockMemoryFiles = [
   },
 ];
 
+// ── Audit Logs ───────────────────────────────────────────────────────────────
+
+export const mockAuditLogs = [
+  {
+    id: "audit_1",
+    orgId: "org_demo",
+    userId: "user_demo",
+    action: "bash",
+    resourceType: "tool_call",
+    resourceId: "agent_1",
+    details: "Executed: ls -la /workspace/src",
+    createdAt: now - 2 * HOUR_MS,
+  },
+  {
+    id: "audit_2",
+    orgId: "org_demo",
+    userId: "user_demo",
+    action: "update_model",
+    resourceType: "config_change",
+    resourceId: "agent_2",
+    details: "Changed model from claude-3.5-haiku to claude-3.5-sonnet",
+    createdAt: now - 5 * HOUR_MS,
+  },
+  {
+    id: "audit_3",
+    orgId: "org_demo",
+    userId: "user_demo",
+    action: "login",
+    resourceType: "auth",
+    resourceId: "user_demo",
+    details: "Login from 192.168.1.10",
+    createdAt: now - 8 * HOUR_MS,
+  },
+  {
+    id: "audit_4",
+    orgId: "org_demo",
+    userId: "user_demo",
+    action: "quarantine",
+    resourceType: "security",
+    resourceId: "agent_5",
+    details: "Agent quarantined: policy violation detected",
+    createdAt: now - 1 * DAY_MS,
+  },
+];
+
+// ── Blueprints ────────────────────────────────────────────────────────────────
+
+export const mockBlueprints = [
+  {
+    id: "bp_1",
+    name: "Customer Support Agent",
+    description: "GPT-4o powered support agent with triage, escalation, and canned-response skills. Connects to your ticketing system and Slack.",
+    version: "2.1.0",
+    status: "published" as const,
+    deployCount: 14,
+    createdAt: now - 60 * DAY_MS,
+  },
+  {
+    id: "bp_2",
+    name: "Research Assistant",
+    description: "Multi-step research pipeline. Searches the web, reads papers, synthesizes findings into structured summaries.",
+    version: "1.4.3",
+    status: "published" as const,
+    deployCount: 8,
+    createdAt: now - 40 * DAY_MS,
+  },
+  {
+    id: "bp_3",
+    name: "Code Review Bot",
+    description: "Runs on PR webhooks. Performs AST analysis, security scanning, test coverage checks, and posts structured review comments.",
+    version: "3.0.0-beta",
+    status: "draft" as const,
+    deployCount: 2,
+    createdAt: now - 7 * DAY_MS,
+  },
+];
+
 // ── Voice Settings ───────────────────────────────────────────────────────────
 
 export const mockVoiceSettings = {

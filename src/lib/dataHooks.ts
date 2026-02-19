@@ -32,9 +32,12 @@ export function useAgents(instanceId?: string) {
 
 export function useTasks(options?: { status?: string; userId?: string }) {
   const ctx = useDataContext();
-  let data = ctx?.tasks ?? mockTasks;
-  if (options?.status) data = data.filter((t) => t.status === options.status);
-  if (options?.userId) data = data.filter((t) => t.userId === options.userId);
+  const raw = ctx?.tasks ?? mockTasks;
+  // Widen status beyond the mock literal union so 'done'/'failed' etc. work at call-site
+  type WidenedTask = Omit<typeof raw[number], 'status'> & { status: string };
+  const data = raw as WidenedTask[];
+  if (options?.status) return data.filter((t) => t.status === options.status);
+  if (options?.userId) return data.filter((t) => t.userId === options.userId);
   return data;
 }
 
@@ -57,11 +60,12 @@ export function useCronJobs(options?: { userId?: string; enabled?: boolean }) {
 
 export function useApprovals(options?: { status?: string; userId?: string }) {
   const ctx = useDataContext();
-  let data = ctx?.approvals ?? mockApprovals;
-  if (options?.status)
-    data = data.filter((a) => a.status === options.status);
-  if (options?.userId)
-    data = data.filter((a) => a.userId === options.userId);
+  const raw = ctx?.approvals ?? mockApprovals;
+  // Widen status + riskLevel beyond mock literal unions
+  type WidenedApproval = Omit<typeof raw[number], 'status' | 'riskLevel'> & { status: string; riskLevel: string };
+  const data = raw as WidenedApproval[];
+  if (options?.status) return data.filter((a) => a.status === options.status);
+  if (options?.userId) return data.filter((a) => a.userId === options.userId);
   return data;
 }
 

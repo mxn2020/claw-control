@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as DashboardRouteImport } from './routes/_dashboard'
+import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppHomeRouteImport } from './routes/_app/home'
@@ -73,6 +74,9 @@ import { Route as DashboardAuditAccessRouteImport } from './routes/_dashboard/au
 import { Route as DashboardAgentsNewRouteImport } from './routes/_dashboard/agents/new'
 import { Route as DashboardAgentsCompareRouteImport } from './routes/_dashboard/agents/compare'
 import { Route as DashboardAgentsCatalogRouteImport } from './routes/_dashboard/agents/catalog'
+import { Route as AuthAuthRegisterRouteImport } from './routes/_auth/auth/register'
+import { Route as AuthAuthRecoveryRouteImport } from './routes/_auth/auth/recovery'
+import { Route as AuthAuthLoginRouteImport } from './routes/_auth/auth/login'
 import { Route as AppWorkMeetingsRouteImport } from './routes/_app/work/meetings'
 import { Route as AppWorkInboxRouteImport } from './routes/_app/work/inbox'
 import { Route as AppWorkDocumentsRouteImport } from './routes/_app/work/documents'
@@ -200,6 +204,10 @@ import { Route as DashboardFleetInstancesInstanceIdAgentsNewRouteImport } from '
 
 const DashboardRoute = DashboardRouteImport.update({
   id: '/_dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/_auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppRoute = AppRouteImport.update({
@@ -535,6 +543,21 @@ const DashboardAgentsCatalogRoute = DashboardAgentsCatalogRouteImport.update({
   id: '/agents/catalog',
   path: '/agents/catalog',
   getParentRoute: () => DashboardRoute,
+} as any)
+const AuthAuthRegisterRoute = AuthAuthRegisterRouteImport.update({
+  id: '/auth/register',
+  path: '/auth/register',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthAuthRecoveryRoute = AuthAuthRecoveryRouteImport.update({
+  id: '/auth/recovery',
+  path: '/auth/recovery',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthAuthLoginRoute = AuthAuthLoginRouteImport.update({
+  id: '/auth/login',
+  path: '/auth/login',
+  getParentRoute: () => AuthRoute,
 } as any)
 const AppWorkMeetingsRoute = AppWorkMeetingsRouteImport.update({
   id: '/work/meetings',
@@ -1282,6 +1305,9 @@ export interface FileRoutesByFullPath {
   '/work/documents': typeof AppWorkDocumentsRoute
   '/work/inbox': typeof AppWorkInboxRoute
   '/work/meetings': typeof AppWorkMeetingsRoute
+  '/auth/login': typeof AuthAuthLoginRoute
+  '/auth/recovery': typeof AuthAuthRecoveryRoute
+  '/auth/register': typeof AuthAuthRegisterRoute
   '/agents/catalog': typeof DashboardAgentsCatalogRoute
   '/agents/compare': typeof DashboardAgentsCompareRoute
   '/agents/new': typeof DashboardAgentsNewRoute
@@ -1470,6 +1496,9 @@ export interface FileRoutesByTo {
   '/work/documents': typeof AppWorkDocumentsRoute
   '/work/inbox': typeof AppWorkInboxRoute
   '/work/meetings': typeof AppWorkMeetingsRoute
+  '/auth/login': typeof AuthAuthLoginRoute
+  '/auth/recovery': typeof AuthAuthRecoveryRoute
+  '/auth/register': typeof AuthAuthRegisterRoute
   '/agents/catalog': typeof DashboardAgentsCatalogRoute
   '/agents/compare': typeof DashboardAgentsCompareRoute
   '/agents/new': typeof DashboardAgentsNewRoute
@@ -1638,6 +1667,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_app': typeof AppRouteWithChildren
+  '/_auth': typeof AuthRouteWithChildren
   '/_dashboard': typeof DashboardRouteWithChildren
   '/_app/home': typeof AppHomeRoute
   '/_app/automations/triggers': typeof AppAutomationsTriggersRoute
@@ -1661,6 +1691,9 @@ export interface FileRoutesById {
   '/_app/work/documents': typeof AppWorkDocumentsRoute
   '/_app/work/inbox': typeof AppWorkInboxRoute
   '/_app/work/meetings': typeof AppWorkMeetingsRoute
+  '/_auth/auth/login': typeof AuthAuthLoginRoute
+  '/_auth/auth/recovery': typeof AuthAuthRecoveryRoute
+  '/_auth/auth/register': typeof AuthAuthRegisterRoute
   '/_dashboard/agents/catalog': typeof DashboardAgentsCatalogRoute
   '/_dashboard/agents/compare': typeof DashboardAgentsCompareRoute
   '/_dashboard/agents/new': typeof DashboardAgentsNewRoute
@@ -1851,6 +1884,9 @@ export interface FileRouteTypes {
     | '/work/documents'
     | '/work/inbox'
     | '/work/meetings'
+    | '/auth/login'
+    | '/auth/recovery'
+    | '/auth/register'
     | '/agents/catalog'
     | '/agents/compare'
     | '/agents/new'
@@ -2039,6 +2075,9 @@ export interface FileRouteTypes {
     | '/work/documents'
     | '/work/inbox'
     | '/work/meetings'
+    | '/auth/login'
+    | '/auth/recovery'
+    | '/auth/register'
     | '/agents/catalog'
     | '/agents/compare'
     | '/agents/new'
@@ -2206,6 +2245,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_app'
+    | '/_auth'
     | '/_dashboard'
     | '/_app/home'
     | '/_app/automations/triggers'
@@ -2229,6 +2269,9 @@ export interface FileRouteTypes {
     | '/_app/work/documents'
     | '/_app/work/inbox'
     | '/_app/work/meetings'
+    | '/_auth/auth/login'
+    | '/_auth/auth/recovery'
+    | '/_auth/auth/register'
     | '/_dashboard/agents/catalog'
     | '/_dashboard/agents/compare'
     | '/_dashboard/agents/new'
@@ -2397,6 +2440,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRoute: typeof AppRouteWithChildren
+  AuthRoute: typeof AuthRouteWithChildren
   DashboardRoute: typeof DashboardRouteWithChildren
 }
 
@@ -2407,6 +2451,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_auth': {
+      id: '/_auth'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_app': {
@@ -2849,6 +2900,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/agents/catalog'
       preLoaderRoute: typeof DashboardAgentsCatalogRouteImport
       parentRoute: typeof DashboardRoute
+    }
+    '/_auth/auth/register': {
+      id: '/_auth/auth/register'
+      path: '/auth/register'
+      fullPath: '/auth/register'
+      preLoaderRoute: typeof AuthAuthRegisterRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/auth/recovery': {
+      id: '/_auth/auth/recovery'
+      path: '/auth/recovery'
+      fullPath: '/auth/recovery'
+      preLoaderRoute: typeof AuthAuthRecoveryRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/auth/login': {
+      id: '/_auth/auth/login'
+      path: '/auth/login'
+      fullPath: '/auth/login'
+      preLoaderRoute: typeof AuthAuthLoginRouteImport
+      parentRoute: typeof AuthRoute
     }
     '/_app/work/meetings': {
       id: '/_app/work/meetings'
@@ -3811,6 +3883,20 @@ const AppRouteChildren: AppRouteChildren = {
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
+interface AuthRouteChildren {
+  AuthAuthLoginRoute: typeof AuthAuthLoginRoute
+  AuthAuthRecoveryRoute: typeof AuthAuthRecoveryRoute
+  AuthAuthRegisterRoute: typeof AuthAuthRegisterRoute
+}
+
+const AuthRouteChildren: AuthRouteChildren = {
+  AuthAuthLoginRoute: AuthAuthLoginRoute,
+  AuthAuthRecoveryRoute: AuthAuthRecoveryRoute,
+  AuthAuthRegisterRoute: AuthAuthRegisterRoute,
+}
+
+const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
+
 interface DashboardFleetInstancesInstanceIdChannelsRouteChildren {
   DashboardFleetInstancesInstanceIdChannelsConnectorsRoute: typeof DashboardFleetInstancesInstanceIdChannelsConnectorsRoute
   DashboardFleetInstancesInstanceIdChannelsHealthRoute: typeof DashboardFleetInstancesInstanceIdChannelsHealthRoute
@@ -4199,6 +4285,7 @@ const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRoute: AppRouteWithChildren,
+  AuthRoute: AuthRouteWithChildren,
   DashboardRoute: DashboardRouteWithChildren,
 }
 export const routeTree = rootRouteImport

@@ -1,6 +1,7 @@
 import { HeadContent, Outlet, Scripts, createRootRoute } from '@tanstack/react-router'
 import { ConvexProvider, ConvexReactClient } from 'convex/react'
 import { ConvexDataProvider } from '../lib/ConvexDataProvider'
+import { AuthProvider, MockAuthProvider } from '../lib/authContext'
 
 import appCss from '../styles.css?url'
 
@@ -10,23 +11,11 @@ const convex = convexUrl ? new ConvexReactClient(convexUrl) : null
 export const Route = createRootRoute({
   head: () => ({
     meta: [
-      {
-        charSet: 'utf-8',
-      },
-      {
-        name: 'viewport',
-        content: 'width=device-width, initial-scale=1',
-      },
-      {
-        title: 'ClawControl — AI Agent Fleet Management',
-      },
+      { charSet: 'utf-8' },
+      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+      { title: 'ClawControl — AI Agent Fleet Management' },
     ],
-    links: [
-      {
-        rel: 'stylesheet',
-        href: appCss,
-      },
-    ],
+    links: [{ rel: 'stylesheet', href: appCss }],
   }),
   component: RootComponent,
   shellComponent: RootDocument,
@@ -50,12 +39,18 @@ function RootComponent() {
   if (convex) {
     return (
       <ConvexProvider client={convex}>
-        <ConvexDataProvider>
-          <Outlet />
-        </ConvexDataProvider>
+        <AuthProvider>
+          <ConvexDataProvider>
+            <Outlet />
+          </ConvexDataProvider>
+        </AuthProvider>
       </ConvexProvider>
     )
   }
-  // No VITE_CONVEX_URL — render without Convex; data hooks fall back to mock data
-  return <Outlet />
+  // No VITE_CONVEX_URL — run in mock-data / demo mode with a fake logged-in user
+  return (
+    <MockAuthProvider>
+      <Outlet />
+    </MockAuthProvider>
+  )
 }

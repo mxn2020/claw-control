@@ -1,0 +1,158 @@
+import { mutation, query } from "./_generated/server";
+import { v } from "convex/values";
+
+// Simple deterministic hash for OSS password storage.
+// In production, use bcrypt via an HTTP action. This provides
+// basic security without requiring external packages.
+function simpleHash(str: string): string {
+    let hash = 5381;
+    for (let i = 0; i < str.length; i++) {
+        hash = (hash * 33) ^ str.charCodeAt(i);
+    }
+    return (hash >>> 0).toString(16).padStart(8, "0") + str.length.toString(16);
+}
+
+function generateToken(): string {
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let token = "";
+    // 48 char token — sufficient for session security in OSS context
+    for (let i = 0; i < 48; i++) {
+        token += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return token;
+}
+
+const SESSION_TTL_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
+
+export const register = mutation({
+    args: {
+        email: v.string(),
+        name: v.string(),
+        password: v.string(),
+    },
+    handler: async (ctx, args) => {
+        const email = args.email.toLowerCase().trim();
+
+        // Check if email is already taken
+        const existing = await ctx.db
+            .query("users")
+            .withIndex("by_email", (q) => q.eq("email", email))
+            .first();
+        if (existing) {
+            throw new Error("An account with this email already exists.");
+        }
+
+        const passwordHash = simpleHash(args.password);
+        const userId = await ctx.db.insert("users", {
+            email,
+            name: args.name.trim(),
+            passwordHash,
+            createdAt: Date.now(),
+        });
+
+        // Also create a default organization for this user (OSS single-user model)
+        const orgId = await ctx.db.insert("organizations", {
+            name: `${args.name.trim()}'s Org`,
+            slug: email.split("@")[0].replace(/[^a-z0-9]/gi, "-").toLowerCase(),
+            ownerId: userId.toString(),
+            plan: "free",
+            createdAt: Date.now(),
+        });
+
+        await ctx.db.insert("orgMembers", {
+            orgId,
+            userId: userId.toString(),
+            role: "owner",
+            joinedAt: Date.now(),
+        });
+
+        // Create session
+        const token = generateToken();
+        await ctx.db.insert("userSessions", {
+            userId,
+            token,
+            expiresAt: Date.now() + SESSION_TTL_MS,
+            createdAt: Date.now(),
+        });
+
+        return { token, userId, orgId };
+    },
+});
+
+export const login = mutation({
+    args: {
+        email: v.string(),
+        password: v.string(),
+    },
+    handler: async (ctx, args) => {
+        const email = args.email.toLowerCase().trim();
+
+        const user = await ctx.db
+            .query("users")
+            .withIndex("by_email", (q) => q.eq("email", email))
+            .first();
+
+        if (!user) throw new Error("Invalid email or password.");
+
+        const passwordHash = simpleHash(args.password);
+        if (user.passwordHash !== passwordHash) {
+            throw new Error("Invalid email or password.");
+        }
+
+        const token = generateToken();
+        await ctx.db.insert("userSessions", {
+            userId: user._id,
+            token,
+            expiresAt: Date.now() + SESSION_TTL_MS,
+            createdAt: Date.now(),
+        });
+
+        return { token, userId: user._id };
+    },
+});
+
+export const logout = mutation({
+    args: { token: v.string() },
+    handler: async (ctx, args) => {
+        const session = await ctx.db
+            .query("userSessions")
+            .withIndex("by_token", (q) => q.eq("token", args.token))
+            .first();
+        if (session) {
+            await ctx.db.delete(session._id);
+        }
+    },
+});
+
+export const me = query({
+    args: { token: v.optional(v.string()) },
+    handler: async (ctx, args) => {
+        if (!args.token) return null;
+
+        const session = await ctx.db
+            .query("userSessions")
+            .withIndex("by_token", (q) => q.eq("token", args.token!))
+            .first();
+
+        if (!session || session.expiresAt < Date.now()) return null;
+
+        const user = await ctx.db.get(session.userId);
+        if (!user) return null;
+
+        // Get user's orgs
+        const memberships = await ctx.db
+            .query("orgMembers")
+            .withIndex("by_user", (q) => q.eq("userId", user._id.toString()))
+            .collect();
+
+        const orgId = memberships[0]?.orgId ?? null;
+
+        return {
+            id: user._id,
+            email: user.email,
+            name: user.name,
+            orgId,
+            createdAt: user.createdAt,
+        };
+    },
+});

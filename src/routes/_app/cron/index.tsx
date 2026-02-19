@@ -1,187 +1,111 @@
+import { useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
-import { Card, CardHeader, CardTitle, CardContent } from '#/components/ui/card'
+import { Card, CardContent } from '#/components/ui/card'
 import { Badge } from '#/components/ui/badge'
 import { Button } from '#/components/ui/button'
-import { Clock, Bot, Plus, CheckCircle2, XCircle, Calendar, ToggleLeft, ToggleRight } from 'lucide-react'
+import { Clock, Plus, ToggleLeft, ToggleRight, Calendar, CheckCircle, XCircle, Minus } from 'lucide-react'
 import { useCronJobs } from '#/lib/dataHooks'
-import { useMutation } from 'convex/react'
-import { api } from '../../../../convex/_generated/api'
-import type { Id } from '../../../../convex/_generated/dataModel'
-import { useDataContext } from '#/lib/dataContext'
-import type { MockCronJob } from '#/lib/dataContext'
 
 export const Route = createFileRoute('/_app/cron/')({
-  component: Cron,
+  component: CronPage,
 })
 
-const formatRelativeTime = (ts: number | undefined) => {
-  if (!ts) return '—'
-  const diff = Date.now() - ts
-  if (diff < 0) {
-    const absDiff = -diff
-    if (absDiff < 3600000) return 'In ' + Math.floor(absDiff / 60000) + ' min'
-    if (absDiff < 86400000) return 'In ' + Math.floor(absDiff / 3600000) + ' hrs'
-    return 'In ' + Math.floor(absDiff / 86400000) + ' days'
-  }
-  if (diff < 60000) return Math.floor(diff / 1000) + 's ago'
-  if (diff < 3600000) return Math.floor(diff / 60000) + ' min ago'
-  if (diff < 86400000) return Math.floor(diff / 3600000) + ' hrs ago'
-  return Math.floor(diff / 86400000) + ' days ago'
-}
+function CronPage() {
+  const cronJobs = useCronJobs()
+  const [showNew, setShowNew] = useState(false)
 
-const formatNextRun = (ts: number | undefined) => {
-  if (!ts) return '—'
-  return formatRelativeTime(ts)
-}
-
-// Connected component — useMutation safe here because ConvexProvider is guaranteed
-function CronJobsConnected({ jobs }: { jobs: MockCronJob[] }) {
-  const updateCron = useMutation(api.cronJobs.update)
-
-  const toggleEnabled = async (id: string, enabled: boolean) => {
-    await updateCron({ id: id as Id<'cronJobs'>, enabled })
-  }
-
-  return <CronJobsList jobs={jobs} onToggle={toggleEnabled} />
-}
-
-function CronJobsList({
-  jobs,
-  onToggle,
-}: {
-  jobs: MockCronJob[]
-  onToggle: ((id: string, enabled: boolean) => Promise<void>) | undefined
-}) {
-  return (
-    <div className="space-y-2">
-      {jobs.map((job) => (
-        <Card key={job.id} className={`transition-all ${!job.enabled ? 'opacity-60' : 'hover:border-cyan-500/30'}`}>
-          <CardContent className="py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex-1 space-y-1">
-                <div className="flex items-center gap-2">
-                  <Clock size={14} className="text-cyan-400" />
-                  <p className="text-sm font-medium text-white">{job.name}</p>
-                  {!job.enabled && <Badge className="bg-slate-500/10 text-slate-400 border-slate-500/20">disabled</Badge>}
-                </div>
-                <div className="flex items-center gap-4 text-xs text-slate-500">
-                  <span>Schedule: {job.schedule}</span>
-                  <span className="flex items-center gap-1">
-                    <Bot size={11} /> {job.agentId}
-                  </span>
-                </div>
-              </div>
-              <div className="flex items-center gap-6 text-xs">
-                <div className="text-right">
-                  <p className="text-slate-500">Next run</p>
-                  <p className="text-slate-300">{formatNextRun(job.nextRunAt)}</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-slate-500">Last run</p>
-                  <div className="flex items-center gap-1">
-                    {job.lastRunStatus === 'success' ? (
-                      <CheckCircle2 size={12} className="text-emerald-400" />
-                    ) : (
-                      <XCircle size={12} className="text-red-400" />
-                    )}
-                    <span className="text-slate-300">{formatRelativeTime(job.lastRunAt)}</span>
-                  </div>
-                </div>
-                {onToggle && (
-                  <button
-                    className="text-slate-400 hover:text-cyan-400 transition-colors"
-                    title={job.enabled ? 'Disable job' : 'Enable job'}
-                    onClick={() => onToggle(job.id, !job.enabled)}
-                  >
-                    {job.enabled
-                      ? <ToggleRight size={22} className="text-cyan-400" />
-                      : <ToggleLeft size={22} />}
-                  </button>
-                )}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
-  )
-}
-
-function Cron() {
-  const jobs = useCronJobs()
-  const ctx = useDataContext()
+  const enabled = cronJobs.filter((j) => j.enabled).length
+  const nextJob = cronJobs
+    .filter((j) => j.enabled && j.nextRunAt)
+    .sort((a, b) => (a.nextRunAt ?? 0) - (b.nextRunAt ?? 0))[0]
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Cron Jobs</h1>
+          <h1 className="text-2xl font-bold text-white">Scheduled Automations</h1>
           <p className="text-sm text-slate-400 mt-1">
-            Scheduled and recurring agent tasks
+            {enabled} active · {cronJobs.length - enabled} paused
           </p>
         </div>
-        <Button className="flex items-center gap-2">
-          <Plus size={16} />
-          New Job
+        <Button size="sm" onClick={() => setShowNew(!showNew)}>
+          <Plus className="w-4 h-4 mr-1.5" /> New Schedule
         </Button>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-3 gap-4">
-        <Card>
-          <CardContent className="py-3 flex items-center gap-3">
-            <Clock className="w-5 h-5 text-cyan-400" />
-            <div>
-              <p className="text-xl font-bold text-white">{jobs.filter(j => j.enabled).length}</p>
-              <p className="text-xs text-slate-500">Active Jobs</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="py-3 flex items-center gap-3">
-            <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-            <div>
-              <p className="text-xl font-bold text-white">{jobs.filter(j => j.lastRunStatus === 'success').length}</p>
-              <p className="text-xs text-slate-500">Last Run OK</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="py-3 flex items-center gap-3">
-            <XCircle className="w-5 h-5 text-red-400" />
-            <div>
-              <p className="text-xl font-bold text-white">{jobs.filter(j => j.lastRunStatus === 'failed').length}</p>
-              <p className="text-xs text-slate-500">Failed</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Job List */}
-      {ctx ? (
-        <CronJobsConnected jobs={jobs} />
-      ) : (
-        <CronJobsList jobs={jobs} onToggle={undefined} />
+      {nextJob && (
+        <div className="flex items-center gap-3 rounded-lg border border-cyan-500/20 bg-cyan-500/5 px-4 py-3">
+          <Calendar className="w-4 h-4 text-cyan-400 flex-shrink-0" />
+          <p className="text-sm text-slate-300">
+            Next: <span className="text-white font-medium">{nextJob.name}</span>
+            {nextJob.nextRunAt && (
+              <span className="text-slate-400 ml-2">
+                in {Math.ceil(((nextJob.nextRunAt ?? 0) - Date.now()) / 60_000)} min
+              </span>
+            )}
+          </p>
+        </div>
       )}
 
-      {/* Calendar View Placeholder */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2">
-            <Calendar className="w-4 h-4 text-cyan-400" />
-            Calendar View
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="min-h-[200px] rounded-lg border border-dashed border-slate-700 bg-slate-900 flex items-center justify-center">
-            <div className="text-center">
-              <Calendar size={32} className="text-slate-600 mx-auto mb-2" />
-              <p className="text-sm text-slate-500">Calendar view coming soon</p>
-              <p className="text-xs text-slate-600 mt-1">Visualize your scheduled jobs on a weekly/monthly calendar</p>
-            </div>
+      <div className="space-y-3">
+        {cronJobs.map((job) => (
+          <Card key={job.id} className={!job.enabled ? 'opacity-60' : ''}>
+            <CardContent className="pt-4 pb-3">
+              <div className="flex items-start gap-3">
+                <button
+                  type="button"
+                  className="mt-0.5 flex-shrink-0 text-slate-400 hover:text-cyan-400 transition-colors"
+                  title={job.enabled ? 'Disable' : 'Enable'}
+                >
+                  {job.enabled
+                    ? <ToggleRight className="w-5 h-5 text-cyan-400" />
+                    : <ToggleLeft className="w-5 h-5" />}
+                </button>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <p className="text-sm font-medium text-white">{job.name}</p>
+                    <code className="text-xs text-slate-500 font-mono bg-slate-800/60 px-1.5 py-0.5 rounded">
+                      {job.schedule}
+                    </code>
+                  </div>
+                  {job.instruction && (
+                    <p className="text-xs text-slate-400 mt-0.5 line-clamp-2">{job.instruction}</p>
+                  )}
+                  <div className="flex items-center gap-3 mt-2 text-xs text-slate-500">
+                    {job.lastRunStatus && (
+                      <span className="flex items-center gap-1">
+                        {job.lastRunStatus === 'success'
+                          ? <CheckCircle className="w-3 h-3 text-emerald-400" />
+                          : job.lastRunStatus === 'failed'
+                            ? <XCircle className="w-3 h-3 text-red-400" />
+                            : <Minus className="w-3 h-3 text-slate-500" />}
+                        Last: {job.lastRunStatus}
+                      </span>
+                    )}
+                    {job.nextRunAt && job.enabled && (
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        Next in {Math.ceil(((job.nextRunAt) - Date.now()) / 60_000)} min
+                      </span>
+                    )}
+                    {job.agentId && <span className="font-mono">{job.agentId}</span>}
+                  </div>
+                </div>
+                <Badge variant={job.enabled ? 'success' : 'default'}>
+                  {job.enabled ? 'active' : 'paused'}
+                </Badge>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+
+        {cronJobs.length === 0 && (
+          <div className="text-center py-12 text-slate-500">
+            <Clock className="w-12 h-12 mx-auto mb-3 text-slate-600" />
+            <p>No scheduled automations yet.</p>
           </div>
-        </CardContent>
-      </Card>
+        )}
+      </div>
     </div>
   )
 }

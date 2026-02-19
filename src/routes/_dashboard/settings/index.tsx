@@ -1,80 +1,97 @@
+import { useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { Card, CardHeader, CardTitle, CardContent } from '#/components/ui/card'
-import { User, Key, Webhook, Bell, Palette } from 'lucide-react'
+import { Button } from '#/components/ui/button'
+import { Input } from '#/components/ui/input'
+import { User, Save, CheckCircle } from 'lucide-react'
+import { useAuth } from '#/lib/authContext'
 
 export const Route = createFileRoute('/_dashboard/settings/')({
-  component: Settings,
+  component: SettingsProfile,
 })
 
-const sections = [
-  {
-    title: 'Profile',
-    description: 'Manage your account details and preferences.',
-    icon: <User className="w-5 h-5 text-cyan-400" />,
-    placeholder: 'Name, email, avatar, and timezone settings.',
-  },
-  {
-    title: 'API Keys',
-    description: 'Create and manage API keys for programmatic access.',
-    icon: <Key className="w-5 h-5 text-amber-400" />,
-    placeholder: 'Generate, rotate, and revoke API keys.',
-  },
-  {
-    title: 'Webhooks',
-    description: 'Configure webhook endpoints for event notifications.',
-    icon: <Webhook className="w-5 h-5 text-emerald-400" />,
-    placeholder: 'Add webhook URLs and select event types.',
-  },
-  {
-    title: 'Notifications',
-    description: 'Control how and when you receive alerts.',
-    icon: <Bell className="w-5 h-5 text-blue-400" />,
-    placeholder: 'Email, SMS, and in-app notification preferences.',
-  },
-  {
-    title: 'Appearance',
-    description: 'Customize the look and feel of the dashboard.',
-    icon: <Palette className="w-5 h-5 text-purple-400" />,
-    placeholder: 'Theme, density, and layout preferences.',
-  },
-]
+function SettingsProfile() {
+  const { user } = useAuth()
+  const [name, setName] = useState(user?.name ?? '')
+  const [email] = useState(user?.email ?? '')
+  const [saved, setSaved] = useState(false)
 
-function Settings() {
+  function handleSave(e: React.FormEvent) {
+    e.preventDefault()
+    // TODO: wire to Convex updateUser mutation
+    setSaved(true)
+    setTimeout(() => setSaved(false), 2000)
+  }
+
   return (
-    <div className="space-y-6">
-      {/* Header */}
+    <div className="space-y-6 max-w-2xl">
       <div>
         <h1 className="text-2xl font-bold text-white">Settings</h1>
-        <p className="text-sm text-slate-400 mt-1">
-          Manage your account and platform preferences
-        </p>
+        <p className="text-sm text-slate-400 mt-1">Manage your account and platform preferences</p>
       </div>
 
-      {/* Settings Sections */}
-      <div className="space-y-4">
-        {sections.map((section) => (
-          <Card key={section.title}>
-            <CardHeader className="pb-2">
-              <div className="flex items-center gap-2">
-                {section.icon}
-                <div>
-                  <CardTitle className="text-base">{section.title}</CardTitle>
-                  <p className="text-xs text-slate-400 mt-0.5">
-                    {section.description}
-                  </p>
-                </div>
+      {/* Profile */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <User className="w-5 h-5 text-cyan-400" />
+            <CardTitle>Profile</CardTitle>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSave} className="space-y-4">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-14 h-14 rounded-full bg-cyan-600 flex items-center justify-center text-xl font-bold text-white">
+                {(user?.name ?? 'U').charAt(0).toUpperCase()}
               </div>
-            </CardHeader>
-            <CardContent>
-              <div className="min-h-[60px] rounded-lg border border-dashed border-slate-700 bg-slate-900 p-4">
-                <p className="text-sm text-slate-500">
-                  {section.placeholder}
-                </p>
+              <div>
+                <p className="text-sm font-medium text-white">{user?.name}</p>
+                <p className="text-xs text-slate-400">{user?.email}</p>
               </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="block text-sm font-medium text-slate-300">Full Name</label>
+              <Input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Your name"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="block text-sm font-medium text-slate-300">Email</label>
+              <Input
+                value={email}
+                readOnly
+                disabled
+                className="opacity-60"
+              />
+              <p className="text-xs text-slate-500">Email cannot be changed in OSS mode.</p>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <Button type="submit">
+                {saved ? <CheckCircle className="w-4 h-4 mr-1.5 text-emerald-400" /> : <Save className="w-4 h-4 mr-1.5" />}
+                {saved ? 'Saved!' : 'Save Changes'}
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+
+      {/* API Keys */}
+      <Card>
+        <CardHeader>
+          <CardTitle>API Keys</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-6 text-slate-500 border border-dashed border-slate-700 rounded-lg">
+            <p className="text-sm">API key management coming soon.</p>
+            <p className="text-xs mt-1">Keys will be stored securely in Convex.</p>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }
