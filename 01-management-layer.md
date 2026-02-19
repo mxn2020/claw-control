@@ -10,6 +10,26 @@
 
 **Security architecture:** The control plane never opens inbound ports on agent nodes. All communication is agent-initiated outbound tunnel. Secrets are write-only after entry. The audit log is immutable and append-only. Quarantine and kill-switch are always one click away.
 
+**OSS vs. Managed Service Split:**
+
+ClawControl follows the Supabase model — the core control plane is open source and self-hostable, with a companion managed SaaS for teams that want enterprise features without infrastructure management. The table below defines the tier boundary:
+
+| Feature | OSS (Self-Hosted) | Managed SaaS |
+|---|---|---|
+| Local username/password login | ✅ | ✅ |
+| Basic session management | ✅ | ✅ |
+| Device pairing (`/auth/device`) | ✅ | ✅ |
+| Multi-user with roles | Optional | ✅ |
+| MFA (TOTP / WebAuthn) | Optional | ✅ |
+| SSO / SAML / OIDC | ❌ | ✅ |
+| Multi-org (`/org/switch`, `/org/new`) | ❌ | ✅ |
+| Audit-attributed sessions | ❌ | ✅ |
+| Team permissions / RBAC (`/org/teams`) | ❌ | ✅ |
+| Billing & usage metering (`/org/billing`) | ❌ | ✅ |
+| Compliance exports (`/security/compliance/exports`) | ❌ | ✅ |
+
+> Routes and features below are annotated with `[OSS]`, `[MANAGED]`, or `[BOTH]` where the tier distinction matters. Unannotated routes are available in both tiers.
+
 **Swarm Scale Naming:**
 
 | Tier | Name | Count | UI Complexity |
@@ -39,23 +59,23 @@
   /docs/channels
 
 /auth
-  /auth/login
-  /auth/register
-  /auth/sso
-  /auth/mfa
-  /auth/recovery
-  /auth/device                                       # Headless/VPS device pairing
+  /auth/login                                        # [BOTH] Username/password login
+  /auth/register                                     # [BOTH] Standard registration
+  /auth/sso                                          # [MANAGED] SAML 2.0 / OIDC
+  /auth/mfa                                          # [BOTH] Optional in OSS, enforced in Managed
+  /auth/recovery                                     # [BOTH]
+  /auth/device                                       # [BOTH] Headless/VPS device pairing
 
 /org
-  /org/switch
-  /org/new
-  /org/members
-  /org/teams
-  /org/audit
-  /org/billing
-    /org/billing/plan
-    /org/billing/invoices
-    /org/billing/usage
+  /org/switch                                        # [MANAGED] Multi-org switcher
+  /org/new                                           # [MANAGED] Create new org
+  /org/members                                       # [MANAGED] Full RBAC (OSS: single-user or basic roles)
+  /org/teams                                         # [MANAGED] Team-based access scoping
+  /org/audit                                         # [MANAGED] Org-level audit log
+  /org/billing                                       # [MANAGED] SaaS billing
+    /org/billing/plan                                # [MANAGED]
+    /org/billing/invoices                            # [MANAGED]
+    /org/billing/usage                               # [MANAGED]
 
 /settings
   /settings/profile
@@ -259,9 +279,9 @@
     /security/quarantine/skills
     /security/quarantine/actions
   /security/compliance
-    /security/compliance/regions
-    /security/compliance/retention
-    /security/compliance/exports
+    /security/compliance/regions                     # [MANAGED]
+    /security/compliance/retention                   # [BOTH]
+    /security/compliance/exports                     # [MANAGED]
   /security/incidents
     /security/incidents/timeline
     /security/incidents/:incidentId
@@ -269,20 +289,20 @@
       /security/incidents/:incidentId/containment
       /security/incidents/:incidentId/postmortem
 
-/audit
-  /audit/tools
-  /audit/config-changes
-  /audit/access
-  /audit/incidents
-  /audit/export
+/audit                                               # [BOTH] Basic audit in OSS; full attributed audit in Managed
+  /audit/tools                                       # [BOTH] Immutable tool execution ledger
+  /audit/config-changes                              # [BOTH] Who changed what config, when
+  /audit/access                                      # [MANAGED] Requires multi-user auth
+  /audit/incidents                                   # [BOTH] Security incident log
+  /audit/export                                      # [MANAGED] SIEM export
 
 /configure
-  /configure/providers
-    /configure/providers/new
-    /configure/providers/:providerId
-  /configure/defaults
-  /configure/integrations
-  /configure/self-hosting
+  /configure/providers                               # [BOTH] Global LLM provider key vault
+    /configure/providers/new                         # [BOTH]
+    /configure/providers/:providerId                 # [BOTH]
+  /configure/defaults                                # [BOTH] Default tool/skill/policy for new agents
+  /configure/integrations                            # [MANAGED] Webhooks, SIEM, alerting channels
+  /configure/self-hosting                            # [OSS] Self-host config (Docker, K8s, env vars)
 ```
 
 ---
@@ -321,27 +341,27 @@ Full documentation site. Structured as: Quickstart (get your first instance conn
 
 ## Auth Routes
 
-### `/auth/login`
+### `/auth/login` `[BOTH]`
 
-Email + password login with optional SSO redirect. On failed attempts, lockout with exponential backoff. Login events are written to the org audit log with IP, user agent, and timestamp.
+Email + password login. `[MANAGED]` adds optional SSO redirect. On failed attempts, lockout with exponential backoff. `[MANAGED]` Login events are written to the org audit log with IP, user agent, and timestamp. `[OSS]` Login events are written to the local log file.
 
-### `/auth/register`
+### `/auth/register` `[BOTH]`
 
-Standard registration with email verification. On completion, the user is prompted to either connect their first OpenClaw instance or invite team members. No credit card required to start on the free tier.
+Standard registration with email verification. On completion, the user is prompted to connect their first OpenClaw instance. `[MANAGED]` The user is also prompted to invite team members. No credit card required to start on the free tier.
 
-### `/auth/sso`
+### `/auth/sso` `[MANAGED]`
 
-SAML 2.0 and OIDC configuration. Enterprise orgs can enforce SSO so that all members must authenticate through their identity provider. SSO bypass is disabled when enforcement is active.
+SAML 2.0 and OIDC configuration. Enterprise orgs can enforce SSO so that all members must authenticate through their identity provider. SSO bypass is disabled when enforcement is active. *Not available in the OSS release.*
 
-### `/auth/mfa`
+### `/auth/mfa` `[BOTH]`
 
-TOTP (authenticator app) and WebAuthn (hardware key) support. MFA can be enforced org-wide by an admin. Recovery codes are shown once at setup and stored hashed. Lost MFA recovery flows through org admin approval.
+TOTP (authenticator app) and WebAuthn (hardware key) support. `[OSS]` MFA is available as an optional feature for the local admin user. `[MANAGED]` MFA can be enforced org-wide by an admin. Recovery codes are shown once at setup and stored hashed. Lost MFA recovery flows through org admin approval.
 
-### `/auth/recovery`
+### `/auth/recovery` `[BOTH]`
 
-Email-based account recovery for standard accounts. For SSO accounts, recovery is handled through the identity provider. All recovery events are flagged in the org audit log.
+Email-based account recovery for standard accounts. `[MANAGED]` For SSO accounts, recovery is handled through the identity provider. All recovery events are flagged in the org audit log.
 
-### `/auth/device`
+### `/auth/device` `[BOTH]`
 
 The device pairing flow for headless VPS installations. When a user runs the bootstrap installer on a new server, the installer prints a short device code. The user visits this page, enters the code, and the server is linked to their org with the appropriate token injected. Inspired by OAuth device flow. This eliminates the need to copy-paste long tokens into server environment files manually.
 
@@ -349,29 +369,29 @@ The device pairing flow for headless VPS installations. When a user runs the boo
 
 ## Org Routes
 
-### `/org/switch`
+### `/org/switch` `[MANAGED]`
 
-Multi-org switcher. Users who belong to multiple orgs (common for consultants managing multiple client deployments) can switch context without logging out. The current org is always shown in the top nav.
+Multi-org switcher. Users who belong to multiple orgs (common for consultants managing multiple client deployments) can switch context without logging out. The current org is always shown in the top nav. *Not available in the OSS release — OSS operates as a single implicit org.*
 
-### `/org/new`
+### `/org/new` `[MANAGED]`
 
-Create a new org. Sets the org slug (used in webhooks and API), display name, and default timezone. The creator becomes the first Owner. Up to three orgs are allowed on the free tier.
+Create a new org. Sets the org slug (used in webhooks and API), display name, and default timezone. The creator becomes the first Owner. Up to three orgs are allowed on the free tier. *Not available in the OSS release.*
 
-### `/org/members`
+### `/org/members` `[MANAGED]`
 
-Member directory with roles: Owner, Admin, Operator, Viewer, and a custom role builder for enterprise. Invite by email with role pre-assignment. Pending invites shown with resend and revoke options. Each member's last active time and MFA status are visible to admins. Bulk role changes supported.
+Member directory with roles: Owner, Admin, Operator, Viewer, and a custom role builder for enterprise. Invite by email with role pre-assignment. Pending invites shown with resend and revoke options. Each member's last active time and MFA status are visible to admins. Bulk role changes supported. `[OSS]` The OSS release supports a single admin user by default; optional multi-user mode provides basic role assignment without RBAC teams.
 
-### `/org/teams`
+### `/org/teams` `[MANAGED]`
 
-Teams are named groups of members used for access scoping. A team can be granted access to specific instances, specific swarms, or specific agents — without granting org-wide access. Useful for separating a "Support Ops" team from a "Engineering Agents" team. Teams are also used in the audit log to attribute changes.
+Teams are named groups of members used for access scoping. A team can be granted access to specific instances, specific swarms, or specific agents — without granting org-wide access. Useful for separating a "Support Ops" team from a "Engineering Agents" team. Teams are also used in the audit log to attribute changes. *Not available in the OSS release.*
 
-### `/org/audit`
+### `/org/audit` `[MANAGED]`
 
-Org-level audit log covering: member invites and removals, role changes, billing changes, SSO config changes, and API key creation/revocation. Searchable and filterable by actor, event type, and date. Exportable to CSV or pushed to a SIEM via the integrations config.
+Org-level audit log covering: member invites and removals, role changes, billing changes, SSO config changes, and API key creation/revocation. Searchable and filterable by actor, event type, and date. Exportable to CSV or pushed to a SIEM via the integrations config. *Not available in the OSS release. OSS provides basic config-change audit via `/audit/config-changes`.*
 
-### `/org/billing`
+### `/org/billing` `[MANAGED]`
 
-**Plan:** Current plan, next renewal date, and a clear upgrade/downgrade path. **Invoices:** Downloadable PDF invoices with line-item breakdown. **Usage:** Real-time meter showing current-period consumption — active nodes, agents, messages processed, skill scans run, storage used. Usage is broken down by instance so you can see which deployments are driving cost.
+**Plan:** Current plan, next renewal date, and a clear upgrade/downgrade path. **Invoices:** Downloadable PDF invoices with line-item breakdown. **Usage:** Real-time meter showing current-period consumption — active nodes, agents, messages processed, skill scans run, storage used. Usage is broken down by instance so you can see which deployments are driving cost. *Not available in the OSS release.*
 
 ---
 
@@ -409,15 +429,15 @@ Above the grid: a summary bar with total instances, total active agents, total a
 
 Sorting and filtering: filter by provider, region, status, version, swarm membership, or tag. Sort by name, status, last heartbeat, or risk score.
 
-### `/fleet/instances/new` — Provision Wizard
+### `/fleet/instances/new` — Provision Wizard `[BOTH]`
 
 A three-path wizard for adding a new OpenClaw instance.
 
-**Path 1 — Cloud Provision:** Connect a cloud provider API key (DigitalOcean, Hetzner, AWS, Vultr) and ClawControl provisions a VM directly. Select instance size, region, and OS. The wizard generates and injects a `docker-compose.yml` with toggle options: headless browser module on/off, Redis cache on/off, sandbox mode on/off, Tailscale mesh join token. The instance is provisioned, OpenClaw installed, and the sidecar tunnel agent started — all within the wizard. The instance appears in the fleet grid within about two minutes.
+**Path 1 — Cloud Provision** `[BOTH]`**:** Connect a cloud provider API key (DigitalOcean, Hetzner, AWS, Vultr) and ClawControl provisions a VM directly. Select instance size, region, and OS. The wizard generates and injects a `docker-compose.yml` with toggle options: headless browser module on/off, Redis cache on/off, sandbox mode on/off, Tailscale mesh join token. The instance is provisioned, OpenClaw installed, and the sidecar tunnel agent started — all within the wizard. The instance appears in the fleet grid within about two minutes.
 
-**Path 2 — BYO Server:** For users who already have a VPS. The wizard generates a one-liner bootstrap script embedding the org token and control plane URL. The user pastes it into their server's terminal (or uses `/auth/device` pairing). The script installs OpenClaw, configures the sidecar tunnel agent, and phones home to register the instance. Step-by-step instructions are shown for Ubuntu, Debian, and Docker-based setups.
+**Path 2 — BYO Server** `[BOTH]`**:** For users who already have a VPS. The wizard generates a one-liner bootstrap script embedding the org token and control plane URL. The user pastes it into their server's terminal (or uses `/auth/device` pairing). The script installs OpenClaw, configures the sidecar tunnel agent, and phones home to register the instance. Step-by-step instructions are shown for Ubuntu, Debian, and Docker-based setups.
 
-**Path 3 — Managed Instance:** ClawControl fully hosts and operates the OpenClaw gateway. The user picks a region and plan tier. No server access needed. Suitable for teams who want the benefits of OpenClaw without infrastructure management. Priced as an add-on to the SaaS subscription.
+**Path 3 — Managed Instance** `[MANAGED]`**:** ClawControl fully hosts and operates the OpenClaw gateway. The user picks a region and plan tier. No server access needed. Suitable for teams who want the benefits of OpenClaw without infrastructure management. Priced as an add-on to the SaaS subscription. *Not available in the OSS release.*
 
 After provisioning via any path: the wizard walks through baseline hardening — rotate the default gateway token, confirm the public gateway port is closed, select a baseline security policy template, and optionally assign the new instance to an existing swarm or blueprint.
 
@@ -1227,17 +1247,17 @@ Log of all containment actions across the org. Every quarantine trigger, isolati
 
 ### `/security/compliance` — Compliance & Data Governance
 
-#### `/security/compliance/regions`
+#### `/security/compliance/regions` `[MANAGED]`
 
-Data residency map. Shows where each instance is physically located and where the data it handles originates (based on channel origins). For EU-based operators, flags any configuration where EU-origin data is processed outside the EU. For operators with HIPAA or other regional requirements, shows compliance status per instance. Allows tagging instances with data classification labels.
+Data residency map. Shows where each instance is physically located and where the data it handles originates (based on channel origins). For EU-based operators, flags any configuration where EU-origin data is processed outside the EU. For operators with HIPAA or other regional requirements, shows compliance status per instance. Allows tagging instances with data classification labels. *Not available in the OSS release.*
 
-#### `/security/compliance/retention`
+#### `/security/compliance/retention` `[BOTH]`
 
-Log and session data retention policies. Configure per resource type: how long session transcripts are retained, how long execution traces are retained, how long audit logs are retained. Minimum and maximum retention can be set by org policy. Automatic purge of data beyond the retention window is confirmed by the policy. Data subject deletion requests can be processed here: search for a specific user identifier across all sessions and purge all associated records.
+Log and session data retention policies. Configure per resource type: how long session transcripts are retained, how long execution traces are retained, how long audit logs are retained. Minimum and maximum retention can be set by org policy. Automatic purge of data beyond the retention window is confirmed by the policy. `[MANAGED]` Data subject deletion requests can be processed here: search for a specific user identifier across all sessions and purge all associated records.
 
-#### `/security/compliance/exports`
+#### `/security/compliance/exports` `[MANAGED]`
 
-Generate compliance reports for auditors. Report types: Access log report (all user logins and actions for a period), Data processing activity report (what data was processed by which agents), Security incident summary, Skills audit (all skills installed with their permissions and scan results), Secret rotation compliance (which secrets met rotation policy and which did not). Reports are generated as signed PDF or structured JSON, with a tamper-evident hash. Delivery via download or push to a configured S3 bucket.
+Generate compliance reports for auditors. Report types: Access log report (all user logins and actions for a period), Data processing activity report (what data was processed by which agents), Security incident summary, Skills audit (all skills installed with their permissions and scan results), Secret rotation compliance (which secrets met rotation policy and which did not). Reports are generated as signed PDF or structured JSON, with a tamper-evident hash. Delivery via download or push to a configured S3 bucket. *Not available in the OSS release.*
 
 ---
 
@@ -1263,31 +1283,31 @@ A structured postmortem template populated with incident data. Sections: Timelin
 
 ## Audit Routes
 
-### `/audit/tools` — Immutable Tool Execution Ledger
+### `/audit/tools` — Immutable Tool Execution Ledger `[BOTH]`
 
-Every tool call made by any agent across the org, logged immutably. Each entry: timestamp, agent, instance, tool name, input arguments (with secrets redacted), output summary, duration, and outcome. The ledger is append-only — no entry can be modified or deleted. Searchable by all fields. Filterable by time range, agent, tool, and outcome. Exportable for forensic or compliance purposes. "Scope of engagement" mode available for security teams: a defined time window is flagged and every tool execution during that window is captured with full unredacted detail for authorized investigators.
+Every tool call made by any agent across the org, logged immutably. Each entry: timestamp, agent, instance, tool name, input arguments (with secrets redacted), output summary, duration, and outcome. The ledger is append-only — no entry can be modified or deleted. Searchable by all fields. Filterable by time range, agent, tool, and outcome. Exportable for forensic or compliance purposes. `[MANAGED]` "Scope of engagement" mode available for security teams: a defined time window is flagged and every tool execution during that window is captured with full unredacted detail for authorized investigators.
 
-### `/audit/config-changes`
+### `/audit/config-changes` `[BOTH]`
 
-Every configuration change across the org: personality file edits, tool policy changes, skill installs and removals, provider key rotations, routing rule changes, and swarm deployments. Each entry: timestamp, actor (ClawControl user), resource affected, change type, and a diff. The before/after diff for every change is stored for 90 days (or the org's configured retention period). Filterable by actor, resource type, and date.
+Every configuration change across the org: personality file edits, tool policy changes, skill installs and removals, provider key rotations, routing rule changes, and swarm deployments. Each entry: timestamp, actor (ClawControl user), resource affected, change type, and a diff. The before/after diff for every change is stored for 90 days (or the org's configured retention period). Filterable by actor, resource type, and date. `[OSS]` In the OSS release, actor attribution is limited to the local admin user.
 
-### `/audit/access`
+### `/audit/access` `[MANAGED]`
 
-Access log covering: user logins (with IP and user agent), terminal sessions (every command executed via the web terminal, attributed to the logged-in user), API key usage (which API key accessed which resource), and team permission changes. Particularly important for terminal access — every command run via the web terminal is logged here with full attribution, which is the core accountability advantage over shared SSH keys.
+Access log covering: user logins (with IP and user agent), terminal sessions (every command executed via the web terminal, attributed to the logged-in user), API key usage (which API key accessed which resource), and team permission changes. Particularly important for terminal access — every command run via the web terminal is logged here with full attribution, which is the core accountability advantage over shared SSH keys. *Not available in the OSS release — requires multi-user auth.*
 
-### `/audit/incidents`
+### `/audit/incidents` `[BOTH]`
 
 Security incident records linked from the `/security/incidents` section. The audit perspective shows incidents as events in the overall audit timeline rather than as managed objects to respond to.
 
-### `/audit/export`
+### `/audit/export` `[MANAGED]`
 
-Configure audit log exports to external SIEM systems. Supported destinations: Splunk (via HTTP Event Collector), Datadog (Logs API), Elastic (Elasticsearch bulk API), and generic HTTPS webhook for custom destinations. Configure: which event types to export, the destination endpoint and authentication, and the push frequency (real-time streaming or batch). Export history shows recent push attempts with success/failure status and record counts.
+Configure audit log exports to external SIEM systems. Supported destinations: Splunk (via HTTP Event Collector), Datadog (Logs API), Elastic (Elasticsearch bulk API), and generic HTTPS webhook for custom destinations. Configure: which event types to export, the destination endpoint and authentication, and the push frequency (real-time streaming or batch). Export history shows recent push attempts with success/failure status and record counts. *Not available in the OSS release.*
 
 ---
 
 ## Configure Routes
 
-### `/configure/providers` — Global LLM Provider Key Vault
+### `/configure/providers` — Global LLM Provider Key Vault `[BOTH]`
 
 #### `/configure/providers` (list)
 
@@ -1303,11 +1323,11 @@ Provider detail page. Shows: API key status (verified / expired), last validatio
 
 ---
 
-### `/configure/defaults` — Org-Wide Defaults
+### `/configure/defaults` — Org-Wide Defaults `[BOTH]`
 
 Default settings that are applied to every new instance and agent created in the org. Covers: default model provider and model, default tool policy template, default sandbox mode, default spend limits, default retention period, and default security policy. Changing defaults here does not affect existing resources — only newly created ones. Used to enforce org-wide standards without manual configuration of every new resource.
 
-### `/configure/integrations` — External Integrations
+### `/configure/integrations` — External Integrations `[MANAGED]`
 
 Webhook configuration: outbound webhooks that fire on ClawControl events. For each webhook: target URL, authentication (HMAC secret), subscribed event types (instance status change, agent status change, session escalation, skill scan result, budget threshold, security incident), and recent delivery log with response codes and retry status.
 
@@ -1315,7 +1335,9 @@ SIEM integration: configure push destinations for audit and log exports (same co
 
 Alerting channels: where notifications are sent for important events. Supported: email, Slack webhook, PagerDuty, and generic HTTP. Configure separate channels for different severity levels (P1 security incidents go to PagerDuty; budget alerts go to Slack).
 
-### `/configure/self-hosting` — Self-Host Configuration
+*Not available in the OSS release. OSS users can configure basic webhook integrations via environment variables.*
+
+### `/configure/self-hosting` — Self-Host Configuration `[OSS]`
 
 Documentation and tooling for teams running the ClawControl control plane itself on their own infrastructure (as opposed to using the managed SaaS). Provides: Docker Compose and Kubernetes manifests for the ClawControl backend, configuration reference for environment variables, a health check endpoint spec, an upgrade runbook, and a migration guide between ClawControl versions. Also shows the current self-hosted instance's version, configuration status, and any required actions (e.g., pending database migrations).
 
@@ -1323,19 +1345,21 @@ Documentation and tooling for teams running the ClawControl control plane itself
 
 ## Org Routes (detailed)
 
-### `/org/members`
+### `/org/members` `[MANAGED]`
 
-Full member management. The table shows: display name, email, role, team memberships, MFA status (enabled / disabled), last login (with IP), and account status (active / suspended). Actions per member: change role, assign to teams, suspend (prevents login without deleting the account), and remove from org. Inviting a new member: enter email, select role, optionally assign to teams. The invitee receives an email with a time-limited join link. Pending invites are shown with resend and revoke options. Bulk invite via CSV upload for enterprise onboarding.
+Full member management. The table shows: display name, email, role, team memberships, MFA status (enabled / disabled), last login (with IP), and account status (active / suspended). Actions per member: change role, assign to teams, suspend (prevents login without deleting the account), and remove from org. Inviting a new member: enter email, select role, optionally assign to teams. The invitee receives an email with a time-limited join link. Pending invites are shown with resend and revoke options. Bulk invite via CSV upload for enterprise onboarding. *OSS: single admin user by default; optional multi-user provides basic role assignment.*
 
-### `/org/teams`
+### `/org/teams` `[MANAGED]`
 
-Teams are permission scopes. Each team has: a name, a description, member list, and resource access grants. Resource access grants specify which instances, swarms, and agents the team can access and at what permission level (Viewer, Operator, or Admin). Viewing is read-only access to dashboards and sessions. Operator adds the ability to pause/resume agents and inject into sessions. Admin adds config editing and terminal access. A member can belong to multiple teams and receives the union of their grants. Teams are also used for audit attribution — config changes are tagged with the actor's team membership at the time of the change.
+Teams are permission scopes. Each team has: a name, a description, member list, and resource access grants. Resource access grants specify which instances, swarms, and agents the team can access and at what permission level (Viewer, Operator, or Admin). Viewing is read-only access to dashboards and sessions. Operator adds the ability to pause/resume agents and inject into sessions. Admin adds config editing and terminal access. A member can belong to multiple teams and receives the union of their grants. Teams are also used for audit attribution — config changes are tagged with the actor's team membership at the time of the change. *Not available in the OSS release.*
 
-### `/org/billing` (detailed)
+### `/org/billing` (detailed) `[MANAGED]`
 
 **Plan:** Current plan name, included limits (node count, agent count, message volume), current usage against limits, and renewal date. Upgrade, downgrade, and cancel actions. For the managed instance add-on: shows each managed instance, its region, and its individual cost contribution.
 
 **Invoices:** Downloadable PDF invoices. Each invoice has a line-item breakdown: base plan fee, usage overage (if any) broken down by type, add-ons (managed instances, extra storage, enterprise support). VAT handling for EU customers. Invoice delivery can be configured to go directly to a billing email.
 
 **Usage:** Real-time meter showing the current billing period's consumption. Updated hourly. Breakdown by: active instance-nodes (the primary billing metric), agent count, messages processed, skill scans performed, and storage used. A projected end-of-period usage chart based on current velocity. Alerts configured here trigger when usage approaches the plan limit.
+
+*Not available in the OSS release.*
 

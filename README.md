@@ -8,6 +8,24 @@
 
 Everything in this blueprint respects that hierarchy. Global settings cascade down; agent settings override up.
 
+**OSS vs. Managed Service Split:**
+
+ClawControl follows the Supabase model — the core control plane is open source and self-hostable, with a companion managed SaaS for teams that want enterprise features without infrastructure management.
+
+| Feature | OSS (Self-Hosted) | Managed SaaS |
+|---|---|---|
+| Local username/password login | ✅ | ✅ |
+| Basic session management | ✅ | ✅ |
+| Device pairing (`/auth/device`) | ✅ | ✅ |
+| Multi-user with roles | Optional | ✅ |
+| MFA (TOTP / WebAuthn) | Optional | ✅ |
+| SSO / SAML / OIDC | ❌ | ✅ |
+| Multi-org (`/org/switch`, `/org/new`) | ❌ | ✅ |
+| Audit-attributed sessions | ❌ | ✅ |
+| Team permissions / RBAC (`/org/teams`) | ❌ | ✅ |
+| Billing & usage metering (`/org/billing`) | ❌ | ✅ |
+| Compliance exports (`/security/compliance/exports`) | ❌ | ✅ |
+
 **Swarm Scale Naming:**
 
 | Scale | Name | Count |
@@ -34,23 +52,23 @@ Everything in this blueprint respects that hierarchy. Global settings cascade do
   /docs/swarms
 
 /auth
-  /auth/login
-  /auth/register
-  /auth/sso
-  /auth/mfa
-  /auth/recovery
-  /auth/device                             # Headless/VPS pairing flow
+  /auth/login                              # [BOTH] Username/password login
+  /auth/register                           # [BOTH] Standard registration
+  /auth/sso                                # [MANAGED] SAML 2.0 / OIDC
+  /auth/mfa                                # [BOTH] Optional in OSS, enforced in Managed
+  /auth/recovery                           # [BOTH]
+  /auth/device                             # [BOTH] Headless/VPS pairing flow
 
 /org
-  /org/switch
-  /org/new
-  /org/members
-  /org/teams
-  /org/audit
-  /org/billing
-    /org/billing/plan
-    /org/billing/invoices
-    /org/billing/usage
+  /org/switch                              # [MANAGED] Multi-org switcher
+  /org/new                                 # [MANAGED] Create new org
+  /org/members                             # [MANAGED] Full RBAC member mgmt (OSS: single-user or basic roles)
+  /org/teams                               # [MANAGED] Team-based access scoping
+  /org/audit                               # [MANAGED] Org-level audit log
+  /org/billing                             # [MANAGED] SaaS billing
+    /org/billing/plan                      # [MANAGED]
+    /org/billing/invoices                  # [MANAGED]
+    /org/billing/usage                     # [MANAGED]
 
 /settings
   /settings/profile
@@ -345,24 +363,24 @@ Everything in this blueprint respects that hierarchy. Global settings cascade do
 # AUDIT — Immutable Ledger
 # ─────────────────────────────────────────
 
-/audit
-  /audit/tools                             # Immutable tool execution ledger
-  /audit/config-changes                    # Who changed what config, when
-  /audit/access                            # Who accessed the control plane
-  /audit/incidents                         # Security incident log
-  /audit/export                            # SIEM export (Splunk / Datadog / Elastic)
+/audit                                     # [BOTH] Basic audit in OSS; full attributed audit in Managed
+  /audit/tools                             # [BOTH] Immutable tool execution ledger
+  /audit/config-changes                    # [BOTH] Who changed what config, when
+  /audit/access                            # [MANAGED] Who accessed the control plane (requires multi-user)
+  /audit/incidents                         # [BOTH] Security incident log
+  /audit/export                            # [MANAGED] SIEM export (Splunk / Datadog / Elastic)
 
 # ─────────────────────────────────────────
 # CONFIGURE — Global Platform Settings
 # ─────────────────────────────────────────
 
 /configure
-  /configure/providers                     # Global LLM provider key vault
-    /configure/providers/new
-    /configure/providers/:providerId
-  /configure/defaults                      # Default tool/skill/policy for new agents
-  /configure/integrations                  # Webhooks, SIEM, alerting channels
-  /configure/self-hosting                  # Self-host config (Docker, K8s, env vars)
+  /configure/providers                     # [BOTH] Global LLM provider key vault
+    /configure/providers/new               # [BOTH]
+    /configure/providers/:providerId       # [BOTH]
+  /configure/defaults                      # [BOTH] Default tool/skill/policy for new agents
+  /configure/integrations                  # [MANAGED] Webhooks, SIEM, alerting channels
+  /configure/self-hosting                  # [OSS] Self-host config (Docker, K8s, env vars)
 ```
 
 ---
@@ -372,10 +390,10 @@ Everything in this blueprint respects that hierarchy. Global settings cascade do
 ## `/fleet` — Instance Management
 
 ### `/fleet/overview`
-The "global war room." Shows every OpenClaw instance registered to your org as a status card: heartbeat, version, active agent count, resource pressure, and tunnel health. One-click jump to any instance. Global kill switch always in the top bar.
+`[BOTH]` The "global war room." Shows every OpenClaw instance registered to your org as a status card: heartbeat, version, active agent count, resource pressure, and tunnel health. One-click jump to any instance. Global kill switch always in the top bar.
 
 ### `/fleet/instances/new` — Provision Wizard
-Three paths: **Cloud** (DigitalOcean, Hetzner, AWS, Vultr — provision directly via API), **BYO Server** (generate a bootstrap script with your `OPENCLAW_TOKEN` + `CONTROL_PLANE_URL` baked in), or **Managed** (ClawControl fully hosts and manages the instance). Config wizard generates `docker-compose.yml` or systemd unit with toggle options: headless browser, Redis, sandbox mode, Tailscale mesh join.
+`[BOTH]` Three paths: **Cloud** `[BOTH]` (DigitalOcean, Hetzner, AWS, Vultr — provision directly via API), **BYO Server** `[BOTH]` (generate a bootstrap script with your `OPENCLAW_TOKEN` + `CONTROL_PLANE_URL` baked in), or **Managed** `[MANAGED]` (ClawControl fully hosts and manages the instance). Config wizard generates `docker-compose.yml` or systemd unit with toggle options: headless browser, Redis, sandbox mode, Tailscale mesh join.
 
 ### `/fleet/instances/:instanceId/config` — Instance Global Config
 This is what the prior blueprints missed: **instance-level globals that cascade to all agents**. Here you manage the `openclaw.json` root config: which LLM providers are available, which tools are enabled by default, which skills are installed instance-wide, baseline security policies, and environment variables. Changes here propagate to all agents on this instance unless an agent explicitly overrides.
@@ -462,3 +480,5 @@ Given the current threat environment (exposed instances, malicious skills, enter
 **Swarm naming as product identity.** The μ/m/M/Ω tiering isn't just labeling — it gates UI complexity. A μ-swarm shows a simple list; an Ω-swarm shows region maps, cost projections, and rolling deploy controls. Users only see what's relevant to their scale.
 
 **Security is architecture, not a checkbox.** The control plane never opens inbound ports on agent nodes. All communication is agent-initiated outbound tunnel. Secrets are write-only after entry. Audit log is immutable. Quarantine is one click away from anywhere.
+
+**OSS-first, Managed-enhanced.** The open-source release includes everything needed to manage a fleet of OpenClaw instances: provisioning, agent management, personality editing, tool policies, skill marketplace, channels, observability, and basic security. Enterprise features — SSO, multi-org, RBAC teams, billing, compliance exports, and SIEM integration — are part of the managed SaaS layer. This split ensures the OSS release is fully functional while providing clear upgrade incentives for teams that need governance at scale.
