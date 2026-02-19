@@ -104,7 +104,7 @@ function AgentDetail() {
   const agentTotalCost = agent?.totalCost ?? 0
 
   const stats = [
-    { label: 'Sessions', value: agentSessionCount, icon: <Hash className="w-4 h-4 text-cyan-400" /> },
+    { label: 'Sessions', value: agentSessionCount.toLocaleString(), icon: <Hash className="w-4 h-4 text-cyan-400" /> },
     {
       label: 'Total Tokens',
       value: agentTotalTokens >= 1_000_000
