@@ -21,6 +21,9 @@ import {
   OctagonX,
   ChevronDown,
   ChevronRight,
+  BarChart2,
+  Lock,
+  FileCheck,
 } from 'lucide-react'
 import { cn } from '#/lib/utils'
 
@@ -66,13 +69,16 @@ const navSections: NavSection[] = [
       { label: 'Traces', to: '/observe/traces', icon: <GitBranch size={18} /> },
       { label: 'Logs', to: '/observe/logs', icon: <FileText size={18} /> },
       { label: 'Cost', to: '/observe/cost', icon: <DollarSign size={18} /> },
+      { label: 'Analytics', to: '/observe/analytics', icon: <BarChart2 size={18} /> },
     ],
   },
   {
     title: 'SECURITY',
     items: [
       { label: 'Posture', to: '/security/posture', icon: <Shield size={18} /> },
+      { label: 'Secrets', to: '/security/secrets', icon: <Lock size={18} /> },
       { label: 'Quarantine', to: '/security/quarantine', icon: <AlertTriangle size={18} /> },
+      { label: 'Compliance', to: '/security/compliance', icon: <FileCheck size={18} /> },
       { label: 'Audit', to: '/audit', icon: <ClipboardList size={18} /> },
     ],
   },
