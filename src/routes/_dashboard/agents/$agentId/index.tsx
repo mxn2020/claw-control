@@ -6,6 +6,7 @@ import {
   CardContent,
 } from '#/components/ui/card'
 import { Badge } from '#/components/ui/badge'
+import { Button } from '#/components/ui/button'
 import {
   ArrowLeft,
   Bot,
@@ -16,23 +17,18 @@ import {
   Wrench,
   MessageSquare,
   Brain,
+  Pause,
+  Play,
 } from 'lucide-react'
+import { useAgents } from '#/lib/dataHooks'
+import { useDataContext } from '#/lib/dataContext'
+import { useMutation } from 'convex/react'
+import { api } from '../../../../../convex/_generated/api'
+import type { Id } from '../../../../../convex/_generated/dataModel'
 
 export const Route = createFileRoute('/_dashboard/agents/$agentId/')({
   component: AgentDetail,
 })
-
-const mockAgent = {
-  name: 'Support Agent',
-  status: 'active' as const,
-  model: 'gpt-4o',
-  instanceId: 'inst_1',
-  instanceName: 'Production Gateway',
-  sessions: 142,
-  totalTokens: 1_284_300,
-  totalCost: 38.52,
-  uptime: '6d 14h 22m',
-}
 
 const mockSoulSnippet = `You are a helpful customer support agent.
 You are empathetic, concise, and solution-oriented.
@@ -71,22 +67,57 @@ const tabs = [
   'Security',
 ]
 
+// Connected variant — useMutation is safe here (ConvexProvider is guaranteed)
+function AgentStatusToggle({ agentId, status }: { agentId: string; status: string }) {
+  const updateStatus = useMutation(api.agents.updateStatus)
+
+  const toggle = async () => {
+    const newStatus = status === 'active' ? 'paused' : 'active'
+    await updateStatus({
+      id: agentId as Id<'agents'>,
+      status: newStatus,
+    })
+  }
+
+  return (
+    <Button size="sm" variant="outline" className="gap-1.5" onClick={toggle}>
+      {status === 'active' ? (
+        <><Pause size={14} /> Pause</>
+      ) : (
+        <><Play size={14} /> Resume</>
+      )}
+    </Button>
+  )
+}
+
 function AgentDetail() {
   const { agentId } = Route.useParams()
+  const agents = useAgents()
+  const ctx = useDataContext()
+
+  const agent = agents.find((a) => a.id === agentId)
+  const agentName = agent?.name ?? 'Agent'
+  const agentStatus = agent?.status ?? 'idle'
+  const agentModel = agent?.model ?? '—'
+  const agentSessionCount = agent?.sessionCount ?? 0
+  const agentTotalTokens = agent?.totalTokens ?? 0
+  const agentTotalCost = agent?.totalCost ?? 0
 
   const stats = [
-    { label: 'Sessions', value: mockAgent.sessions, icon: <Hash className="w-4 h-4 text-cyan-400" /> },
+    { label: 'Sessions', value: agentSessionCount.toLocaleString(), icon: <Hash className="w-4 h-4 text-cyan-400" /> },
     {
       label: 'Total Tokens',
-      value: `${(mockAgent.totalTokens / 1_000_000).toFixed(1)}M`,
+      value: agentTotalTokens >= 1_000_000
+        ? `${(agentTotalTokens / 1_000_000).toFixed(1)}M`
+        : `${(agentTotalTokens / 1_000).toFixed(1)}K`,
       icon: <Activity className="w-4 h-4 text-cyan-400" />,
     },
     {
       label: 'Total Cost',
-      value: `$${mockAgent.totalCost.toFixed(2)}`,
+      value: `$${agentTotalCost.toFixed(2)}`,
       icon: <Coins className="w-4 h-4 text-cyan-400" />,
     },
-    { label: 'Uptime', value: mockAgent.uptime, icon: <Clock className="w-4 h-4 text-cyan-400" /> },
+    { label: 'Uptime', value: '—', icon: <Clock className="w-4 h-4 text-cyan-400" /> },
   ]
 
   return (
@@ -104,21 +135,16 @@ function AgentDetail() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <Bot className="w-6 h-6 text-cyan-400" />
-          <h1 className="text-2xl font-bold text-white">{mockAgent.name}</h1>
-          <Badge variant={mockAgent.status === 'active' ? 'success' : 'warning'}>
-            {mockAgent.status}
+          <h1 className="text-2xl font-bold text-white">{agentName}</h1>
+          <Badge variant={agentStatus === 'active' ? 'success' : 'warning'}>
+            {agentStatus}
           </Badge>
         </div>
         <div className="flex items-center gap-3 text-sm text-slate-400">
-          <span>{mockAgent.model}</span>
-          <span>·</span>
-          <Link
-            to="/fleet/instances/$instanceId"
-            params={{ instanceId: mockAgent.instanceId }}
-            className="text-cyan-400 hover:text-cyan-300 transition-colors"
-          >
-            {mockAgent.instanceName}
-          </Link>
+          <span>{agentModel}</span>
+          {ctx && (agentStatus === 'active' || agentStatus === 'paused') && (
+            <AgentStatusToggle agentId={agentId} status={agentStatus} />
+          )}
         </div>
       </div>
 

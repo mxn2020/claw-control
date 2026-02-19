@@ -2,8 +2,13 @@ import { createFileRoute } from '@tanstack/react-router'
 import { Card, CardHeader, CardTitle, CardContent } from '#/components/ui/card'
 import { Badge } from '#/components/ui/badge'
 import { Button } from '#/components/ui/button'
-import { Clock, Bot, Plus, CheckCircle2, XCircle, Calendar } from 'lucide-react'
+import { Clock, Bot, Plus, CheckCircle2, XCircle, Calendar, ToggleLeft, ToggleRight } from 'lucide-react'
 import { useCronJobs } from '#/lib/dataHooks'
+import { useMutation } from 'convex/react'
+import { api } from '../../../../convex/_generated/api'
+import type { Id } from '../../../../convex/_generated/dataModel'
+import { useDataContext } from '#/lib/dataContext'
+import type { MockCronJob } from '#/lib/dataContext'
 
 export const Route = createFileRoute('/_app/cron/')({
   component: Cron,
@@ -29,8 +34,83 @@ const formatNextRun = (ts: number | undefined) => {
   return formatRelativeTime(ts)
 }
 
+// Connected component — useMutation safe here because ConvexProvider is guaranteed
+function CronJobsConnected({ jobs }: { jobs: MockCronJob[] }) {
+  const updateCron = useMutation(api.cronJobs.update)
+
+  const toggleEnabled = async (id: string, enabled: boolean) => {
+    await updateCron({ id: id as Id<'cronJobs'>, enabled })
+  }
+
+  return <CronJobsList jobs={jobs} onToggle={toggleEnabled} />
+}
+
+function CronJobsList({
+  jobs,
+  onToggle,
+}: {
+  jobs: MockCronJob[]
+  onToggle: ((id: string, enabled: boolean) => Promise<void>) | undefined
+}) {
+  return (
+    <div className="space-y-2">
+      {jobs.map((job) => (
+        <Card key={job.id} className={`transition-all ${!job.enabled ? 'opacity-60' : 'hover:border-cyan-500/30'}`}>
+          <CardContent className="py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex-1 space-y-1">
+                <div className="flex items-center gap-2">
+                  <Clock size={14} className="text-cyan-400" />
+                  <p className="text-sm font-medium text-white">{job.name}</p>
+                  {!job.enabled && <Badge className="bg-slate-500/10 text-slate-400 border-slate-500/20">disabled</Badge>}
+                </div>
+                <div className="flex items-center gap-4 text-xs text-slate-500">
+                  <span>Schedule: {job.schedule}</span>
+                  <span className="flex items-center gap-1">
+                    <Bot size={11} /> {job.agentId}
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center gap-6 text-xs">
+                <div className="text-right">
+                  <p className="text-slate-500">Next run</p>
+                  <p className="text-slate-300">{formatNextRun(job.nextRunAt)}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-slate-500">Last run</p>
+                  <div className="flex items-center gap-1">
+                    {job.lastRunStatus === 'success' ? (
+                      <CheckCircle2 size={12} className="text-emerald-400" />
+                    ) : (
+                      <XCircle size={12} className="text-red-400" />
+                    )}
+                    <span className="text-slate-300">{formatRelativeTime(job.lastRunAt)}</span>
+                  </div>
+                </div>
+                {onToggle && (
+                  <button
+                    className="text-slate-400 hover:text-cyan-400 transition-colors"
+                    title={job.enabled ? 'Disable job' : 'Enable job'}
+                    onClick={() => onToggle(job.id, !job.enabled)}
+                  >
+                    {job.enabled
+                      ? <ToggleRight size={22} className="text-cyan-400" />
+                      : <ToggleLeft size={22} />}
+                  </button>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  )
+}
+
 function Cron() {
   const jobs = useCronJobs()
+  const ctx = useDataContext()
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -78,46 +158,11 @@ function Cron() {
       </div>
 
       {/* Job List */}
-      <div className="space-y-2">
-        {jobs.map((job) => (
-          <Card key={job.id} className={`transition-all ${!job.enabled ? 'opacity-60' : 'hover:border-cyan-500/30'}`}>
-            <CardContent className="py-4">
-              <div className="flex items-center justify-between">
-                <div className="flex-1 space-y-1">
-                  <div className="flex items-center gap-2">
-                    <Clock size={14} className="text-cyan-400" />
-                    <p className="text-sm font-medium text-white">{job.name}</p>
-                    {!job.enabled && <Badge className="bg-slate-500/10 text-slate-400 border-slate-500/20">disabled</Badge>}
-                  </div>
-                  <div className="flex items-center gap-4 text-xs text-slate-500">
-                    <span>Schedule: {job.schedule}</span>
-                    <span className="flex items-center gap-1">
-                      <Bot size={11} /> {job.agentId}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-6 text-xs">
-                  <div className="text-right">
-                    <p className="text-slate-500">Next run</p>
-                    <p className="text-slate-300">{formatNextRun(job.nextRunAt)}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-slate-500">Last run</p>
-                    <div className="flex items-center gap-1">
-                      {job.lastRunStatus === 'success' ? (
-                        <CheckCircle2 size={12} className="text-emerald-400" />
-                      ) : (
-                        <XCircle size={12} className="text-red-400" />
-                      )}
-                      <span className="text-slate-300">{formatRelativeTime(job.lastRunAt)}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      {ctx ? (
+        <CronJobsConnected jobs={jobs} />
+      ) : (
+        <CronJobsList jobs={jobs} onToggle={undefined} />
+      )}
 
       {/* Calendar View Placeholder */}
       <Card>
