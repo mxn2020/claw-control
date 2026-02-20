@@ -1,26 +1,24 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { Card, CardHeader, CardTitle, CardContent } from '#/components/ui/card'
 import { Badge } from '#/components/ui/badge'
+import { useQuery } from 'convex/react'
+import { api } from '../../../../../convex/_generated/api'
 
 export const Route = createFileRoute('/_dashboard/swarms/$swarmId/observe')({
   component: SwarmObserve,
 })
 
-const mockEvents = [
-  { id: 'e1', time: '12:04:01', type: 'tool_call', agent: 'support-agent', detail: 'web-search("refund policy")' },
-  { id: 'e2', time: '12:04:05', type: 'message', agent: 'eng-agent', detail: 'Responded to #engineering-api' },
-  { id: 'e3', time: '12:04:09', type: 'error', agent: 'code-bot', detail: 'Execution timeout after 30s' },
-  { id: 'e4', time: '12:04:12', type: 'tool_call', agent: 'support-agent', detail: 'email-sender(to=customer@example.com)' },
-]
-
-const typeVariant = (t: string) => {
-  if (t === 'error') return 'danger' as const
-  if (t === 'tool_call') return 'info' as const
+const typeVariant = (action: string) => {
+  if (action.includes('error') || action.includes('quarantine')) return 'danger' as const
+  if (action.includes('tool') || action.includes('create')) return 'info' as const
   return 'default' as const
 }
 
 function SwarmObserve() {
   const { swarmId } = Route.useParams()
+  const stats = useQuery(api.platform.getStats, {})
+  const logs = useQuery(api.auditLogs.list, { limit: 20 })
+  const events = logs ?? []
 
   return (
     <div className="space-y-6">
@@ -30,18 +28,24 @@ function SwarmObserve() {
       </div>
 
       <div className="grid grid-cols-3 gap-4">
-        {[
-          { label: 'Active Agents', value: '12', color: 'text-emerald-400' },
-          { label: 'Events / min', value: '348', color: 'text-cyan-400' },
-          { label: 'Errors / min', value: '2', color: 'text-red-400' },
-        ].map((metric) => (
-          <Card key={metric.label}>
-            <CardContent className="pt-6">
-              <p className="text-xs text-slate-400">{metric.label}</p>
-              <p className={`text-2xl font-bold mt-1 ${metric.color}`}>{metric.value}</p>
-            </CardContent>
-          </Card>
-        ))}
+        <Card>
+          <CardContent className="pt-6">
+            <p className="text-xs text-slate-400">Active Agents</p>
+            <p className="text-2xl font-bold mt-1 text-emerald-400">{stats?.activeAgents ?? 0}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-6">
+            <p className="text-xs text-slate-400">Active Sessions</p>
+            <p className="text-2xl font-bold mt-1 text-cyan-400">{stats?.activeSessions ?? 0}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-6">
+            <p className="text-xs text-slate-400">Total Events</p>
+            <p className="text-2xl font-bold mt-1 text-amber-400">{events.length}</p>
+          </CardContent>
+        </Card>
       </div>
 
       <Card>
@@ -50,16 +54,18 @@ function SwarmObserve() {
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
-            {mockEvents.map((ev) => (
-              <div
-                key={ev.id}
-                className="flex items-start gap-3 rounded-lg border border-slate-700/50 bg-slate-900/50 p-3"
-              >
-                <span className="font-mono text-xs text-slate-500 mt-0.5 shrink-0">{ev.time}</span>
-                <Badge variant={typeVariant(ev.type)}>{ev.type}</Badge>
+            {events.length === 0 && (
+              <p className="text-sm text-slate-500 text-center py-6">No events yet.</p>
+            )}
+            {events.map((ev) => (
+              <div key={ev._id} className="flex items-start gap-3 rounded-lg border border-slate-700/50 bg-slate-900/50 p-3">
+                <span className="font-mono text-xs text-slate-500 mt-0.5 shrink-0">
+                  {new Date(ev.createdAt).toLocaleTimeString()}
+                </span>
+                <Badge variant={typeVariant(ev.action)}>{ev.action}</Badge>
                 <div>
-                  <span className="text-xs text-slate-400">{ev.agent}</span>
-                  <p className="text-xs text-slate-300 mt-0.5 font-mono">{ev.detail}</p>
+                  <span className="text-xs text-slate-400">{ev.resourceType}</span>
+                  <p className="text-xs text-slate-300 mt-0.5 font-mono">{ev.details ?? '—'}</p>
                 </div>
               </div>
             ))}

@@ -16,6 +16,9 @@ import {
   Shield,
   Variable,
 } from 'lucide-react'
+import { useQuery } from 'convex/react'
+import { api } from '../../../../../../../convex/_generated/api'
+import type { Id } from '../../../../../../../convex/_generated/dataModel'
 
 export const Route = createFileRoute(
   '/_dashboard/fleet/instances/$instanceId/config/',
@@ -23,59 +26,63 @@ export const Route = createFileRoute(
   component: ConfigIndex,
 })
 
-const configSections = [
-  {
-    title: 'General',
-    description: 'Instance name, version, region, and resource limits',
-    icon: Settings,
-    to: '/fleet/instances/$instanceId/config/general' as const,
-    status: 'configured',
-    summary: 'v0.9.2 · nyc3 · 4 vCPU / 8 GB',
-  },
-  {
-    title: 'Providers',
-    description: 'LLM provider API keys and model configuration',
-    icon: Cloud,
-    to: '/fleet/instances/$instanceId/config/providers' as const,
-    status: 'configured',
-    summary: '3 providers · 2 active',
-  },
-  {
-    title: 'Tools',
-    description: 'Tool allow/deny list and permission controls',
-    icon: Wrench,
-    to: '/fleet/instances/$instanceId/config/tools' as const,
-    status: 'configured',
-    summary: '6 of 8 tools enabled',
-  },
-  {
-    title: 'Skills',
-    description: 'Skill modules and capability configuration',
-    icon: Brain,
-    to: '/fleet/instances/$instanceId/config' as const,
-    status: 'default',
-    summary: 'Using default skill set',
-  },
-  {
-    title: 'Policies',
-    description: 'Security policies, sandbox mode, and access rules',
-    icon: Shield,
-    to: '/fleet/instances/$instanceId/config/policies' as const,
-    status: 'configured',
-    summary: 'Sandbox enabled · 3 rules',
-  },
-  {
-    title: 'Environment',
-    description: 'Environment variables and runtime secrets',
-    icon: Variable,
-    to: '/fleet/instances/$instanceId/config/environment' as const,
-    status: 'configured',
-    summary: '7 variables set',
-  },
-]
-
 function ConfigIndex() {
   const { instanceId } = Route.useParams()
+  const instance = useQuery(api.instances.get, { id: instanceId as Id<"instances"> })
+  const skills = useQuery(api.platform.list, {})
+
+  const configSections = [
+    {
+      title: 'General',
+      description: 'Instance name, version, region, and resource limits',
+      icon: Settings,
+      to: '/fleet/instances/$instanceId/config/general' as const,
+      status: 'configured',
+      summary: `${instance?.version ? `v${instance.version}` : 'unknown'} · ${instance?.region ?? 'default'} · ${instance?.provider ?? 'Local'}`,
+    },
+    {
+      title: 'Providers',
+      description: 'LLM provider API keys and model configuration',
+      icon: Cloud,
+      to: '/fleet/instances/$instanceId/config/providers' as const,
+      status: instance?.config?.providers?.length ? 'configured' : 'default',
+      summary: instance?.config?.providers?.length
+        ? `${instance.config.providers.length} provider(s) configured`
+        : 'No providers configured',
+    },
+    {
+      title: 'Tools',
+      description: 'Tool allow/deny list and permission controls',
+      icon: Wrench,
+      to: '/fleet/instances/$instanceId/config/tools' as const,
+      status: 'configured',
+      summary: 'Manage tool permissions',
+    },
+    {
+      title: 'Skills',
+      description: 'Skill modules and capability configuration',
+      icon: Brain,
+      to: '/fleet/instances/$instanceId/config/skills' as const,
+      status: (skills?.length ?? 0) > 0 ? 'configured' : 'default',
+      summary: `${skills?.length ?? 0} skills available`,
+    },
+    {
+      title: 'Policies',
+      description: 'Security policies, sandbox mode, and access rules',
+      icon: Shield,
+      to: '/fleet/instances/$instanceId/config/policies' as const,
+      status: instance?.config?.sandboxMode ? 'configured' : 'default',
+      summary: instance?.config?.sandboxMode ? 'Sandbox enabled' : 'Default policies',
+    },
+    {
+      title: 'Environment',
+      description: 'Environment variables and runtime secrets',
+      icon: Variable,
+      to: '/fleet/instances/$instanceId/config/environment' as const,
+      status: 'default',
+      summary: 'Managed via VPS agent',
+    },
+  ]
 
   return (
     <div className="space-y-6">
@@ -91,7 +98,7 @@ function ConfigIndex() {
       <div>
         <h1 className="text-2xl font-bold text-white">Configuration</h1>
         <p className="mt-1 text-sm text-slate-400">
-          Instance {instanceId} — manage settings across all configuration areas
+          {instance?.name ?? instanceId} — manage settings across all configuration areas
         </p>
       </div>
 
@@ -110,11 +117,7 @@ function ConfigIndex() {
                     <section.icon className="w-5 h-5 text-cyan-400" />
                     <CardTitle>{section.title}</CardTitle>
                   </div>
-                  <Badge
-                    variant={
-                      section.status === 'configured' ? 'success' : 'default'
-                    }
-                  >
+                  <Badge variant={section.status === 'configured' ? 'success' : 'default'}>
                     {section.status}
                   </Badge>
                 </div>

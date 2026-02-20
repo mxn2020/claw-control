@@ -7,14 +7,12 @@ import {
   CardDescription,
 } from '#/components/ui/card'
 import { Badge } from '#/components/ui/badge'
-import { Button } from '#/components/ui/button'
 import {
   ArrowLeft,
   Puzzle,
-  Plus,
-  Trash2,
-  Save,
 } from 'lucide-react'
+import { useQuery } from 'convex/react'
+import { api } from '../../../../../../../convex/_generated/api'
 
 export const Route = createFileRoute(
   '/_dashboard/fleet/instances/$instanceId/config/skills',
@@ -22,20 +20,11 @@ export const Route = createFileRoute(
   component: SkillsConfig,
 })
 
-const mockSkills = [
-  { id: 'sk-1', name: 'Web Search', description: 'Search the web for real-time information', installed: true },
-  { id: 'sk-2', name: 'Code Execution', description: 'Execute code in a sandboxed environment', installed: true },
-  { id: 'sk-3', name: 'Database Query', description: 'Run read-only SQL queries against configured databases', installed: true },
-  { id: 'sk-4', name: 'Email Sender', description: 'Send transactional emails via configured SMTP', installed: false },
-  { id: 'sk-5', name: 'File Manager', description: 'Read and write files within the agent sandbox', installed: true },
-  { id: 'sk-6', name: 'Calendar', description: 'Access and manage calendar events', installed: false },
-  { id: 'sk-7', name: 'Knowledge Base', description: 'Query internal knowledge base documents', installed: true },
-  { id: 'sk-8', name: 'Image Generation', description: 'Generate images from text prompts', installed: false },
-]
-
 function SkillsConfig() {
   const { instanceId } = Route.useParams()
-  const installedCount = mockSkills.filter((s) => s.installed).length
+  const skills = useQuery(api.platform.list, {})
+  const skillList = skills ?? []
+  const enabledCount = skillList.filter(s => s.isEnabled).length
 
   return (
     <div className="space-y-6">
@@ -53,13 +42,9 @@ function SkillsConfig() {
           <Puzzle className="w-6 h-6 text-cyan-400" />
           <div>
             <h1 className="text-2xl font-bold text-white">Skills Configuration</h1>
-            <p className="text-sm text-slate-400">Instance {instanceId}</p>
+            <p className="text-sm text-slate-400">{skillList.length} skills available</p>
           </div>
         </div>
-        <Button>
-          <Save className="w-4 h-4 mr-2" />
-          Save Changes
-        </Button>
       </div>
 
       <Card>
@@ -68,19 +53,22 @@ function SkillsConfig() {
             <div>
               <CardTitle>Global Skills</CardTitle>
               <CardDescription className="mt-1">
-                Install or uninstall skills available to agents on this instance
+                Skills available to agents on this instance
               </CardDescription>
             </div>
             <Badge variant="info">
-              {installedCount} of {mockSkills.length} installed
+              {enabledCount} of {skillList.length} enabled
             </Badge>
           </div>
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
-            {mockSkills.map((skill) => (
+            {skillList.length === 0 && (
+              <p className="text-sm text-slate-500 text-center py-6">No skills found.</p>
+            )}
+            {skillList.map((skill) => (
               <div
-                key={skill.id}
+                key={skill._id}
                 className="flex items-center justify-between rounded-lg border border-slate-700/50 bg-slate-900/50 p-4"
               >
                 <div className="flex items-center gap-3">
@@ -88,26 +76,14 @@ function SkillsConfig() {
                   <div>
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-medium text-white">{skill.name}</span>
-                      <Badge variant={skill.installed ? 'success' : 'danger'}>
-                        {skill.installed ? 'installed' : 'not installed'}
+                      <Badge variant={skill.isEnabled ? 'success' : 'danger'}>
+                        {skill.isEnabled ? 'enabled' : 'disabled'}
                       </Badge>
                     </div>
-                    <p className="text-xs text-slate-400">{skill.description}</p>
+                    <p className="text-xs text-slate-400">{skill.description ?? 'No description'}</p>
                   </div>
                 </div>
-                <Button variant="ghost" size="sm">
-                  {skill.installed ? (
-                    <>
-                      <Trash2 className="w-4 h-4 mr-1" />
-                      Uninstall
-                    </>
-                  ) : (
-                    <>
-                      <Plus className="w-4 h-4 mr-1" />
-                      Install
-                    </>
-                  )}
-                </Button>
+                <Badge variant="info">v{skill.version}</Badge>
               </div>
             ))}
           </div>
