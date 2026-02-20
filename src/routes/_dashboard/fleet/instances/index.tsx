@@ -16,7 +16,7 @@ const formatRelativeTime = (ts: number) => {
 }
 
 function InstanceList() {
-  const instances = useInstances()
+  const instances = useInstances() || []
 
   return (
     <div className="space-y-6">
@@ -54,13 +54,13 @@ function InstanceList() {
               <tbody>
                 {instances.map((instance) => (
                   <tr
-                    key={instance.id}
+                    key={instance._id}
                     className="border-b border-slate-700/50 hover:bg-slate-700/20 transition-colors"
                   >
                     <td className="px-4 py-3">
                       <Link
                         to="/fleet/instances/$instanceId"
-                        params={{ instanceId: instance.id }}
+                        params={{ instanceId: instance._id }}
                         className="font-medium text-cyan-400 hover:text-cyan-300 transition-colors"
                       >
                         {instance.name}
@@ -81,7 +81,7 @@ function InstanceList() {
                         {instance.version}
                       </code>
                     </td>
-                    <td className="px-4 py-3 text-slate-400">{formatRelativeTime(instance.lastHeartbeat)}</td>
+                    <td className="px-4 py-3 text-slate-400">{formatRelativeTime(instance.lastHeartbeat ?? instance._creationTime)}</td>
                   </tr>
                 ))}
               </tbody>

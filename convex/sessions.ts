@@ -5,8 +5,15 @@ export const list = query({
   args: {
     orgId: v.optional(v.id("organizations")),
     agentId: v.optional(v.id("agents")),
+    instanceId: v.optional(v.id("instances")),
   },
   handler: async (ctx, args) => {
+    if (args.instanceId) {
+      return await ctx.db
+        .query("sessions")
+        .withIndex("by_instance", (q) => q.eq("instanceId", args.instanceId!))
+        .collect();
+    }
     if (args.agentId) {
       return await ctx.db
         .query("sessions")

@@ -1,41 +1,26 @@
-// Data hooks — read from DataContext (populated by Convex) with mock data fallback.
+// Data hooks — read from DataContext (populated by Convex).
 // When ConvexDataProvider is in the tree, hooks return live Convex data.
-// Without it (no VITE_CONVEX_URL), they fall back to mock data.
+// If data is currently loading from Convex, these will return undefined.
 
-import {
-  mockInstances,
-  mockAgents,
-  mockTasks,
-  mockCanvases,
-  mockCronJobs,
-  mockApprovals,
-  mockUsageRecords,
-  mockDiscoverItems,
-  mockBrowserSessions,
-  mockNodes,
-  mockMemoryFiles,
-  mockVoiceSettings,
-} from "./mockData";
 import { useDataContext } from "./dataContext";
 
 export function useInstances() {
   const ctx = useDataContext();
-  return ctx?.instances ?? mockInstances;
+  return ctx?.instances;
 }
 
 export function useAgents(instanceId?: string) {
   const ctx = useDataContext();
-  const agents = ctx?.agents ?? mockAgents;
+  const agents = ctx?.agents;
+  if (!agents) return undefined;
   if (instanceId) return agents.filter((a) => a.instanceId === instanceId);
   return agents;
 }
 
 export function useTasks(options?: { status?: string; userId?: string }) {
   const ctx = useDataContext();
-  const raw = ctx?.tasks ?? mockTasks;
-  // Widen status beyond the mock literal union so 'done'/'failed' etc. work at call-site
-  type WidenedTask = Omit<typeof raw[number], 'status'> & { status: string };
-  const data = raw as WidenedTask[];
+  const data = ctx?.tasks;
+  if (!data) return undefined;
   if (options?.status) return data.filter((t) => t.status === options.status);
   if (options?.userId) return data.filter((t) => t.userId === options.userId);
   return data;
@@ -43,7 +28,8 @@ export function useTasks(options?: { status?: string; userId?: string }) {
 
 export function useCanvases(options?: { userId?: string; type?: string }) {
   const ctx = useDataContext();
-  let data = ctx?.canvases ?? mockCanvases;
+  let data = ctx?.canvases;
+  if (!data) return undefined;
   if (options?.type) data = data.filter((c) => c.type === options.type);
   if (options?.userId) data = data.filter((c) => c.userId === options.userId);
   return data;
@@ -51,7 +37,8 @@ export function useCanvases(options?: { userId?: string; type?: string }) {
 
 export function useCronJobs(options?: { userId?: string; enabled?: boolean }) {
   const ctx = useDataContext();
-  let data = ctx?.cronJobs ?? mockCronJobs;
+  let data = ctx?.cronJobs;
+  if (!data) return undefined;
   if (options?.enabled !== undefined)
     data = data.filter((j) => j.enabled === options.enabled);
   if (options?.userId) data = data.filter((j) => j.userId === options.userId);
@@ -60,10 +47,8 @@ export function useCronJobs(options?: { userId?: string; enabled?: boolean }) {
 
 export function useApprovals(options?: { status?: string; userId?: string }) {
   const ctx = useDataContext();
-  const raw = ctx?.approvals ?? mockApprovals;
-  // Widen status + riskLevel beyond mock literal unions
-  type WidenedApproval = Omit<typeof raw[number], 'status' | 'riskLevel'> & { status: string; riskLevel: string };
-  const data = raw as WidenedApproval[];
+  const data = ctx?.approvals;
+  if (!data) return undefined;
   if (options?.status) return data.filter((a) => a.status === options.status);
   if (options?.userId) return data.filter((a) => a.userId === options.userId);
   return data;
@@ -75,7 +60,8 @@ export function useUsageRecords(options?: {
   date?: string;
 }) {
   const ctx = useDataContext();
-  let data = ctx?.usageRecords ?? mockUsageRecords;
+  let data = ctx?.usageRecords;
+  if (!data) return undefined;
   if (options?.userId) data = data.filter((r) => r.userId === options.userId);
   if (options?.agentId)
     data = data.filter((r) => r.agentId === options.agentId);
@@ -88,7 +74,8 @@ export function useDiscoverItems(options?: {
   category?: string;
 }) {
   const ctx = useDataContext();
-  let data = ctx?.discoverItems ?? mockDiscoverItems;
+  let data = ctx?.discoverItems;
+  if (!data) return undefined;
   if (options?.type) data = data.filter((i) => i.type === options.type);
   if (options?.category)
     data = data.filter((i) => i.category === options.category);
@@ -100,7 +87,8 @@ export function useBrowserSessions(options?: {
   status?: string;
 }) {
   const ctx = useDataContext();
-  let data = ctx?.browserSessions ?? mockBrowserSessions;
+  let data = ctx?.browserSessions;
+  if (!data) return undefined;
   if (options?.status)
     data = data.filter((s) => s.status === options.status);
   if (options?.userId)
@@ -108,9 +96,24 @@ export function useBrowserSessions(options?: {
   return data;
 }
 
+export function useSessions(options?: {
+  agentId?: string;
+  status?: string;
+}) {
+  const ctx = useDataContext();
+  let data = ctx?.sessions;
+  if (!data) return undefined;
+  if (options?.status)
+    data = data.filter((s) => s.status === options.status);
+  if (options?.agentId)
+    data = data.filter((s) => s.agentId === options.agentId);
+  return data;
+}
+
 export function useNodes(options?: { userId?: string; status?: string }) {
   const ctx = useDataContext();
-  let data = ctx?.nodes ?? mockNodes;
+  let data = ctx?.nodes;
+  if (!data) return undefined;
   if (options?.status) data = data.filter((n) => n.status === options.status);
   if (options?.userId) data = data.filter((n) => n.userId === options.userId);
   return data;
@@ -121,7 +124,8 @@ export function useMemoryFiles(options?: {
   agentId?: string;
 }) {
   const ctx = useDataContext();
-  let data = ctx?.memoryFiles ?? mockMemoryFiles;
+  let data = ctx?.memoryFiles;
+  if (!data) return undefined;
   if (options?.userId) data = data.filter((f) => f.userId === options.userId);
   if (options?.agentId)
     data = data.filter((f) => f.agentId === options.agentId);
@@ -130,7 +134,8 @@ export function useMemoryFiles(options?: {
 
 export function useVoiceSettings(userId?: string) {
   const ctx = useDataContext();
-  const settings = ctx?.voiceSettings ?? mockVoiceSettings;
-  if (userId && settings?.userId !== userId) return null;
+  const settings = ctx?.voiceSettings;
+  if (!settings) return undefined;
+  if (userId && settings.userId !== userId) return null;
   return settings;
 }

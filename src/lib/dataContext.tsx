@@ -1,47 +1,21 @@
 import { createContext, useContext } from 'react'
-import type {
-  mockInstances,
-  mockAgents,
-  mockTasks,
-  mockCanvases,
-  mockCronJobs,
-  mockApprovals,
-  mockUsageRecords,
-  mockDiscoverItems,
-  mockBrowserSessions,
-  mockNodes,
-  mockMemoryFiles,
-  mockVoiceSettings,
-} from './mockData'
+import type { Doc } from '../../convex/_generated/dataModel'
 
-// Types inferred from mock data arrays
-export type MockInstance = (typeof mockInstances)[number]
-export type MockAgent = (typeof mockAgents)[number]
-export type MockTask = (typeof mockTasks)[number]
-export type MockCanvas = (typeof mockCanvases)[number]
-export type MockCronJob = (typeof mockCronJobs)[number]
-export type MockApproval = (typeof mockApprovals)[number]
-export type MockUsageRecord = (typeof mockUsageRecords)[number]
-export type MockDiscoverItem = (typeof mockDiscoverItems)[number]
-export type MockBrowserSession = (typeof mockBrowserSessions)[number]
-export type MockNode = (typeof mockNodes)[number]
-export type MockMemoryFile = (typeof mockMemoryFiles)[number]
-export type MockVoiceSettings = typeof mockVoiceSettings
-
-// The shape of all app data — fed by either Convex queries or mock data
+// The shape of all app data — fed by Convex queries
 export interface AppData {
-  instances: MockInstance[]
-  agents: MockAgent[]
-  tasks: MockTask[]
-  canvases: MockCanvas[]
-  cronJobs: MockCronJob[]
-  approvals: MockApproval[]
-  usageRecords: MockUsageRecord[]
-  discoverItems: MockDiscoverItem[]
-  browserSessions: MockBrowserSession[]
-  nodes: MockNode[]
-  memoryFiles: MockMemoryFile[]
-  voiceSettings: MockVoiceSettings | null
+  instances: Doc<"instances">[] | undefined
+  agents: Doc<"agents">[] | undefined
+  tasks: Doc<"tasks">[] | undefined
+  canvases: Doc<"canvases">[] | undefined
+  cronJobs: Doc<"cronJobs">[] | undefined
+  approvals: Doc<"approvals">[] | undefined
+  usageRecords: Doc<"usageRecords">[] | undefined
+  discoverItems: Doc<"discoverItems">[] | undefined
+  browserSessions: Doc<"browserSessions">[] | undefined
+  sessions: Doc<"sessions">[] | undefined
+  nodes: Doc<"nodes">[] | undefined
+  memoryFiles: Doc<"memoryFiles">[] | undefined
+  voiceSettings: Doc<"voiceSettings"> | null | undefined
 }
 
 export const DataContext = createContext<AppData | null>(null)

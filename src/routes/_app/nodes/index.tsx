@@ -10,7 +10,7 @@ export const Route = createFileRoute('/_app/nodes/')({
 })
 
 function NodesIndex() {
-  const devices = useNodes()
+  const devices = useNodes() || []
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -29,9 +29,9 @@ function NodesIndex() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {devices.map((device) => (
           <Link
-            key={device.id}
+            key={device._id}
             to="/nodes/$nodeId"
-            params={{ nodeId: device.id }}
+            params={{ nodeId: device._id }}
             className="block"
           >
             <Card className="hover:border-cyan-500/50 transition-all cursor-pointer">
@@ -61,7 +61,7 @@ function NodesIndex() {
                   <span className="text-xs text-slate-500">Capabilities</span>
                 </div>
                 <div className="flex flex-wrap gap-1.5">
-                  {Object.entries(device.capabilities)
+                  {Object.entries(device.capabilities || {})
                     .filter(([, v]) => v)
                     .map(([cap]) => (
                       <Badge key={cap} className="bg-slate-700 text-slate-300 text-xs">{cap}</Badge>

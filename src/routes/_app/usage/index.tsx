@@ -10,14 +10,14 @@ export const Route = createFileRoute('/_app/usage/')({
 })
 
 function UsageIndex() {
-  const records = useUsageRecords()
+  const records = useUsageRecords() || []
 
   // Aggregate by agentId for token breakdown
   const byAgent: Record<string, { tokens: number; cost: number }> = {}
   let totalTokens = 0
   let totalCost = 0
-  for (const r of records) {
-    const key = r.agentId
+  for (const r of records || []) {
+    const key = r.agentId ?? 'unknown'
     if (!byAgent[key]) byAgent[key] = { tokens: 0, cost: 0 }
     byAgent[key].tokens += r.tokensUsed
     byAgent[key].cost += r.cost
@@ -47,8 +47,8 @@ function UsageIndex() {
   const monthAgo = now - 30 * 86_400_000
 
   const todayRecords = records.filter((r) => r.date === todayStr)
-  const weekRecords = records.filter((r) => r.createdAt >= weekAgo)
-  const monthRecords = records.filter((r) => r.createdAt >= monthAgo)
+  const weekRecords = records.filter((r) => r._creationTime >= weekAgo)
+  const monthRecords = records.filter((r) => r._creationTime >= monthAgo)
 
   const sumTokens = (rs: typeof records) => rs.reduce((s, r) => s + r.tokensUsed, 0)
   const sumCost = (rs: typeof records) => rs.reduce((s, r) => s + r.cost, 0)
@@ -127,9 +127,8 @@ function UsageIndex() {
                 return (
                   <div
                     key={i}
-                    className={`aspect-square rounded-sm ${
-                      intensity === 0 ? 'bg-slate-800' : intensity === 1 ? 'bg-cyan-900/40' : intensity === 2 ? 'bg-cyan-700/60' : 'bg-cyan-500'
-                    }`}
+                    className={`aspect-square rounded-sm ${intensity === 0 ? 'bg-slate-800' : intensity === 1 ? 'bg-cyan-900/40' : intensity === 2 ? 'bg-cyan-700/60' : 'bg-cyan-500'
+                      }`}
                   />
                 )
               })}

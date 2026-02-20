@@ -14,9 +14,9 @@ function CronPage() {
   const cronJobs = useCronJobs()
   const [showNew, setShowNew] = useState(false)
 
-  const enabled = cronJobs.filter((j) => j.enabled).length
+  const enabled = cronJobs?.filter((j) => j.enabled).length ?? 0
   const nextJob = cronJobs
-    .filter((j) => j.enabled && j.nextRunAt)
+    ?.filter((j) => j.enabled && j.nextRunAt)
     .sort((a, b) => (a.nextRunAt ?? 0) - (b.nextRunAt ?? 0))[0]
 
   return (
@@ -25,7 +25,7 @@ function CronPage() {
         <div>
           <h1 className="text-2xl font-bold text-white">Scheduled Automations</h1>
           <p className="text-sm text-slate-400 mt-1">
-            {enabled} active · {cronJobs.length - enabled} paused
+            {enabled} active · {(cronJobs?.length ?? 0) - enabled} paused
           </p>
         </div>
         <Button size="sm" onClick={() => setShowNew(!showNew)}>
@@ -48,8 +48,8 @@ function CronPage() {
       )}
 
       <div className="space-y-3">
-        {cronJobs.map((job) => (
-          <Card key={job.id} className={!job.enabled ? 'opacity-60' : ''}>
+        {cronJobs?.map((job) => (
+          <Card key={job._id} className={!job.enabled ? 'opacity-60' : ''}>
             <CardContent className="pt-4 pb-3">
               <div className="flex items-start gap-3">
                 <button
@@ -99,7 +99,7 @@ function CronPage() {
           </Card>
         ))}
 
-        {cronJobs.length === 0 && (
+        {(cronJobs?.length ?? 0) === 0 && (
           <div className="text-center py-12 text-slate-500">
             <Clock className="w-12 h-12 mx-auto mb-3 text-slate-600" />
             <p>No scheduled automations yet.</p>

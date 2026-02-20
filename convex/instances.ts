@@ -57,6 +57,35 @@ export const updateStatus = mutation({
   },
 });
 
+export const update = mutation({
+  args: {
+    id: v.id("instances"),
+    name: v.optional(v.string()),
+    provider: v.optional(v.string()),
+    region: v.optional(v.string()),
+    version: v.optional(v.string()),
+    cpuUsage: v.optional(v.number()),
+    memoryUsage: v.optional(v.number()),
+    lastHeartbeat: v.optional(v.number()),
+    config: v.optional(v.object({
+      providers: v.optional(v.array(v.string())),
+      defaultModel: v.optional(v.string()),
+      sandboxMode: v.optional(v.boolean()),
+    })),
+  },
+  handler: async (ctx, args) => {
+    const { id, ...fields } = args;
+    // Filter out undefined values
+    const updates: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(fields)) {
+      if (value !== undefined) updates[key] = value;
+    }
+    if (Object.keys(updates).length > 0) {
+      await ctx.db.patch(id, updates);
+    }
+  },
+});
+
 export const remove = mutation({
   args: { id: v.id("instances") },
   handler: async (ctx, args) => {

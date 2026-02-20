@@ -1,31 +1,57 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { Card, CardHeader, CardTitle, CardContent } from '#/components/ui/card'
 import { ArrowLeft, Plus } from 'lucide-react'
+import { useInstances } from '#/lib/dataHooks'
+import { useQuery, useMutation } from 'convex/react'
+import { api } from '../../../../convex/_generated/api'
+import { useAuth } from '#/lib/authContext'
+import { useState } from 'react'
+import type { Id } from '../../../../convex/_generated/dataModel'
 
 export const Route = createFileRoute('/_dashboard/agents/new')({
   component: NewAgent,
 })
 
-const mockInstances = [
-  { id: 'inst_1', name: 'Production Gateway' },
-  { id: 'inst_2', name: 'Staging Server' },
-  { id: 'inst_3', name: 'Dev Instance' },
-]
-
-const mockModels = [
+const defaultModels = [
   'gpt-4o',
   'gpt-4o-mini',
   'claude-3.5-sonnet',
   'claude-3-haiku',
 ]
 
-const mockBlueprints = [
-  { id: 'bp_1', name: 'Customer Support' },
-  { id: 'bp_2', name: 'Research Assistant' },
-  { id: 'bp_3', name: 'Code Reviewer' },
-]
-
 function NewAgent() {
+  const instances = useInstances() ?? []
+  const blueprints = useQuery(api.blueprints.list, {})
+  const blueprintList = blueprints ?? []
+  const createAgent = useMutation(api.agents.create)
+  const { user } = useAuth()
+  const navigate = useNavigate()
+
+  const [name, setName] = useState('')
+  const [instanceId, setInstanceId] = useState('')
+  const [model, setModel] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!name.trim() || !instanceId || !user?.orgId) return
+
+    setSubmitting(true)
+    try {
+      await createAgent({
+        orgId: user.orgId as Id<"organizations">,
+        instanceId: instanceId as Id<"instances">,
+        name: name.trim(),
+        model: model || undefined,
+      })
+      navigate({ to: '/agents' })
+    } catch (err) {
+      console.error('Failed to create agent:', err)
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
   return (
     <div className="space-y-6">
       {/* Back Link */}
@@ -49,12 +75,7 @@ function NewAgent() {
           <CardTitle>Agent Configuration</CardTitle>
         </CardHeader>
         <CardContent>
-          <form
-            className="space-y-5"
-            onSubmit={(e) => {
-              e.preventDefault()
-            }}
-          >
+          <form className="space-y-5" onSubmit={handleSubmit}>
             {/* Agent Name */}
             <div className="space-y-1.5">
               <label htmlFor="agent-name" className="block text-sm font-medium text-slate-300">
@@ -63,8 +84,11 @@ function NewAgent() {
               <input
                 id="agent-name"
                 type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. support-bot"
                 className="w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                required
               />
             </div>
 
@@ -76,13 +100,15 @@ function NewAgent() {
               <select
                 id="instance-select"
                 className="w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500"
-                defaultValue=""
+                value={instanceId}
+                onChange={(e) => setInstanceId(e.target.value)}
+                required
               >
                 <option value="" disabled>
                   Select an instance…
                 </option>
-                {mockInstances.map((inst) => (
-                  <option key={inst.id} value={inst.id}>
+                {instances.map((inst) => (
+                  <option key={inst._id} value={inst._id}>
                     {inst.name}
                   </option>
                 ))}
@@ -97,15 +123,12 @@ function NewAgent() {
               <select
                 id="model-select"
                 className="w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500"
-                defaultValue=""
+                value={model}
+                onChange={(e) => setModel(e.target.value)}
               >
-                <option value="" disabled>
-                  Select a model…
-                </option>
-                {mockModels.map((model) => (
-                  <option key={model} value={model}>
-                    {model}
-                  </option>
+                <option value="">Select a model…</option>
+                {defaultModels.map((m) => (
+                  <option key={m} value={m}>{m}</option>
                 ))}
               </select>
             </div>
@@ -113,8 +136,7 @@ function NewAgent() {
             {/* Blueprint Selector (optional) */}
             <div className="space-y-1.5">
               <label htmlFor="blueprint-select" className="block text-sm font-medium text-slate-300">
-                Blueprint{' '}
-                <span className="text-slate-500 font-normal">(optional)</span>
+                Blueprint <span className="text-slate-500 font-normal">(optional)</span>
               </label>
               <select
                 id="blueprint-select"
@@ -122,10 +144,8 @@ function NewAgent() {
                 defaultValue=""
               >
                 <option value="">None</option>
-                {mockBlueprints.map((bp) => (
-                  <option key={bp.id} value={bp.id}>
-                    {bp.name}
-                  </option>
+                {blueprintList.map((bp) => (
+                  <option key={bp._id} value={bp._id}>{bp.name}</option>
                 ))}
               </select>
             </div>
@@ -133,10 +153,11 @@ function NewAgent() {
             {/* Submit */}
             <button
               type="submit"
-              className="inline-flex items-center gap-2 rounded-lg bg-cyan-600 px-4 py-2 text-sm font-medium text-white hover:bg-cyan-500 transition-colors"
+              disabled={submitting || !name.trim() || !instanceId}
+              className="inline-flex items-center gap-2 rounded-lg bg-cyan-600 px-4 py-2 text-sm font-medium text-white hover:bg-cyan-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Plus className="w-4 h-4" />
-              Create Agent
+              {submitting ? 'Creating…' : 'Create Agent'}
             </button>
           </form>
         </CardContent>

@@ -19,8 +19,8 @@ const formatRelativeTime = (ts: number) => {
 function BrowserIndex() {
   const sessions = useBrowserSessions()
 
-  const activeSessions = sessions.filter((s) => s.status === 'active')
-  const pastSessions = sessions.filter((s) => s.status === 'completed' || s.status === 'failed')
+  const activeSessions = sessions?.filter((s) => s.status === 'active') || []
+  const pastSessions = sessions?.filter((s) => s.status === 'completed' || s.status === 'failed') || []
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -48,15 +48,15 @@ function BrowserIndex() {
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            {activeSessions.map((s) => (
-              <div key={s.id} className="flex items-center justify-between rounded-lg border border-slate-700 bg-slate-800/50 px-4 py-3">
+            {activeSessions?.map((s) => (
+              <div key={s._id} className="flex items-center justify-between rounded-lg border border-slate-700 bg-slate-800/50 px-4 py-3">
                 <div className="flex items-center gap-3">
                   <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-700">
                     <Monitor size={14} className="text-cyan-400" />
                   </div>
                   <div>
                     <p className="text-sm font-medium text-white">{s.url}</p>
-                    <p className="text-xs text-slate-500">{s.agentId} · {formatRelativeTime(s.createdAt)}</p>
+                    <p className="text-xs text-slate-500">{s.agentId} · {formatRelativeTime(s._creationTime)}</p>
                   </div>
                 </div>
                 <Badge variant="success">{s.status}</Badge>
@@ -77,8 +77,8 @@ function BrowserIndex() {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {pastSessions.map((t) => (
-                <div key={t.id} className="rounded-lg border border-slate-700 bg-slate-800/50 px-4 py-3">
+              {pastSessions?.map((t) => (
+                <div key={t._id} className="rounded-lg border border-slate-700 bg-slate-800/50 px-4 py-3">
                   <p className="text-sm text-slate-200">{t.taskDescription}</p>
                   <div className="flex items-center gap-2 mt-1.5">
                     <span className="text-xs text-slate-500">{t.agentId}</span>
@@ -102,11 +102,11 @@ function BrowserIndex() {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {sessions.filter((s) => s.status === 'completed').map((p) => (
-                <div key={p.id} className="flex items-center justify-between rounded-lg border border-slate-700 bg-slate-800/50 px-4 py-3">
+              {sessions?.filter((s) => s.status === 'completed').map((p) => (
+                <div key={p._id} className="flex items-center justify-between rounded-lg border border-slate-700 bg-slate-800/50 px-4 py-3">
                   <div>
                     <p className="text-sm font-medium text-white">{p.url}</p>
-                    <p className="text-xs text-slate-500">{p.pagesVisited.length} pages · {formatRelativeTime(p.createdAt)}</p>
+                    <p className="text-xs text-slate-500">{(p.pagesVisited?.length) ?? 0} pages · {formatRelativeTime(p._creationTime)}</p>
                   </div>
                 </div>
               ))}

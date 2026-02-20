@@ -13,6 +13,9 @@ import {
   Lock,
   AlertTriangle,
 } from 'lucide-react'
+import { useQuery, useMutation } from 'convex/react'
+import { api } from '../../../../../../convex/_generated/api'
+import type { Id } from '../../../../../../convex/_generated/dataModel'
 
 export const Route = createFileRoute(
   '/_dashboard/fleet/instances/$instanceId/security',
@@ -20,29 +23,21 @@ export const Route = createFileRoute(
   component: InstanceSecurity,
 })
 
-const mockOpenPorts = [
-  { port: 443, protocol: 'HTTPS', service: 'API Gateway', status: 'secure' as const },
-  { port: 8080, protocol: 'HTTP', service: 'Health Check', status: 'warning' as const },
-  { port: 6379, protocol: 'TCP', service: 'Redis', status: 'secure' as const },
-  { port: 5432, protocol: 'TCP', service: 'PostgreSQL', status: 'secure' as const },
-]
-
-const mockCves = [
-  { id: 'CVE-2024-3094', severity: 'critical' as const, package: 'xz-utils', status: 'patched' },
-  { id: 'CVE-2024-21626', severity: 'high' as const, package: 'runc', status: 'patched' },
-  { id: 'CVE-2024-0567', severity: 'medium' as const, package: 'gnutls', status: 'pending' },
-  { id: 'CVE-2023-44487', severity: 'high' as const, package: 'nghttp2', status: 'patched' },
-]
-
-const severityVariant: Record<string, 'danger' | 'warning' | 'info'> = {
-  critical: 'danger',
-  high: 'danger',
-  medium: 'warning',
-  low: 'info',
-}
-
 function InstanceSecurity() {
   const { instanceId } = Route.useParams()
+  const instance = useQuery(api.instances.get, { id: instanceId as Id<"instances"> })
+  const updateStatus = useMutation(api.instances.updateStatus)
+
+  const isQuarantined = instance?.status === 'quarantined'
+
+  const handleQuarantine = async () => {
+    if (instance) {
+      await updateStatus({
+        id: instance._id,
+        status: isQuarantined ? 'online' : 'quarantined',
+      })
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -59,30 +54,39 @@ function InstanceSecurity() {
         <Shield className="w-6 h-6 text-cyan-400" />
         <div>
           <h1 className="text-2xl font-bold text-white">Security</h1>
-          <p className="text-sm text-slate-400">Instance {instanceId}</p>
+          <p className="text-sm text-slate-400">{instance?.name ?? instanceId}</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Risk Score</CardTitle>
+            <CardTitle>Instance Status</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex items-center gap-4">
-              <span className="text-4xl font-bold text-green-400">82</span>
               <div>
-                <Badge variant="success">Low Risk</Badge>
-                <p className="text-xs text-slate-400 mt-1">Last scanned 12 min ago</p>
+                <span className="text-sm text-slate-400">Status:</span>
+                <Badge variant={isQuarantined ? 'danger' : instance?.status === 'online' ? 'success' : 'warning'} className="ml-2">
+                  {instance?.status ?? '…'}
+                </Badge>
               </div>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-slate-400">Policy Compliance</span>
-              <span className="text-slate-200">96%</span>
+              <span className="text-slate-400">Provider</span>
+              <span className="text-slate-200">{instance?.provider ?? 'Local'}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-slate-400">Encryption at Rest</span>
-              <Badge variant="success">enabled</Badge>
+              <span className="text-slate-400">Region</span>
+              <span className="text-slate-200">{instance?.region ?? 'default'}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-slate-400">Version</span>
+              <span className="text-slate-200">{instance?.version ?? 'unknown'}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-slate-400">Agents</span>
+              <span className="text-slate-200">{instance?.agentCount ?? 0}</span>
             </div>
           </CardContent>
         </Card>
@@ -95,93 +99,60 @@ function InstanceSecurity() {
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
+            <p className="text-sm text-slate-400">
+              Quarantining an instance pauses all agents, blocks egress, and preserves state for forensic analysis.
+            </p>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-slate-300">Network Isolation</p>
-                <p className="text-xs text-slate-400">Block all external traffic</p>
+                <p className="text-sm font-medium text-slate-300">
+                  {isQuarantined ? 'Instance is quarantined' : 'Instance is operational'}
+                </p>
+                <p className="text-xs text-slate-400">
+                  {isQuarantined ? 'Click to release quarantine' : 'Click to quarantine this instance'}
+                </p>
               </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" className="sr-only peer" />
-                <div className="w-9 h-5 bg-slate-600 peer-checked:bg-cyan-600 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all" />
-              </label>
-            </div>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-slate-300">Tool Lockdown</p>
-                <p className="text-xs text-slate-400">Disable all tool execution</p>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" className="sr-only peer" />
-                <div className="w-9 h-5 bg-slate-600 peer-checked:bg-cyan-600 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all" />
-              </label>
+              <Button
+                variant={isQuarantined ? 'default' : 'destructive'}
+                size="sm"
+                onClick={handleQuarantine}
+              >
+                <Shield className="w-4 h-4 mr-1.5" />
+                {isQuarantined ? 'Release' : 'Quarantine'}
+              </Button>
             </div>
           </CardContent>
         </Card>
       </div>
 
+      {/* Security Notes */}
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
             <Lock className="w-4 h-4 text-cyan-400" />
-            <CardTitle>Open Ports</CardTitle>
+            <CardTitle>Security Architecture</CardTitle>
           </div>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-2">
-            {mockOpenPorts.map((port) => (
-              <div
-                key={port.port}
-                className="flex items-center justify-between rounded-lg border border-slate-700/50 bg-slate-900/50 p-4"
-              >
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-sm text-white">:{port.port}</span>
-                    <Badge variant="info">{port.protocol}</Badge>
-                  </div>
-                  <p className="text-xs text-slate-400 mt-0.5">{port.service}</p>
-                </div>
-                <Badge variant={port.status === 'secure' ? 'success' : 'warning'}>
-                  {port.status}
-                </Badge>
-              </div>
-            ))}
+        <CardContent className="space-y-3">
+          <div className="flex justify-between text-sm">
+            <span className="text-slate-400">Tunnel Architecture</span>
+            <Badge variant="success">agent-initiated outbound</Badge>
           </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4 text-cyan-400" />
-              <CardTitle>CVE Status</CardTitle>
-            </div>
-            <Button>
-              <Shield className="w-4 h-4 mr-2" />
-              Run Scan
-            </Button>
+          <div className="flex justify-between text-sm">
+            <span className="text-slate-400">Inbound Ports</span>
+            <Badge variant="success">none required</Badge>
           </div>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2">
-            {mockCves.map((cve) => (
-              <div
-                key={cve.id}
-                className="flex items-center justify-between rounded-lg border border-slate-700/50 bg-slate-900/50 p-4"
-              >
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-sm text-white">{cve.id}</span>
-                    <Badge variant={severityVariant[cve.severity]}>{cve.severity}</Badge>
-                  </div>
-                  <p className="text-xs text-slate-400 mt-0.5">{cve.package}</p>
-                </div>
-                <Badge variant={cve.status === 'patched' ? 'success' : 'warning'}>
-                  {cve.status}
-                </Badge>
-              </div>
-            ))}
+          <div className="flex justify-between text-sm">
+            <span className="text-slate-400">Secrets Storage</span>
+            <Badge variant="success">write-only after entry</Badge>
           </div>
+          <div className="flex justify-between text-sm">
+            <span className="text-slate-400">Audit Log</span>
+            <Badge variant="success">immutable, append-only</Badge>
+          </div>
+          <p className="text-xs text-slate-500 mt-2">
+            Port scanning, CVE detection, and policy compliance scoring require the VPS agent sidecar to be active.
+            These features will be populated once the agent is connected.
+          </p>
         </CardContent>
       </Card>
     </div>

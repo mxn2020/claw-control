@@ -2,30 +2,24 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import { Card, CardHeader, CardTitle, CardContent } from '#/components/ui/card'
 import { Badge } from '#/components/ui/badge'
 import { Network, Plus, Bot, Server } from 'lucide-react'
+import { useQuery } from 'convex/react'
+import { api } from '../../../../convex/_generated/api'
 
 export const Route = createFileRoute('/_dashboard/swarms/')({
   component: SwarmsOverview,
 })
 
-const mockSwarms = [
-  {
-    id: 'swarm_1',
-    name: 'Support μ-Swarm',
-    status: 'active' as const,
-    tier: 'μ' as const,
-    instanceCount: 3,
-    agentCount: 6,
-  },
-]
-
 const tierLegend = [
   { symbol: 'μ', label: 'Micro', range: '2–10 agents' },
-  { symbol: 'm', label: 'Milli', range: '11–100 agents' },
-  { symbol: 'M', label: 'Mega', range: '101–1,000 agents' },
-  { symbol: 'Ω', label: 'Omega', range: '1,001–10,000 agents' },
+  { symbol: 'm', label: 'Meso', range: '11–100 agents' },
+  { symbol: 'M', label: 'Macro', range: '101–1,000 agents' },
+  { symbol: 'Ω', label: 'Mega', range: '1,001–10,000 agents' },
 ]
 
 function SwarmsOverview() {
+  const swarms = useQuery(api.swarms.list, {})
+  const swarmList = swarms ?? []
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -44,11 +38,11 @@ function SwarmsOverview() {
 
       {/* Swarm Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {mockSwarms.map((swarm) => (
+        {swarmList.map((swarm) => (
           <Link
-            key={swarm.id}
+            key={swarm._id}
             to="/swarms/$swarmId"
-            params={{ swarmId: swarm.id }}
+            params={{ swarmId: swarm._id }}
             className="block"
           >
             <Card className="hover:border-cyan-500/50 transition-all duration-200 cursor-pointer">
@@ -58,7 +52,9 @@ function SwarmsOverview() {
                     <Network className="w-5 h-5 text-cyan-400" />
                     <CardTitle className="text-base">{swarm.name}</CardTitle>
                   </div>
-                  <Badge variant="success">{swarm.status}</Badge>
+                  <Badge variant={swarm.status === 'active' ? 'success' : swarm.status === 'provisioning' ? 'warning' : 'default'}>
+                    {swarm.status}
+                  </Badge>
                 </div>
               </CardHeader>
               <CardContent>
@@ -66,17 +62,22 @@ function SwarmsOverview() {
                   <Badge variant="info">{swarm.tier}-tier</Badge>
                   <div className="flex items-center gap-1">
                     <Server className="w-3.5 h-3.5 text-slate-400" />
-                    {swarm.instanceCount} instances
+                    {swarm.instanceIds?.length ?? 0} instances
                   </div>
                   <div className="flex items-center gap-1">
                     <Bot className="w-3.5 h-3.5 text-slate-400" />
-                    {swarm.agentCount} agents
+                    {swarm.agentIds?.length ?? 0} agents
                   </div>
                 </div>
               </CardContent>
             </Card>
           </Link>
         ))}
+        {swarmList.length === 0 && (
+          <div className="col-span-3 text-center py-12 text-slate-500">
+            No swarms configured yet.
+          </div>
+        )}
       </div>
 
       {/* Tier Legend */}

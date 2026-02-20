@@ -7,6 +7,9 @@ import {
   Settings,
   MessageSquare,
 } from 'lucide-react'
+import { useQuery } from 'convex/react'
+import { api } from '../../../../../convex/_generated/api'
+import type { Id } from '../../../../../convex/_generated/dataModel'
 
 export const Route = createFileRoute(
   '/_dashboard/sessions/$sessionId/conversation',
@@ -14,57 +17,18 @@ export const Route = createFileRoute(
   component: SessionConversation,
 })
 
-const mockMessages = [
-  {
-    id: 1,
-    role: 'user' as const,
-    content: 'Hi, I need help with my billing. I was charged twice this month.',
-    timestamp: '2024-01-15 10:32:01 AM',
-  },
-  {
-    id: 2,
-    role: 'assistant' as const,
-    content:
-      'I can see your account. Let me look into the duplicate charge. I found two transactions on Jan 15th — one for $29.99 and another for $29.99. The second one appears to be a duplicate.',
-    timestamp: '2024-01-15 10:32:14 AM',
-    toolCalls: ['lookup_account', 'list_transactions'],
-  },
-  {
-    id: 3,
-    role: 'system' as const,
-    content: 'Policy engine: billing refund flow activated.',
-    timestamp: '2024-01-15 10:32:15 AM',
-  },
-  {
-    id: 4,
-    role: 'user' as const,
-    content: 'Yes, exactly. Can you refund the extra one?',
-    timestamp: '2024-01-15 10:33:02 AM',
-  },
-  {
-    id: 5,
-    role: 'assistant' as const,
-    content:
-      "I've initiated a refund for the duplicate charge of $29.99. It should appear in your account within 3-5 business days. Is there anything else I can help with?",
-    timestamp: '2024-01-15 10:34:11 AM',
-    toolCalls: ['initiate_refund'],
-  },
-  {
-    id: 6,
-    role: 'user' as const,
-    content: "No, that's all. Thanks!",
-    timestamp: '2024-01-15 10:34:30 AM',
-  },
-]
-
 const roleConfig = {
   user: { icon: User, bg: 'bg-slate-700', bubble: 'bg-cyan-600/20 text-slate-200', label: 'User' },
   assistant: { icon: Bot, bg: 'bg-cyan-600/20', bubble: 'bg-slate-800 text-slate-200', label: 'Agent' },
   system: { icon: Settings, bg: 'bg-amber-600/20', bubble: 'bg-amber-900/30 text-amber-200 border border-amber-700/40', label: 'System' },
+  tool: { icon: Settings, bg: 'bg-purple-600/20', bubble: 'bg-purple-900/30 text-purple-200 border border-purple-700/40', label: 'Tool' },
 }
 
 function SessionConversation() {
   const { sessionId } = Route.useParams()
+  const session = useQuery(api.sessions.get, { id: sessionId as Id<"sessions"> })
+  const messages = useQuery(api.sessions.getMessages, { sessionId: sessionId as Id<"sessions"> })
+  const msgList = messages ?? []
 
   return (
     <div className="space-y-6">
@@ -76,34 +40,39 @@ function SessionConversation() {
             <h1 className="text-2xl font-bold text-white">Conversation</h1>
           </div>
           <p className="text-sm text-slate-400">
-            Full thread for session {sessionId}
+            {session?.title ?? 'Untitled'} — {msgList.length} messages
           </p>
         </div>
-        <Badge variant="info">{mockMessages.length} messages</Badge>
+        <Badge variant={session?.status === 'active' ? 'success' : 'info'}>{session?.status ?? '…'}</Badge>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Messages */}
         <div className="lg:col-span-3 space-y-4">
-          {mockMessages.map((msg) => {
-            const config = roleConfig[msg.role]
+          {msgList.length === 0 && (
+            <div className="text-center py-16 text-slate-500">
+              <Bot className="w-12 h-12 mx-auto mb-3 text-slate-600" />
+              <p>No messages yet.</p>
+            </div>
+          )}
+          {msgList.map((msg) => {
+            const config = roleConfig[msg.role as keyof typeof roleConfig] ?? roleConfig.system
             const Icon = config.icon
             return (
               <div
-                key={msg.id}
+                key={msg._id}
                 className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}
               >
                 <div
                   className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${config.bg}`}
                 >
                   <Icon
-                    className={`w-4 h-4 ${
-                      msg.role === 'assistant'
+                    className={`w-4 h-4 ${msg.role === 'assistant'
                         ? 'text-cyan-400'
-                        : msg.role === 'system'
+                        : msg.role === 'system' || msg.role === 'tool'
                           ? 'text-amber-400'
                           : 'text-slate-300'
-                    }`}
+                      }`}
                   />
                 </div>
                 <div className={`max-w-[70%] rounded-xl px-4 py-3 ${config.bubble}`}>
@@ -113,17 +82,8 @@ function SessionConversation() {
                     </span>
                   </div>
                   <p className="text-sm">{msg.content}</p>
-                  {'toolCalls' in msg && msg.toolCalls && (
-                    <div className="flex gap-1.5 mt-2 flex-wrap">
-                      {msg.toolCalls.map((tool) => (
-                        <Badge key={tool} variant="outline">
-                          {tool}
-                        </Badge>
-                      ))}
-                    </div>
-                  )}
                   <span className="text-xs text-slate-500 mt-1 block">
-                    {msg.timestamp}
+                    {new Date(msg.createdAt).toLocaleString()}
                   </span>
                 </div>
               </div>
@@ -140,25 +100,32 @@ function SessionConversation() {
             <CardContent className="space-y-3">
               <div>
                 <span className="text-xs text-slate-400">Messages</span>
-                <p className="text-sm text-white">{mockMessages.length}</p>
+                <p className="text-sm text-white">{msgList.length}</p>
               </div>
               <div>
                 <span className="text-xs text-slate-400">Participants</span>
-                <div className="flex gap-1 mt-1">
-                  <Badge variant="default">User</Badge>
-                  <Badge variant="info">Agent</Badge>
-                  <Badge variant="warning">System</Badge>
+                <div className="flex gap-1 mt-1 flex-wrap">
+                  {[...new Set(msgList.map(m => m.role))].map(role => (
+                    <Badge key={role} variant={role === 'assistant' ? 'info' : role === 'system' ? 'warning' : 'default'}>
+                      {role}
+                    </Badge>
+                  ))}
+                  {msgList.length === 0 && <span className="text-xs text-slate-500">—</span>}
                 </div>
-              </div>
-              <div>
-                <span className="text-xs text-slate-400">Duration</span>
-                <p className="text-sm text-white">2m 29s</p>
               </div>
               <div>
                 <span className="text-xs text-slate-400">Status</span>
                 <div className="mt-1">
-                  <Badge variant="success">completed</Badge>
+                  <Badge variant={session?.status === 'active' ? 'success' : 'default'}>
+                    {session?.status ?? '…'}
+                  </Badge>
                 </div>
+              </div>
+              <div>
+                <span className="text-xs text-slate-400">Total Tokens</span>
+                <p className="text-sm text-white">
+                  {msgList.reduce((s, m) => s + (m.tokens ?? 0), 0).toLocaleString()}
+                </p>
               </div>
             </CardContent>
           </Card>

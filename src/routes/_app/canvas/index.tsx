@@ -22,8 +22,8 @@ function CanvasIndex() {
 
   // Split: recently updated (within 6h) are "active", rest are history
   const sixHoursAgo = Date.now() - 6 * 3600000
-  const activeCanvases = canvases.filter((c) => c.updatedAt > sixHoursAgo)
-  const historySnapshots = canvases.filter((c) => c.updatedAt <= sixHoursAgo)
+  const activeCanvases = canvases?.filter((c) => (c.updatedAt ?? c._creationTime) > sixHoursAgo) || []
+  const historySnapshots = canvases?.filter((c) => (c.updatedAt ?? c._creationTime) <= sixHoursAgo) || []
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -51,9 +51,9 @@ function CanvasIndex() {
           <div className="space-y-3">
             {activeCanvases.map((canvas) => (
               <Link
-                key={canvas.id}
+                key={canvas._id}
                 to="/canvas/$canvasId"
-                params={{ canvasId: canvas.id }}
+                params={{ canvasId: canvas._id }}
                 className="block"
               >
                 <div className="flex items-center justify-between rounded-lg border border-slate-700 bg-slate-800/50 px-4 py-3 hover:border-cyan-500/50 transition-all cursor-pointer">
@@ -63,7 +63,7 @@ function CanvasIndex() {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-white">{canvas.title}</p>
-                      <p className="text-xs text-slate-500">{canvas.agentId} · {formatRelativeTime(canvas.updatedAt)}</p>
+                      <p className="text-xs text-slate-500">{canvas.agentId} · {formatRelativeTime(canvas.updatedAt ?? canvas._creationTime)}</p>
                     </div>
                   </div>
                   <Badge variant="success">
@@ -88,9 +88,9 @@ function CanvasIndex() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {historySnapshots.map((snap) => (
               <Link
-                key={snap.id}
+                key={snap._id}
                 to="/canvas/$canvasId"
-                params={{ canvasId: snap.id }}
+                params={{ canvasId: snap._id }}
                 className="block"
               >
                 <div className="rounded-lg border border-slate-700 bg-slate-800/50 p-3 hover:border-cyan-500/50 transition-all cursor-pointer">
@@ -98,7 +98,7 @@ function CanvasIndex() {
                     <Image size={24} className="text-slate-600" />
                   </div>
                   <p className="text-sm font-medium text-white truncate">{snap.title}</p>
-                  <p className="text-xs text-slate-500">{snap.agentId} · {new Date(snap.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
+                  <p className="text-xs text-slate-500">{snap.agentId} · {new Date(snap.updatedAt ?? snap._creationTime).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
                 </div>
               </Link>
             ))}

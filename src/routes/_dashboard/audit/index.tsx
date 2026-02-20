@@ -1,7 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { Card, CardContent } from '#/components/ui/card'
 import { ClipboardList, ShieldCheck, Wrench, Settings2, UserCog } from 'lucide-react'
-import { mockAuditLogs } from '#/lib/mockData'
+import { useQuery } from 'convex/react'
+import { api } from '../../../../convex/_generated/api'
 
 export const Route = createFileRoute('/_dashboard/audit/')({
   component: AuditPage,
@@ -18,11 +19,8 @@ const actionIcons: Record<string, React.ReactNode> = {
   security: <ShieldCheck className="w-3.5 h-3.5 text-red-400" />,
 }
 
-type AuditLog = typeof mockAuditLogs[number]
-
 function AuditPage() {
-  // In a live Convex setup, swap mockAuditLogs for a useQuery(api.auditLogs.list, {}) call
-  const logs: AuditLog[] = mockAuditLogs
+  const logs = useQuery(api.auditLogs.list, {})
 
   return (
     <div className="space-y-6">
@@ -34,31 +32,32 @@ function AuditPage() {
       <Card>
         <CardContent className="pt-4">
           <div className="space-y-3">
-            {logs.map((log, i) => (
-              <div key={log.id ?? i} className="flex items-start gap-3 py-2 border-b border-slate-800 last:border-0">
-                <div className="mt-0.5 flex-shrink-0">
-                  {actionIcons[log.resourceType] ?? <ClipboardList className="w-3.5 h-3.5 text-slate-400" />}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-                    <span className="text-sm font-medium text-white">{log.action}</span>
-                    <span className="text-xs px-1.5 py-0.5 rounded bg-slate-700 text-slate-300">{log.resourceType}</span>
-                    {log.resourceId && (
-                      <code className="text-xs text-slate-500 font-mono">{log.resourceId}</code>
-                    )}
+            {logs === undefined ? (
+              <p className="text-sm text-slate-500 py-6 text-center">Loading audit events...</p>
+            ) : logs.length === 0 ? (
+              <p className="text-sm text-slate-500 py-6 text-center">No audit events recorded yet.</p>
+            ) : (
+              logs.map((log) => (
+                <div key={log._id} className="flex items-start gap-3 py-2 border-b border-slate-800 last:border-0">
+                  <div className="mt-0.5 flex-shrink-0">
+                    {actionIcons[log.resourceType] ?? <ClipboardList className="w-3.5 h-3.5 text-slate-400" />}
                   </div>
-                  {log.details && <p className="text-xs text-slate-400 truncate">{log.details}</p>}
-                  <div className="flex items-center gap-3 text-xs text-slate-600 mt-1">
-                    {log.userId && <span>{log.userId}</span>}
-                    <span>{formatTime(log.createdAt)}</span>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+                      <span className="text-sm font-medium text-white">{log.action}</span>
+                      <span className="text-xs px-1.5 py-0.5 rounded bg-slate-700 text-slate-300">{log.resourceType}</span>
+                      {log.resourceId && (
+                        <code className="text-xs text-slate-500 font-mono">{log.resourceId}</code>
+                      )}
+                    </div>
+                    {log.details && <p className="text-xs text-slate-400 truncate">{log.details}</p>}
+                    <div className="flex items-center gap-3 text-xs text-slate-600 mt-1">
+                      {log.userId && <span>{log.userId}</span>}
+                      <span>{formatTime(log.createdAt)}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-            {logs.length === 0 && (
-              <p className="text-sm text-slate-500 py-6 text-center">
-                No audit events recorded yet.
-              </p>
+              ))
             )}
           </div>
         </CardContent>

@@ -30,7 +30,7 @@ const timeAgo = (ms: number) => {
 }
 
 function TasksPage() {
-  const allTasks = useTasks()
+  const allTasks = useTasks() || []
 
   const groups = {
     active: allTasks.filter((t) => t.status === 'running' || t.status === 'queued'),
@@ -81,7 +81,7 @@ function TasksPage() {
             </h2>
             <div className="space-y-2">
               {tasks.map((task) => (
-                <Card key={task.id} className={task.priority === 'high' && task.status !== 'done' ? 'border-amber-500/30' : ''}>
+                <Card key={task._id} className={task.priority === 'high' && task.status !== 'done' ? 'border-amber-500/30' : ''}>
                   <CardContent className="pt-3 pb-3">
                     <div className="flex items-start gap-3">
                       <div className="flex-1 min-w-0">
@@ -94,7 +94,7 @@ function TasksPage() {
                         <div className="flex items-center gap-3 text-xs text-slate-500 mt-1.5">
                           <span className="font-mono">{task.agentId}</span>
                           <span>·</span>
-                          <span>{timeAgo(task.createdAt)}</span>
+                          <span>{timeAgo(task._creationTime)}</span>
                           {task.deadline && task.status !== 'done' && (
                             <>
                               <span>·</span>

@@ -10,7 +10,7 @@ export const Route = createFileRoute('/_dashboard/fleet/')({
 })
 
 function FleetOverview() {
-  const instances = useInstances()
+  const instances = useInstances() || []
 
   const online = instances.filter((i) => i.status === 'online').length
   const totalAgents = instances.reduce((s, i) => s + (i.agentCount ?? 0), 0)
@@ -59,9 +59,9 @@ function FleetOverview() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {instances.map((instance) => (
             <Link
-              key={instance.id}
+              key={instance._id}
               to="/fleet/instances/$instanceId"
-              params={{ instanceId: instance.id }}
+              params={{ instanceId: instance._id }}
               className="block"
             >
               <Card className="hover:border-cyan-500/50 transition-all duration-200 cursor-pointer">

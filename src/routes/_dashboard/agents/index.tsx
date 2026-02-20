@@ -24,7 +24,7 @@ function fmt(n: number) {
 }
 
 function AgentsPage() {
-  const agents = useAgents()
+  const agents = useAgents() || []
 
   return (
     <div className="space-y-6">
@@ -46,9 +46,9 @@ function AgentsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         {agents.map((agent) => (
           <Link
-            key={agent.id}
+            key={agent._id}
             to="/agents/$agentId"
-            params={{ agentId: agent.id }}
+            params={{ agentId: agent._id }}
             className="block"
           >
             <Card className="hover:border-cyan-500/50 transition-all duration-200 cursor-pointer h-full">

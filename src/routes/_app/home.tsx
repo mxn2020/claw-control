@@ -19,9 +19,9 @@ const timeAgo = (ms: number) => {
 
 function Home() {
   const { user } = useAuth()
-  const allTasks = useTasks()
-  const allApprovals = useApprovals()
-  const allCron = useCronJobs()
+  const allTasks = useTasks() || []
+  const allApprovals = useApprovals() || []
+  const allCron = useCronJobs() || []
 
   const activeTasks = allTasks.filter((t) => t.status === 'running' || t.status === 'queued')
   const pendingApprovals = allApprovals.filter((a) => a.status === 'pending')
@@ -121,7 +121,7 @@ function Home() {
           <CardContent>
             <div className="space-y-3">
               {activeTasks.slice(0, 5).map((task) => (
-                <div key={task.id} className="flex items-center justify-between gap-3">
+                <div key={task._id} className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-2 min-w-0">
                     <Bot size={14} className="text-cyan-400 flex-shrink-0" />
                     <p className="text-sm text-white truncate">{task.title}</p>
@@ -154,10 +154,10 @@ function Home() {
           <CardContent>
             <div className="space-y-3">
               {pendingApprovals.slice(0, 4).map((a) => (
-                <div key={a.id} className="flex items-center justify-between gap-3">
+                <div key={a._id} className="flex items-center justify-between gap-3">
                   <div className="min-w-0">
                     <p className="text-sm text-white truncate">{a.description}</p>
-                    <p className="text-xs text-slate-500">{timeAgo(a.createdAt)}</p>
+                    <p className="text-xs text-slate-500">{timeAgo(a._creationTime)}</p>
                   </div>
                   <Badge variant={a.riskLevel === 'high' ? 'danger' : a.riskLevel === 'medium' ? 'warning' : 'default'}>
                     {a.riskLevel}

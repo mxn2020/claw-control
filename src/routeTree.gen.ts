@@ -51,6 +51,7 @@ import { Route as DashboardSettingsProfileRouteImport } from './routes/_dashboar
 import { Route as DashboardSettingsNotificationsRouteImport } from './routes/_dashboard/settings/notifications'
 import { Route as DashboardSettingsAppearanceRouteImport } from './routes/_dashboard/settings/appearance'
 import { Route as DashboardSettingsApiKeysRouteImport } from './routes/_dashboard/settings/api-keys'
+import { Route as DashboardSessionsSessionIdRouteImport } from './routes/_dashboard/sessions/$sessionId'
 import { Route as DashboardSecuritySecretsRouteImport } from './routes/_dashboard/security/secrets'
 import { Route as DashboardSecurityQuarantineRouteImport } from './routes/_dashboard/security/quarantine'
 import { Route as DashboardSecurityPostureRouteImport } from './routes/_dashboard/security/posture'
@@ -418,6 +419,12 @@ const DashboardSettingsApiKeysRoute =
     path: '/settings/api-keys',
     getParentRoute: () => DashboardRoute,
   } as any)
+const DashboardSessionsSessionIdRoute =
+  DashboardSessionsSessionIdRouteImport.update({
+    id: '/sessions/$sessionId',
+    path: '/sessions/$sessionId',
+    getParentRoute: () => DashboardRoute,
+  } as any)
 const DashboardSecuritySecretsRoute =
   DashboardSecuritySecretsRouteImport.update({
     id: '/security/secrets',
@@ -678,9 +685,9 @@ const DashboardSkillsScanIndexRoute =
   } as any)
 const DashboardSessionsSessionIdIndexRoute =
   DashboardSessionsSessionIdIndexRouteImport.update({
-    id: '/sessions/$sessionId/',
-    path: '/sessions/$sessionId/',
-    getParentRoute: () => DashboardRoute,
+    id: '/',
+    path: '/',
+    getParentRoute: () => DashboardSessionsSessionIdRoute,
   } as any)
 const DashboardSecurityComplianceIndexRoute =
   DashboardSecurityComplianceIndexRouteImport.update({
@@ -791,21 +798,21 @@ const DashboardSkillsScanQuarantineRoute =
   } as any)
 const DashboardSessionsSessionIdTraceRoute =
   DashboardSessionsSessionIdTraceRouteImport.update({
-    id: '/sessions/$sessionId/trace',
-    path: '/sessions/$sessionId/trace',
-    getParentRoute: () => DashboardRoute,
+    id: '/trace',
+    path: '/trace',
+    getParentRoute: () => DashboardSessionsSessionIdRoute,
   } as any)
 const DashboardSessionsSessionIdReplayRoute =
   DashboardSessionsSessionIdReplayRouteImport.update({
-    id: '/sessions/$sessionId/replay',
-    path: '/sessions/$sessionId/replay',
-    getParentRoute: () => DashboardRoute,
+    id: '/replay',
+    path: '/replay',
+    getParentRoute: () => DashboardSessionsSessionIdRoute,
   } as any)
 const DashboardSessionsSessionIdConversationRoute =
   DashboardSessionsSessionIdConversationRouteImport.update({
-    id: '/sessions/$sessionId/conversation',
-    path: '/sessions/$sessionId/conversation',
-    getParentRoute: () => DashboardRoute,
+    id: '/conversation',
+    path: '/conversation',
+    getParentRoute: () => DashboardSessionsSessionIdRoute,
   } as any)
 const DashboardSecurityComplianceRetentionRoute =
   DashboardSecurityComplianceRetentionRouteImport.update({
@@ -1331,6 +1338,7 @@ export interface FileRoutesByFullPath {
   '/security/posture': typeof DashboardSecurityPostureRoute
   '/security/quarantine': typeof DashboardSecurityQuarantineRoute
   '/security/secrets': typeof DashboardSecuritySecretsRoute
+  '/sessions/$sessionId': typeof DashboardSessionsSessionIdRouteWithChildren
   '/settings/api-keys': typeof DashboardSettingsApiKeysRoute
   '/settings/appearance': typeof DashboardSettingsAppearanceRoute
   '/settings/notifications': typeof DashboardSettingsNotificationsRoute
@@ -1717,6 +1725,7 @@ export interface FileRoutesById {
   '/_dashboard/security/posture': typeof DashboardSecurityPostureRoute
   '/_dashboard/security/quarantine': typeof DashboardSecurityQuarantineRoute
   '/_dashboard/security/secrets': typeof DashboardSecuritySecretsRoute
+  '/_dashboard/sessions/$sessionId': typeof DashboardSessionsSessionIdRouteWithChildren
   '/_dashboard/settings/api-keys': typeof DashboardSettingsApiKeysRoute
   '/_dashboard/settings/appearance': typeof DashboardSettingsAppearanceRoute
   '/_dashboard/settings/notifications': typeof DashboardSettingsNotificationsRoute
@@ -1910,6 +1919,7 @@ export interface FileRouteTypes {
     | '/security/posture'
     | '/security/quarantine'
     | '/security/secrets'
+    | '/sessions/$sessionId'
     | '/settings/api-keys'
     | '/settings/appearance'
     | '/settings/notifications'
@@ -2295,6 +2305,7 @@ export interface FileRouteTypes {
     | '/_dashboard/security/posture'
     | '/_dashboard/security/quarantine'
     | '/_dashboard/security/secrets'
+    | '/_dashboard/sessions/$sessionId'
     | '/_dashboard/settings/api-keys'
     | '/_dashboard/settings/appearance'
     | '/_dashboard/settings/notifications'
@@ -2740,6 +2751,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardSettingsApiKeysRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/_dashboard/sessions/$sessionId': {
+      id: '/_dashboard/sessions/$sessionId'
+      path: '/sessions/$sessionId'
+      fullPath: '/sessions/$sessionId'
+      preLoaderRoute: typeof DashboardSessionsSessionIdRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/_dashboard/security/secrets': {
       id: '/_dashboard/security/secrets'
       path: '/security/secrets'
@@ -3085,10 +3103,10 @@ declare module '@tanstack/react-router' {
     }
     '/_dashboard/sessions/$sessionId/': {
       id: '/_dashboard/sessions/$sessionId/'
-      path: '/sessions/$sessionId'
+      path: '/'
       fullPath: '/sessions/$sessionId/'
       preLoaderRoute: typeof DashboardSessionsSessionIdIndexRouteImport
-      parentRoute: typeof DashboardRoute
+      parentRoute: typeof DashboardSessionsSessionIdRoute
     }
     '/_dashboard/security/compliance/': {
       id: '/_dashboard/security/compliance/'
@@ -3218,24 +3236,24 @@ declare module '@tanstack/react-router' {
     }
     '/_dashboard/sessions/$sessionId/trace': {
       id: '/_dashboard/sessions/$sessionId/trace'
-      path: '/sessions/$sessionId/trace'
+      path: '/trace'
       fullPath: '/sessions/$sessionId/trace'
       preLoaderRoute: typeof DashboardSessionsSessionIdTraceRouteImport
-      parentRoute: typeof DashboardRoute
+      parentRoute: typeof DashboardSessionsSessionIdRoute
     }
     '/_dashboard/sessions/$sessionId/replay': {
       id: '/_dashboard/sessions/$sessionId/replay'
-      path: '/sessions/$sessionId/replay'
+      path: '/replay'
       fullPath: '/sessions/$sessionId/replay'
       preLoaderRoute: typeof DashboardSessionsSessionIdReplayRouteImport
-      parentRoute: typeof DashboardRoute
+      parentRoute: typeof DashboardSessionsSessionIdRoute
     }
     '/_dashboard/sessions/$sessionId/conversation': {
       id: '/_dashboard/sessions/$sessionId/conversation'
-      path: '/sessions/$sessionId/conversation'
+      path: '/conversation'
       fullPath: '/sessions/$sessionId/conversation'
       preLoaderRoute: typeof DashboardSessionsSessionIdConversationRouteImport
-      parentRoute: typeof DashboardRoute
+      parentRoute: typeof DashboardSessionsSessionIdRoute
     }
     '/_dashboard/security/compliance/retention': {
       id: '/_dashboard/security/compliance/retention'
@@ -3897,6 +3915,28 @@ const AuthRouteChildren: AuthRouteChildren = {
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
+interface DashboardSessionsSessionIdRouteChildren {
+  DashboardSessionsSessionIdConversationRoute: typeof DashboardSessionsSessionIdConversationRoute
+  DashboardSessionsSessionIdReplayRoute: typeof DashboardSessionsSessionIdReplayRoute
+  DashboardSessionsSessionIdTraceRoute: typeof DashboardSessionsSessionIdTraceRoute
+  DashboardSessionsSessionIdIndexRoute: typeof DashboardSessionsSessionIdIndexRoute
+}
+
+const DashboardSessionsSessionIdRouteChildren: DashboardSessionsSessionIdRouteChildren =
+  {
+    DashboardSessionsSessionIdConversationRoute:
+      DashboardSessionsSessionIdConversationRoute,
+    DashboardSessionsSessionIdReplayRoute:
+      DashboardSessionsSessionIdReplayRoute,
+    DashboardSessionsSessionIdTraceRoute: DashboardSessionsSessionIdTraceRoute,
+    DashboardSessionsSessionIdIndexRoute: DashboardSessionsSessionIdIndexRoute,
+  }
+
+const DashboardSessionsSessionIdRouteWithChildren =
+  DashboardSessionsSessionIdRoute._addFileChildren(
+    DashboardSessionsSessionIdRouteChildren,
+  )
+
 interface DashboardFleetInstancesInstanceIdChannelsRouteChildren {
   DashboardFleetInstancesInstanceIdChannelsConnectorsRoute: typeof DashboardFleetInstancesInstanceIdChannelsConnectorsRoute
   DashboardFleetInstancesInstanceIdChannelsHealthRoute: typeof DashboardFleetInstancesInstanceIdChannelsHealthRoute
@@ -3942,6 +3982,7 @@ interface DashboardRouteChildren {
   DashboardSecurityPostureRoute: typeof DashboardSecurityPostureRoute
   DashboardSecurityQuarantineRoute: typeof DashboardSecurityQuarantineRoute
   DashboardSecuritySecretsRoute: typeof DashboardSecuritySecretsRoute
+  DashboardSessionsSessionIdRoute: typeof DashboardSessionsSessionIdRouteWithChildren
   DashboardSettingsApiKeysRoute: typeof DashboardSettingsApiKeysRoute
   DashboardSettingsAppearanceRoute: typeof DashboardSettingsAppearanceRoute
   DashboardSettingsNotificationsRoute: typeof DashboardSettingsNotificationsRoute
@@ -3976,9 +4017,6 @@ interface DashboardRouteChildren {
   DashboardSecurityComplianceExportsRoute: typeof DashboardSecurityComplianceExportsRoute
   DashboardSecurityComplianceRegionsRoute: typeof DashboardSecurityComplianceRegionsRoute
   DashboardSecurityComplianceRetentionRoute: typeof DashboardSecurityComplianceRetentionRoute
-  DashboardSessionsSessionIdConversationRoute: typeof DashboardSessionsSessionIdConversationRoute
-  DashboardSessionsSessionIdReplayRoute: typeof DashboardSessionsSessionIdReplayRoute
-  DashboardSessionsSessionIdTraceRoute: typeof DashboardSessionsSessionIdTraceRoute
   DashboardSkillsScanQuarantineRoute: typeof DashboardSkillsScanQuarantineRoute
   DashboardSkillsScanQueueRoute: typeof DashboardSkillsScanQueueRoute
   DashboardSkillsScanResultsRoute: typeof DashboardSkillsScanResultsRoute
@@ -3995,7 +4033,6 @@ interface DashboardRouteChildren {
   DashboardFleetInstancesIndexRoute: typeof DashboardFleetInstancesIndexRoute
   DashboardObserveAnalyticsIndexRoute: typeof DashboardObserveAnalyticsIndexRoute
   DashboardSecurityComplianceIndexRoute: typeof DashboardSecurityComplianceIndexRoute
-  DashboardSessionsSessionIdIndexRoute: typeof DashboardSessionsSessionIdIndexRoute
   DashboardSkillsScanIndexRoute: typeof DashboardSkillsScanIndexRoute
   DashboardSwarmsSwarmIdIndexRoute: typeof DashboardSwarmsSwarmIdIndexRoute
   DashboardAgentsAgentIdChannelsBindingsRoute: typeof DashboardAgentsAgentIdChannelsBindingsRoute
@@ -4086,6 +4123,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardSecurityPostureRoute: DashboardSecurityPostureRoute,
   DashboardSecurityQuarantineRoute: DashboardSecurityQuarantineRoute,
   DashboardSecuritySecretsRoute: DashboardSecuritySecretsRoute,
+  DashboardSessionsSessionIdRoute: DashboardSessionsSessionIdRouteWithChildren,
   DashboardSettingsApiKeysRoute: DashboardSettingsApiKeysRoute,
   DashboardSettingsAppearanceRoute: DashboardSettingsAppearanceRoute,
   DashboardSettingsNotificationsRoute: DashboardSettingsNotificationsRoute,
@@ -4130,10 +4168,6 @@ const DashboardRouteChildren: DashboardRouteChildren = {
     DashboardSecurityComplianceRegionsRoute,
   DashboardSecurityComplianceRetentionRoute:
     DashboardSecurityComplianceRetentionRoute,
-  DashboardSessionsSessionIdConversationRoute:
-    DashboardSessionsSessionIdConversationRoute,
-  DashboardSessionsSessionIdReplayRoute: DashboardSessionsSessionIdReplayRoute,
-  DashboardSessionsSessionIdTraceRoute: DashboardSessionsSessionIdTraceRoute,
   DashboardSkillsScanQuarantineRoute: DashboardSkillsScanQuarantineRoute,
   DashboardSkillsScanQueueRoute: DashboardSkillsScanQueueRoute,
   DashboardSkillsScanResultsRoute: DashboardSkillsScanResultsRoute,
@@ -4151,7 +4185,6 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardFleetInstancesIndexRoute: DashboardFleetInstancesIndexRoute,
   DashboardObserveAnalyticsIndexRoute: DashboardObserveAnalyticsIndexRoute,
   DashboardSecurityComplianceIndexRoute: DashboardSecurityComplianceIndexRoute,
-  DashboardSessionsSessionIdIndexRoute: DashboardSessionsSessionIdIndexRoute,
   DashboardSkillsScanIndexRoute: DashboardSkillsScanIndexRoute,
   DashboardSwarmsSwarmIdIndexRoute: DashboardSwarmsSwarmIdIndexRoute,
   DashboardAgentsAgentIdChannelsBindingsRoute:

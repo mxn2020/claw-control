@@ -24,19 +24,19 @@ const timeAgo = (ms: number) => {
 }
 
 function ApprovalsPage() {
-  const allApprovals = useApprovals()
+  const allApprovals = useApprovals() || []
   const [filter, setFilter] = useState<ApprovalStatus>('pending')
   const [decided, setDecided] = useState<Record<string, 'approved' | 'rejected'>>({})
 
   const visible = filter === 'all'
     ? allApprovals
     : allApprovals.filter((a) =>
-      decided[a.id] ? decided[a.id] === filter : (a.status as string) === filter
+      decided[a._id] ? decided[a._id] === filter : (a.status as string) === filter
     )
 
-  const pendingCount = allApprovals.filter((a) => !decided[a.id] && (a.status as string) === 'pending').length
-  const approvedCount = allApprovals.filter((a) => decided[a.id] === 'approved' || (!decided[a.id] && (a.status as string) === 'approved')).length
-  const rejectedCount = allApprovals.filter((a) => decided[a.id] === 'rejected' || (!decided[a.id] && (a.status as string) === 'rejected')).length
+  const pendingCount = allApprovals.filter((a) => !decided[a._id] && (a.status as string) === 'pending').length
+  const approvedCount = allApprovals.filter((a) => decided[a._id] === 'approved' || (!decided[a._id] && (a.status as string) === 'approved')).length
+  const rejectedCount = allApprovals.filter((a) => decided[a._id] === 'rejected' || (!decided[a._id] && (a.status as string) === 'rejected')).length
   const counts: Record<string, number> = { pending: pendingCount, approved: approvedCount, rejected: rejectedCount }
 
   const filterLabels: ApprovalStatus[] = ['pending', 'approved', 'rejected', 'all']
@@ -79,11 +79,11 @@ function ApprovalsPage() {
       {/* Approval cards */}
       <div className="space-y-3">
         {visible.map((approval) => {
-          const localDecision = decided[approval.id]
+          const localDecision = decided[approval._id]
           const effectiveStatus: string = localDecision ?? (approval.status as string)
           const isPending = effectiveStatus === 'pending'
           return (
-            <Card key={approval.id} className={(approval.riskLevel as string) === 'high' ? 'border-red-500/30' : ''}>
+            <Card key={approval._id} className={(approval.riskLevel as string) === 'high' ? 'border-red-500/30' : ''}>
               <CardContent className="pt-4">
                 <div className="flex flex-col sm:flex-row sm:items-start gap-4">
                   <div className="flex-1 min-w-0">
@@ -99,7 +99,7 @@ function ApprovalsPage() {
                     <div className="flex items-center gap-3 text-xs text-slate-500">
                       <span className="font-mono">{approval.agentId}</span>
                       <span>·</span>
-                      <span>{timeAgo(approval.createdAt)}</span>
+                      <span>{timeAgo(approval._creationTime)}</span>
                     </div>
                   </div>
                   <div className="flex flex-col sm:items-end gap-2">
@@ -109,7 +109,7 @@ function ApprovalsPage() {
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => decide(approval.id, 'rejected')}
+                          onClick={() => decide(approval._id, 'rejected')}
                           className="border-red-600 text-red-400 hover:bg-red-600/10"
                         >
                           <XCircle className="w-3.5 h-3.5 mr-1" />
@@ -117,7 +117,7 @@ function ApprovalsPage() {
                         </Button>
                         <Button
                           size="sm"
-                          onClick={() => decide(approval.id, 'approved')}
+                          onClick={() => decide(approval._id, 'approved')}
                           className="bg-emerald-600 hover:bg-emerald-700"
                         >
                           <CheckCircle className="w-3.5 h-3.5 mr-1" />

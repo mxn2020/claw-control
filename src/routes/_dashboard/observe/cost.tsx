@@ -8,7 +8,7 @@ export const Route = createFileRoute('/_dashboard/observe/cost')({
 })
 
 function CostPage() {
-  const records = useUsageRecords()
+  const records = useUsageRecords() || []
 
   const totalCost = records.reduce((s, r) => s + r.cost, 0)
   const totalTokens = records.reduce((s, r) => s + r.tokensUsed, 0)

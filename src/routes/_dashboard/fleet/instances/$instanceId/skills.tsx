@@ -11,6 +11,8 @@ import {
   Puzzle,
   Shield,
 } from 'lucide-react'
+import { useQuery } from 'convex/react'
+import { api } from '../../../../../../convex/_generated/api'
 
 export const Route = createFileRoute(
   '/_dashboard/fleet/instances/$instanceId/skills',
@@ -18,23 +20,17 @@ export const Route = createFileRoute(
   component: InstanceSkills,
 })
 
-const mockSkills = [
-  { id: 'sk-1', name: 'Web Search', version: '1.4.0', risk: 'low' as const, agentsUsing: 5 },
-  { id: 'sk-2', name: 'Code Execution', version: '2.1.3', risk: 'high' as const, agentsUsing: 3 },
-  { id: 'sk-3', name: 'Database Query', version: '1.0.2', risk: 'medium' as const, agentsUsing: 4 },
-  { id: 'sk-4', name: 'Email Sender', version: '0.9.1', risk: 'medium' as const, agentsUsing: 2 },
-  { id: 'sk-5', name: 'File Manager', version: '1.2.0', risk: 'high' as const, agentsUsing: 6 },
-  { id: 'sk-6', name: 'Knowledge Base', version: '3.0.0', risk: 'low' as const, agentsUsing: 7 },
-]
-
 const riskVariant: Record<string, 'success' | 'warning' | 'danger'> = {
   low: 'success',
   medium: 'warning',
   high: 'danger',
+  critical: 'danger',
 }
 
 function InstanceSkills() {
   const { instanceId } = Route.useParams()
+  const skills = useQuery(api.platform.list, {})
+  const skillList = skills ?? []
 
   return (
     <div className="space-y-6">
@@ -51,7 +47,7 @@ function InstanceSkills() {
         <Puzzle className="w-6 h-6 text-cyan-400" />
         <div>
           <h1 className="text-2xl font-bold text-white">Skills</h1>
-          <p className="text-sm text-slate-400">Instance {instanceId}</p>
+          <p className="text-sm text-slate-400">{skillList.length} skills installed</p>
         </div>
       </div>
 
@@ -59,14 +55,17 @@ function InstanceSkills() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle>Installed Skills</CardTitle>
-            <Badge variant="info">{mockSkills.length} installed</Badge>
+            <Badge variant="info">{skillList.length} installed</Badge>
           </div>
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
-            {mockSkills.map((skill) => (
+            {skillList.length === 0 && (
+              <p className="text-sm text-slate-500 text-center py-6">No skills installed yet.</p>
+            )}
+            {skillList.map((skill) => (
               <div
-                key={skill.id}
+                key={skill._id}
                 className="flex items-center justify-between rounded-lg border border-slate-700/50 bg-slate-900/50 p-4"
               >
                 <div className="flex items-center gap-3">
@@ -75,16 +74,22 @@ function InstanceSkills() {
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-medium text-white">{skill.name}</span>
                       <Badge variant="info">v{skill.version}</Badge>
-                      <Badge variant={riskVariant[skill.risk]}>
-                        <Shield className="w-3 h-3 mr-1" />
-                        {skill.risk} risk
-                      </Badge>
+                      {skill.riskLevel && (
+                        <Badge variant={riskVariant[skill.riskLevel] ?? 'info'}>
+                          <Shield className="w-3 h-3 mr-1" />
+                          {skill.riskLevel} risk
+                        </Badge>
+                      )}
                     </div>
                     <p className="text-xs text-slate-400 mt-0.5">
-                      Used by {skill.agentsUsing} agents
+                      {skill.description ?? 'No description'}
+                      {skill.author && ` · by ${skill.author}`}
                     </p>
                   </div>
                 </div>
+                <Badge variant={skill.isEnabled ? 'success' : 'default'}>
+                  {skill.isEnabled ? 'enabled' : 'disabled'}
+                </Badge>
               </div>
             ))}
           </div>

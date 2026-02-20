@@ -19,12 +19,12 @@ const formatRelativeTime = (ts: number) => {
 }
 
 function MemoryIndex() {
-  const files = useMemoryFiles()
+  const files = useMemoryFiles() || []
 
   // Derive topic clusters from tags
   const tagCounts: Record<string, number> = {}
   for (const f of files) {
-    for (const tag of f.tags) {
+    for (const tag of f.tags || []) {
       tagCounts[tag] = (tagCounts[tag] || 0) + 1
     }
   }
@@ -34,15 +34,15 @@ function MemoryIndex() {
     .slice(0, 4)
     .map(([name, count], i) => ({ name, count, color: colors[i % colors.length] }))
 
-  // Recent memories (sorted by createdAt descending)
+  // Recent memories (sorted by _creationTime descending)
   const recentMemories = [...files]
-    .sort((a, b) => b.createdAt - a.createdAt)
+    .sort((a, b) => b._creationTime - a._creationTime)
     .slice(0, 4)
     .map((f) => ({
-      id: f.id,
+      id: f._id,
       content: f.path,
       source: f.fileType,
-      time: formatRelativeTime(f.createdAt),
+      time: formatRelativeTime(f._creationTime),
     }))
   return (
     <div className="space-y-6">
