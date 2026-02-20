@@ -1,201 +1,35 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { Card, CardHeader, CardTitle, CardContent } from '#/components/ui/card'
-import { Badge } from '#/components/ui/badge'
-import {
-  ArrowLeft,
-  Shield,
-  AlertTriangle,
-  Lock,
-  Activity,
-} from 'lucide-react'
+import { ArrowLeft, ShieldCheck } from 'lucide-react'
+import { useQuery } from 'convex/react'
+import { api } from '../../../../../../convex/_generated/api'
 
-export const Route = createFileRoute(
-  '/_dashboard/agents/$agentId/security/',
-)({
-  component: AgentSecurity,
-})
+export const Route = createFileRoute('/_dashboard/agents/$agentId/security/')({ component: AgentSecurityIndex })
 
-const mockPermissions = [
-  { scope: 'read:docs', granted: true },
-  { scope: 'write:tickets', granted: true },
-  { scope: 'write:billing', granted: true },
-  { scope: 'execute:refund', granted: true },
-  { scope: 'admin:settings', granted: false },
-  { scope: 'delete:users', granted: false },
-]
-
-const mockSecurityEvents = [
-  {
-    id: 1,
-    event: 'Permission escalation blocked',
-    severity: 'high' as const,
-    timestamp: '2024-01-15 09:45 AM',
-  },
-  {
-    id: 2,
-    event: 'Rate limit triggered (50 req/min)',
-    severity: 'medium' as const,
-    timestamp: '2024-01-14 03:22 PM',
-  },
-  {
-    id: 3,
-    event: 'Unusual tool-call pattern detected',
-    severity: 'low' as const,
-    timestamp: '2024-01-14 11:10 AM',
-  },
-  {
-    id: 4,
-    event: 'Quarantine auto-released',
-    severity: 'medium' as const,
-    timestamp: '2024-01-13 06:01 PM',
-  },
-]
-
-const severityVariant = {
-  high: 'danger' as const,
-  medium: 'warning' as const,
-  low: 'info' as const,
-}
-
-function AgentSecurity() {
+function AgentSecurityIndex() {
   const { agentId } = Route.useParams()
-
+  const logs = useQuery(api.auditLogs.list, { resourceType: 'security', limit: 10 })
+  const entries = logs ?? []
   return (
     <div className="space-y-6">
-      {/* Back Link */}
-      <Link
-        to="/agents/$agentId"
-        params={{ agentId }}
-        className="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-white transition-colors"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        Back to Agent
-      </Link>
-
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <Shield className="w-5 h-5 text-cyan-400" />
-            <h1 className="text-2xl font-bold text-white">Security</h1>
-          </div>
-          <p className="text-sm text-slate-400">
-            Security posture for agent {agentId}
-          </p>
+      <Link to="/agents/$agentId" params={{ agentId }} className="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-white transition-colors"><ArrowLeft className="w-4 h-4" />Back to Agent</Link>
+      <div><h1 className="text-2xl font-bold text-white">Security</h1><p className="text-sm text-slate-400 mt-1">Agent {agentId} security overview</p></div>
+      <div className="grid grid-cols-3 gap-4">
+        <Card><CardContent className="pt-6"><p className="text-xs text-slate-400">Security Events</p><p className="text-2xl font-bold text-white mt-1">{entries.length}</p></CardContent></Card>
+        <Card><CardContent className="pt-6"><p className="text-xs text-slate-400">Status</p><p className="text-2xl font-bold text-emerald-400 mt-1">Healthy</p></CardContent></Card>
+        <Card><CardContent className="pt-6"><p className="text-xs text-slate-400">Risk Level</p><p className="text-2xl font-bold text-cyan-400 mt-1">Low</p></CardContent></Card>
+      </div>
+      <Card><CardHeader><div className="flex items-center gap-2"><ShieldCheck className="w-4 h-4 text-cyan-400" /><CardTitle>Recent Security Events</CardTitle></div></CardHeader><CardContent>
+        <div className="space-y-2">
+          {entries.length === 0 && <p className="text-sm text-slate-500 text-center py-6">No security events.</p>}
+          {entries.map(e => (
+            <div key={e._id} className="flex items-center justify-between py-2 border-b border-slate-700/50 last:border-0">
+              <div><span className="text-sm text-white">{e.action}</span><p className="text-xs text-slate-400">{e.details ?? '—'}</p></div>
+              <span className="text-xs text-slate-500">{new Date(e.createdAt).toLocaleString()}</span>
+            </div>
+          ))}
         </div>
-        <button
-          type="button"
-          className="inline-flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-500 transition-colors"
-        >
-          <AlertTriangle className="w-4 h-4" />
-          Quarantine Agent
-        </button>
-      </div>
-
-      {/* Risk Score & Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-slate-400">Risk Score</span>
-              <Shield className="w-4 h-4 text-cyan-400" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <span className="text-2xl font-bold text-emerald-400">Low</span>
-            <p className="text-xs text-slate-400 mt-1">Score: 18 / 100</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-slate-400">Permissions</span>
-              <Lock className="w-4 h-4 text-cyan-400" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <span className="text-2xl font-bold text-white">
-              {mockPermissions.filter((p) => p.granted).length}
-            </span>
-            <p className="text-xs text-slate-400 mt-1">
-              of {mockPermissions.length} scopes granted
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-slate-400">Events (7d)</span>
-              <Activity className="w-4 h-4 text-cyan-400" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <span className="text-2xl font-bold text-white">
-              {mockSecurityEvents.length}
-            </span>
-            <p className="text-xs text-slate-400 mt-1">security events</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Permissions */}
-        <Card>
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <Lock className="w-4 h-4 text-cyan-400" />
-              <CardTitle>Permissions</CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              {mockPermissions.map((perm) => (
-                <div
-                  key={perm.scope}
-                  className="flex items-center justify-between rounded-lg border border-slate-700/50 bg-slate-900/50 p-3"
-                >
-                  <span className="text-sm font-mono text-slate-300">
-                    {perm.scope}
-                  </span>
-                  <Badge variant={perm.granted ? 'success' : 'danger'}>
-                    {perm.granted ? 'granted' : 'denied'}
-                  </Badge>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Security Events */}
-        <Card>
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4 text-cyan-400" />
-              <CardTitle>Recent Security Events</CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {mockSecurityEvents.map((evt) => (
-                <div
-                  key={evt.id}
-                  className="rounded-lg border border-slate-700/50 bg-slate-900/50 p-3"
-                >
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm text-white">{evt.event}</span>
-                    <Badge variant={severityVariant[evt.severity]}>
-                      {evt.severity}
-                    </Badge>
-                  </div>
-                  <span className="text-xs text-slate-500">
-                    {evt.timestamp}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      </CardContent></Card>
     </div>
   )
 }
