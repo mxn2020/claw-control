@@ -178,3 +178,81 @@ export const updateUser = mutation({
         }
     },
 });
+
+const RECOVERY_TTL_MS = 60 * 60 * 1000; // 1 hour
+const RECOVERY_PREFIX = "recovery_";
+
+export const requestRecovery = mutation({
+    args: { email: v.string() },
+    handler: async (ctx, args) => {
+        const email = args.email.toLowerCase().trim();
+        const user = await ctx.db
+            .query("users")
+            .withIndex("by_email", (q) => q.eq("email", email))
+            .first();
+
+        // Always return success to avoid leaking whether the email exists
+        if (!user) return { success: true };
+
+        // Generate a recovery token (stored as a special session)
+        const recoveryToken = RECOVERY_PREFIX + generateToken();
+        await ctx.db.insert("userSessions", {
+            userId: user._id,
+            token: recoveryToken,
+            expiresAt: Date.now() + RECOVERY_TTL_MS,
+            createdAt: Date.now(),
+        });
+
+        // In OSS, the token is returned directly (no email sending).
+        // In production managed SaaS, this would send an email instead.
+        return { success: true, recoveryToken };
+    },
+});
+
+export const resetPassword = mutation({
+    args: {
+        recoveryToken: v.string(),
+        newPassword: v.string(),
+    },
+    handler: async (ctx, args) => {
+        if (!args.recoveryToken.startsWith(RECOVERY_PREFIX)) {
+            throw new Error("Invalid recovery token.");
+        }
+        if (args.newPassword.length < 6) {
+            throw new Error("Password must be at least 6 characters.");
+        }
+
+        const session = await ctx.db
+            .query("userSessions")
+            .withIndex("by_token", (q) => q.eq("token", args.recoveryToken))
+            .first();
+
+        if (!session || session.expiresAt < Date.now()) {
+            throw new Error("Recovery token is invalid or expired.");
+        }
+
+        // Update password
+        const passwordHash = simpleHash(args.newPassword);
+        await ctx.db.patch(session.userId, { passwordHash });
+
+        // Invalidate all existing sessions for this user (force re-login)
+        const allSessions = await ctx.db
+            .query("userSessions")
+            .withIndex("by_user", (q) => q.eq("userId", session.userId))
+            .collect();
+        for (const s of allSessions) {
+            await ctx.db.delete(s._id);
+        }
+
+        // Create a fresh session for the user
+        const newToken = generateToken();
+        await ctx.db.insert("userSessions", {
+            userId: session.userId,
+            token: newToken,
+            expiresAt: Date.now() + SESSION_TTL_MS,
+            createdAt: Date.now(),
+        });
+
+        return { token: newToken };
+    },
+});

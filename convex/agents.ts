@@ -105,3 +105,35 @@ export const remove = mutation({
     await ctx.db.delete(args.id);
   },
 });
+
+export const pauseAll = mutation({
+  args: { orgId: v.id("organizations") },
+  handler: async (ctx, args) => {
+    const agents = await ctx.db
+      .query("agents")
+      .withIndex("by_org", (q) => q.eq("orgId", args.orgId))
+      .collect();
+    for (const agent of agents) {
+      if (agent.status !== "paused") {
+        await ctx.db.patch(agent._id, { status: "paused" });
+      }
+    }
+    return { paused: agents.length };
+  },
+});
+
+export const resumeAll = mutation({
+  args: { orgId: v.id("organizations") },
+  handler: async (ctx, args) => {
+    const agents = await ctx.db
+      .query("agents")
+      .withIndex("by_org", (q) => q.eq("orgId", args.orgId))
+      .collect();
+    for (const agent of agents) {
+      if (agent.status === "paused") {
+        await ctx.db.patch(agent._id, { status: "idle" });
+      }
+    }
+    return { resumed: agents.length };
+  },
+});

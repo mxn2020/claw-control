@@ -92,3 +92,50 @@ export const remove = mutation({
     await ctx.db.delete(args.id);
   },
 });
+
+export const pauseAll = mutation({
+  args: { orgId: v.id("organizations") },
+  handler: async (ctx, args) => {
+    const instances = await ctx.db
+      .query("instances")
+      .withIndex("by_org", (q) => q.eq("orgId", args.orgId))
+      .collect();
+    for (const instance of instances) {
+      if (instance.status !== "offline") {
+        await ctx.db.patch(instance._id, { status: "offline" });
+      }
+    }
+    // Log the kill switch activation
+    await ctx.db.insert("auditLogs", {
+      orgId: args.orgId,
+      action: "kill_switch_activated",
+      resourceType: "fleet",
+      details: `Paused ${instances.length} instances`,
+      createdAt: Date.now(),
+    });
+    return { paused: instances.length };
+  },
+});
+
+export const resumeAll = mutation({
+  args: { orgId: v.id("organizations") },
+  handler: async (ctx, args) => {
+    const instances = await ctx.db
+      .query("instances")
+      .withIndex("by_org", (q) => q.eq("orgId", args.orgId))
+      .collect();
+    for (const instance of instances) {
+      if (instance.status === "offline") {
+        await ctx.db.patch(instance._id, { status: "online" });
+      }
+    }
+    await ctx.db.insert("auditLogs", {
+      orgId: args.orgId,
+      action: "kill_switch_deactivated",
+      resourceType: "fleet",
+      details: `Resumed ${instances.length} instances`,
+      createdAt: Date.now(),
+    });
+    return { resumed: instances.length };
+  },
+});

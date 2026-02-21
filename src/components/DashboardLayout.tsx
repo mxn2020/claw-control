@@ -1,9 +1,13 @@
 // src/components/DashboardLayout.tsx
-// Full management layer layout with collapsible sidebar navigation.
+// Full management layer layout with collapsible sidebar navigation and global kill switch.
 
 import { useState } from 'react'
 import { Link, useLocation } from '@tanstack/react-router'
 import { useAuth } from '#/lib/authContext'
+import { useMutation } from 'convex/react'
+import { api } from '../../convex/_generated/api'
+import { useToast } from '#/components/ui/toast'
+import type { Id } from '../../convex/_generated/dataModel'
 import {
   Server,
   Bot,
@@ -23,6 +27,9 @@ import {
   User,
   ChevronDown,
   ChevronRight as ChevronRightSm,
+  OctagonX,
+  Play,
+  AlertTriangle,
 } from 'lucide-react'
 
 interface NavItem {
@@ -205,6 +212,45 @@ function NavGroup({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [collapsed, setCollapsed] = useState(false)
   const { user, logout } = useAuth()
+  const { toast } = useToast()
+
+  // Kill switch state
+  const [killSwitchActive, setKillSwitchActive] = useState(false)
+  const [showKillConfirm, setShowKillConfirm] = useState(false)
+  const [isProcessing, setIsProcessing] = useState(false)
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const convexApi = api as Record<string, any>
+  const pauseAllInstances = useMutation(convexApi.instances?.pauseAll ?? null)
+  const resumeAllInstances = useMutation(convexApi.instances?.resumeAll ?? null)
+  const pauseAllAgents = useMutation(convexApi.agents?.pauseAll ?? null)
+  const resumeAllAgents = useMutation(convexApi.agents?.resumeAll ?? null)
+
+  async function handleKillSwitch() {
+    if (!user?.orgId) return
+    const orgId = user.orgId as Id<"organizations">
+    setIsProcessing(true)
+    try {
+      if (killSwitchActive) {
+        // Resume
+        await resumeAllInstances({ orgId })
+        await resumeAllAgents({ orgId })
+        setKillSwitchActive(false)
+        toast('All instances and agents resumed', 'success')
+      } else {
+        // Pause
+        await pauseAllInstances({ orgId })
+        await pauseAllAgents({ orgId })
+        setKillSwitchActive(true)
+        toast('Kill switch activated — all agents paused', 'error')
+      }
+    } catch (err) {
+      toast(err instanceof Error ? err.message : 'Kill switch failed', 'error')
+    } finally {
+      setIsProcessing(false)
+      setShowKillConfirm(false)
+    }
+  }
 
   return (
     <div className="flex min-h-screen bg-slate-950">
@@ -266,6 +312,81 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       {/* Main content */}
       <div className="flex-1 flex flex-col min-w-0">
+        {/* Top bar with kill switch */}
+        <header className="flex items-center justify-between px-6 py-2 border-b border-slate-800 bg-slate-900/50">
+          <div className="flex items-center gap-2">
+            {killSwitchActive && (
+              <div className="flex items-center gap-2 text-xs text-red-400 bg-red-500/10 border border-red-500/30 px-3 py-1.5 rounded-full animate-pulse">
+                <OctagonX className="w-3.5 h-3.5" />
+                <span className="font-medium">KILL SWITCH ACTIVE</span>
+              </div>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => killSwitchActive ? handleKillSwitch() : setShowKillConfirm(true)}
+              disabled={isProcessing}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${killSwitchActive
+                  ? 'bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/30 border border-emerald-500/30'
+                  : 'bg-red-600/20 text-red-400 hover:bg-red-600/30 border border-red-500/30'
+                } ${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}`}
+            >
+              {killSwitchActive ? (
+                <>
+                  <Play className="w-3.5 h-3.5" />
+                  Resume All
+                </>
+              ) : (
+                <>
+                  <OctagonX className="w-3.5 h-3.5" />
+                  Kill Switch
+                </>
+              )}
+            </button>
+          </div>
+        </header>
+
+        {/* Kill switch confirmation modal */}
+        {showKillConfirm && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+            <div className="bg-slate-900 border border-slate-700 rounded-xl shadow-2xl p-6 max-w-md mx-4">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center">
+                  <AlertTriangle className="w-5 h-5 text-red-400" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-white">Activate Kill Switch?</h3>
+                  <p className="text-sm text-slate-400">This will pause all instances and agents</p>
+                </div>
+              </div>
+              <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 mb-4 text-sm text-slate-300">
+                <ul className="space-y-1">
+                  <li>• All instances will be set to <strong className="text-red-400">offline</strong></li>
+                  <li>• All agents will be <strong className="text-red-400">paused</strong></li>
+                  <li>• Active sessions will be interrupted</li>
+                  <li>• This action is logged to the audit trail</li>
+                </ul>
+              </div>
+              <div className="flex justify-end gap-3">
+                <button
+                  onClick={() => setShowKillConfirm(false)}
+                  className="px-4 py-2 text-sm text-slate-400 hover:text-white transition-colors rounded-lg hover:bg-slate-800"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleKillSwitch}
+                  disabled={isProcessing}
+                  className="px-4 py-2 text-sm bg-red-600 text-white rounded-lg hover:bg-red-500 transition-colors font-medium disabled:opacity-50"
+                >
+                  {isProcessing ? 'Activating…' : 'Activate Kill Switch'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         <main className="flex-1 overflow-auto p-6">
           {children}
         </main>

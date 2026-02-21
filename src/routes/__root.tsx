@@ -2,6 +2,7 @@ import { HeadContent, Outlet, Scripts, createRootRoute } from '@tanstack/react-r
 import { ConvexProvider, ConvexReactClient } from 'convex/react'
 import { ConvexDataProvider } from '../lib/ConvexDataProvider'
 import { AuthProvider, MockAuthProvider } from '../lib/authContext'
+import { ToastProvider } from '../components/ui/toast'
 
 import appCss from '../styles.css?url'
 
@@ -41,7 +42,9 @@ function RootComponent() {
       <ConvexProvider client={convex}>
         <AuthProvider>
           <ConvexDataProvider>
-            <Outlet />
+            <ToastProvider>
+              <Outlet />
+            </ToastProvider>
           </ConvexDataProvider>
         </AuthProvider>
       </ConvexProvider>
@@ -50,7 +53,10 @@ function RootComponent() {
   // No VITE_CONVEX_URL — run in mock-data / demo mode with a fake logged-in user
   return (
     <MockAuthProvider>
-      <Outlet />
+      <ToastProvider>
+        <Outlet />
+      </ToastProvider>
     </MockAuthProvider>
   )
 }
+
