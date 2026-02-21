@@ -1,59 +1,20 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { Card, CardHeader, CardTitle, CardContent } from '#/components/ui/card'
-import { Badge } from '#/components/ui/badge'
+import { useQuery } from 'convex/react'
+import { api } from '../../../../../convex/_generated/api'
 
-export const Route = createFileRoute(
-  '/_dashboard/security/compliance/retention',
-)({
-  component: ComplianceRetention,
-})
-
-const mockPolicies = [
-  { id: 'pol_1', name: 'Session Logs', retention: '90 days', scope: 'all instances', status: 'active' },
-  { id: 'pol_2', name: 'Audit Logs', retention: '2 years', scope: 'all instances', status: 'active' },
-  { id: 'pol_3', name: 'Tool Call Traces', retention: '30 days', scope: 'production', status: 'active' },
-  { id: 'pol_4', name: 'User Data', retention: '1 year', scope: 'EU instances', status: 'active' },
-]
-
+export const Route = createFileRoute('/_dashboard/security/compliance/retention')({ component: ComplianceRetention })
 function ComplianceRetention() {
+  const stats = useQuery(api.platform.getStats, {})
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-white">Retention Policies</h1>
-        <p className="text-sm text-slate-400 mt-1">Log and session data retention policies</p>
+      <div><h1 className="text-2xl font-bold text-white">Data Retention</h1><p className="text-sm text-slate-400 mt-1">Configure data retention policies</p></div>
+      <div className="grid grid-cols-3 gap-4">
+        <Card><CardContent className="pt-6"><p className="text-xs text-slate-400">Total Sessions</p><p className="text-2xl font-bold text-white mt-1">{stats?.totalSessions ?? 0}</p></CardContent></Card>
+        <Card><CardContent className="pt-6"><p className="text-xs text-slate-400">Total Agents</p><p className="text-2xl font-bold text-white mt-1">{stats?.totalAgents ?? 0}</p></CardContent></Card>
+        <Card><CardContent className="pt-6"><p className="text-xs text-slate-400">Total Skills</p><p className="text-2xl font-bold text-white mt-1">{stats?.totalSkills ?? 0}</p></CardContent></Card>
       </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Policies</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            {mockPolicies.map((pol) => (
-              <div
-                key={pol.id}
-                className="flex items-center justify-between rounded-lg border border-slate-700/50 bg-slate-900/50 p-4"
-              >
-                <div>
-                  <span className="text-sm font-medium text-white">{pol.name}</span>
-                  <p className="text-xs text-slate-400 mt-0.5">
-                    Retain for <span className="text-amber-400">{pol.retention}</span> · scope: {pol.scope}
-                  </p>
-                </div>
-                <Badge variant="success">{pol.status}</Badge>
-              </div>
-            ))}
-          </div>
-          <div className="mt-4 flex justify-end">
-            <button
-              type="button"
-              className="rounded-lg bg-cyan-600 px-4 py-2 text-sm font-medium text-white hover:bg-cyan-500 transition-colors"
-            >
-              Add Policy
-            </button>
-          </div>
-        </CardContent>
-      </Card>
+      <Card><CardHeader><CardTitle>Retention Policy</CardTitle></CardHeader><CardContent><p className="text-sm text-slate-400">Data retention policies are managed at the platform level. Contact your administrator to configure custom retention periods for sessions, logs, and audit data.</p></CardContent></Card>
     </div>
   )
 }
