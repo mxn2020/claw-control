@@ -1,4 +1,3 @@
-import { DemoDataBanner } from '#/components/ui/demo-data-banner'
 import { createFileRoute } from '@tanstack/react-router'
 import { Card, CardHeader, CardTitle, CardContent } from '#/components/ui/card'
 import { Badge } from '#/components/ui/badge'
@@ -11,66 +10,37 @@ import {
   Play,
   Bot,
 } from 'lucide-react'
+import { useQuery } from 'convex/react'
+import { api } from '../../../../convex/_generated/api'
 
 export const Route = createFileRoute('/_dashboard/channels/routing')({
   component: ChannelsRouting,
 })
 
-const routingRules = [
-  {
-    id: 1,
-    priority: 1,
-    source: 'Discord — #support',
-    target: 'support-agent',
-    conditions: 'Contains "help" or "issue"',
-    status: 'active',
-  },
-  {
-    id: 2,
-    priority: 2,
-    source: 'Slack — #engineering',
-    target: 'code-review-bot',
-    conditions: 'Contains PR link or "review"',
-    status: 'active',
-  },
-  {
-    id: 3,
-    priority: 3,
-    source: 'WebChat — Customer Portal',
-    target: 'support-agent',
-    conditions: 'All messages (fallback)',
-    status: 'active',
-  },
-  {
-    id: 4,
-    priority: 4,
-    source: 'GitHub — Pull Requests',
-    target: 'code-review-bot',
-    conditions: 'Event type: pull_request',
-    status: 'active',
-  },
-  {
-    id: 5,
-    priority: 5,
-    source: 'Email — support@acme.com',
-    target: 'support-agent',
-    conditions: 'Subject matches "billing|account|refund"',
-    status: 'active',
-  },
-  {
-    id: 6,
-    priority: 6,
-    source: 'Slack — #ops-alerts',
-    target: 'ops-agent',
-    conditions: 'Sender is PagerDuty or Datadog',
-    status: 'paused',
-  },
-]
-
 function ChannelsRouting() {
+  const channels = useQuery(api.platform.listChannels, {})
+  const agents = useQuery(api.agents.list, {})
+
+  if (!channels || !agents) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <span className="text-slate-400">Loading routing rules…</span>
+      </div>
+    )
+  }
+
+  // Derive routing rules from channels → agents mapping
+  const routingRules = channels.map((ch, idx) => ({
+    id: ch._id,
+    priority: idx + 1,
+    source: `${ch.platform} — ${ch.name}`,
+    target: agents.length > 0 ? agents[idx % agents.length].name : 'unassigned',
+    status: ch.status === 'connected' ? 'active' : 'paused',
+    messageCount: ch.messageCount ?? 0,
+  }))
+
   return (
     <div className="space-y-6">
-      <DemoDataBanner />
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -94,45 +64,53 @@ function ChannelsRouting() {
           </div>
         </CardHeader>
         <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-slate-700">
-                  <th className="text-left px-4 py-3 text-xs font-medium text-slate-400 uppercase tracking-wider">Priority</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-slate-400 uppercase tracking-wider">Source Channel</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-slate-400 uppercase tracking-wider" />
-                  <th className="text-left px-4 py-3 text-xs font-medium text-slate-400 uppercase tracking-wider">Target Agent</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-slate-400 uppercase tracking-wider">Conditions</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-slate-400 uppercase tracking-wider">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {routingRules.map((rule) => (
-                  <tr key={rule.id} className="border-b border-slate-700/50 last:border-0">
-                    <td className="px-4 py-3">
-                      <Badge variant="outline" className="text-xs">#{rule.priority}</Badge>
-                    </td>
-                    <td className="px-4 py-3 text-white">{rule.source}</td>
-                    <td className="px-4 py-3">
-                      <ArrowRight className="w-4 h-4 text-slate-500" />
-                    </td>
-                    <td className="px-4 py-3">
-                      <Badge variant="info" className="text-xs">
-                        <Bot className="w-3 h-3 mr-1" />
-                        {rule.target}
-                      </Badge>
-                    </td>
-                    <td className="px-4 py-3 text-slate-400 text-xs">{rule.conditions}</td>
-                    <td className="px-4 py-3">
-                      <Badge variant={rule.status === 'active' ? 'success' : 'warning'}>
-                        {rule.status}
-                      </Badge>
-                    </td>
+          {routingRules.length === 0 ? (
+            <p className="text-sm text-slate-500 p-6">
+              No routing rules — add channels and agents first
+            </p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-slate-700">
+                    <th className="text-left px-4 py-3 text-xs font-medium text-slate-400 uppercase tracking-wider">Priority</th>
+                    <th className="text-left px-4 py-3 text-xs font-medium text-slate-400 uppercase tracking-wider">Source Channel</th>
+                    <th className="text-left px-4 py-3 text-xs font-medium text-slate-400 uppercase tracking-wider" />
+                    <th className="text-left px-4 py-3 text-xs font-medium text-slate-400 uppercase tracking-wider">Target Agent</th>
+                    <th className="text-left px-4 py-3 text-xs font-medium text-slate-400 uppercase tracking-wider">Messages</th>
+                    <th className="text-left px-4 py-3 text-xs font-medium text-slate-400 uppercase tracking-wider">Status</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {routingRules.map((rule) => (
+                    <tr key={rule.id} className="border-b border-slate-700/50 last:border-0">
+                      <td className="px-4 py-3">
+                        <Badge variant="outline" className="text-xs">#{rule.priority}</Badge>
+                      </td>
+                      <td className="px-4 py-3 text-white">{rule.source}</td>
+                      <td className="px-4 py-3">
+                        <ArrowRight className="w-4 h-4 text-slate-500" />
+                      </td>
+                      <td className="px-4 py-3">
+                        <Badge variant="info" className="text-xs">
+                          <Bot className="w-3 h-3 mr-1" />
+                          {rule.target}
+                        </Badge>
+                      </td>
+                      <td className="px-4 py-3 text-slate-400">
+                        {rule.messageCount.toLocaleString()}
+                      </td>
+                      <td className="px-4 py-3">
+                        <Badge variant={rule.status === 'active' ? 'success' : 'warning'}>
+                          {rule.status}
+                        </Badge>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -149,7 +127,7 @@ function ChannelsRouting() {
             Enter a mock message to see which agent would handle it.
           </p>
           <div className="flex gap-3">
-            <Input placeholder="Type a test message… e.g. 'I need help with my billing'" className="flex-1" />
+            <Input placeholder="Type a test message…" className="flex-1" />
             <Button variant="default" size="sm">
               <Play className="w-4 h-4 mr-2" />
               Test

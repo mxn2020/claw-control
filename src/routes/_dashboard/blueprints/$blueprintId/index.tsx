@@ -1,89 +1,102 @@
-import { DemoDataBanner } from '#/components/ui/demo-data-banner'
 import { createFileRoute } from '@tanstack/react-router'
 import { Card, CardHeader, CardTitle, CardContent } from '#/components/ui/card'
-
+import { Badge } from '#/components/ui/badge'
 import {
   FileCode,
   Rocket,
-  Play,
-  History,
   Brain,
   Wrench,
   Zap,
   Radio,
   Variable,
 } from 'lucide-react'
+import { useQuery } from 'convex/react'
+import { api } from '../../../../../convex/_generated/api'
+import type { Id } from '../../../../../convex/_generated/dataModel'
 
 export const Route = createFileRoute('/_dashboard/blueprints/$blueprintId/')({
   component: BlueprintDetail,
 })
 
-const editorSections = [
-  {
-    label: 'Personality',
-    icon: <Brain className="w-4 h-4 text-purple-400" />,
-    placeholder: 'Define the agent persona, tone, and behavioral guidelines…',
-  },
-  {
-    label: 'Tools',
-    icon: <Wrench className="w-4 h-4 text-cyan-400" />,
-    placeholder: 'Configure MCP tool servers and tool access policies…',
-  },
-  {
-    label: 'Skills',
-    icon: <Zap className="w-4 h-4 text-amber-400" />,
-    placeholder: 'Attach skills from the skill inventory…',
-  },
-  {
-    label: 'Channels',
-    icon: <Radio className="w-4 h-4 text-blue-400" />,
-    placeholder: 'Select which channels this agent will be available on…',
-  },
-  {
-    label: 'Variables',
-    icon: <Variable className="w-4 h-4 text-emerald-400" />,
-    placeholder: 'Define environment variables and secrets…',
-  },
-]
-
 function BlueprintDetail() {
   const { blueprintId } = Route.useParams()
+  const blueprint = useQuery(api.blueprints.get, { id: blueprintId as Id<"blueprints"> })
+
+  if (!blueprint) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <span className="text-slate-400">Loading blueprint…</span>
+      </div>
+    )
+  }
+
+  const sections = [
+    {
+      label: 'Personality',
+      icon: <Brain className="w-4 h-4 text-purple-400" />,
+      content: blueprint.personality?.soulMd ?? 'Not configured',
+      hasContent: !!blueprint.personality?.soulMd,
+    },
+    {
+      label: 'Tools',
+      icon: <Wrench className="w-4 h-4 text-cyan-400" />,
+      content: blueprint.toolsConfig
+        ? `Allowed: ${blueprint.toolsConfig.allowed?.join(', ') ?? 'all'}, Denied: ${blueprint.toolsConfig.denied?.join(', ') ?? 'none'}`
+        : 'No tool configuration',
+      hasContent: !!blueprint.toolsConfig,
+    },
+    {
+      label: 'Skills',
+      icon: <Zap className="w-4 h-4 text-amber-400" />,
+      content: blueprint.skills?.join(', ') ?? 'No skills attached',
+      hasContent: (blueprint.skills?.length ?? 0) > 0,
+    },
+    {
+      label: 'Channels',
+      icon: <Radio className="w-4 h-4 text-blue-400" />,
+      content: blueprint.channels?.join(', ') ?? 'No channels configured',
+      hasContent: (blueprint.channels?.length ?? 0) > 0,
+    },
+    {
+      label: 'Variables',
+      icon: <Variable className="w-4 h-4 text-emerald-400" />,
+      content:
+        blueprint.variables?.map((v) => `${v.key}=${v.defaultValue ?? '""'}`).join(', ') ??
+        'No variables defined',
+      hasContent: (blueprint.variables?.length ?? 0) > 0,
+    },
+  ]
 
   return (
     <div className="space-y-6">
-      <DemoDataBanner />
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <FileCode className="w-6 h-6 text-cyan-400" />
           <div>
             <h1 className="text-2xl font-bold text-white">
-              Customer Support Agent
+              {blueprint.name}
             </h1>
             <p className="text-sm text-slate-400 mt-1">
-              Blueprint {blueprintId} — Reusable agent template
+              {blueprint.description ?? 'No description'}
+              {' · '}
+              <Badge variant="outline" className="text-xs">
+                {blueprint.deployCount} deploy{blueprint.deployCount !== 1 ? 's' : ''}
+              </Badge>
             </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <button className="inline-flex items-center gap-2 rounded-lg bg-slate-700 px-4 py-2 text-sm font-medium text-white hover:bg-slate-600 transition-colors">
-            <Play className="w-4 h-4" />
-            Test
-          </button>
           <button className="inline-flex items-center gap-2 rounded-lg bg-cyan-600 px-4 py-2 text-sm font-medium text-white hover:bg-cyan-500 transition-colors">
             <Rocket className="w-4 h-4" />
             Deploy
-          </button>
-          <button className="inline-flex items-center gap-2 rounded-lg bg-slate-700 px-4 py-2 text-sm font-medium text-white hover:bg-slate-600 transition-colors">
-            <History className="w-4 h-4" />
-            Versions
           </button>
         </div>
       </div>
 
       {/* Editor Sections */}
       <div className="space-y-4">
-        {editorSections.map((section) => (
+        {sections.map((section) => (
           <Card key={section.label}>
             <CardHeader className="pb-2">
               <div className="flex items-center gap-2">
@@ -92,9 +105,16 @@ function BlueprintDetail() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="min-h-[80px] rounded-lg border border-dashed border-slate-700 bg-slate-900 p-4">
-                <p className="text-sm text-slate-500">
-                  {section.placeholder}
+              <div
+                className={`min-h-[60px] rounded-lg border p-4 ${section.hasContent
+                    ? 'border-slate-700 bg-slate-900'
+                    : 'border-dashed border-slate-700 bg-slate-900'
+                  }`}
+              >
+                <p
+                  className={`text-sm ${section.hasContent ? 'text-slate-300' : 'text-slate-500'}`}
+                >
+                  {section.content}
                 </p>
               </div>
             </CardContent>

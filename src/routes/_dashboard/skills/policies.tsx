@@ -1,4 +1,3 @@
-import { DemoDataBanner } from '#/components/ui/demo-data-banner'
 import { createFileRoute } from '@tanstack/react-router'
 import { Card, CardHeader, CardTitle, CardContent } from '#/components/ui/card'
 import { Badge } from '#/components/ui/badge'
@@ -6,56 +5,58 @@ import { Button } from '#/components/ui/button'
 import {
   ShieldCheck,
   Plus,
-  FileText,
   Server,
 } from 'lucide-react'
+import { useQuery } from 'convex/react'
+import { api } from '../../../../convex/_generated/api'
 
 export const Route = createFileRoute('/_dashboard/skills/policies')({
   component: SkillsPolicies,
 })
 
-const policies = [
-  {
-    name: 'Production Safety',
-    description: 'Restrict high-risk skills in production environments. Require approval for CRITICAL-rated skills.',
-    rulesCount: 8,
-    appliedTo: ['prod-gateway', 'prod-worker-1', 'prod-worker-2'],
-    status: 'active',
-  },
-  {
-    name: 'Dev Permissive',
-    description: 'Allow all skills with risk ≤ HIGH in development instances. Log all executions.',
-    rulesCount: 4,
-    appliedTo: ['dev-instance'],
-    status: 'active',
-  },
-  {
-    name: 'Staging Mirror',
-    description: 'Mirror production policy but allow MEDIUM-risk skills without approval.',
-    rulesCount: 6,
-    appliedTo: ['staging-server'],
-    status: 'active',
-  },
-  {
-    name: 'Data Compliance',
-    description: 'Block skills that access external APIs or databases without encryption. Enforce data-at-rest policies.',
-    rulesCount: 12,
-    appliedTo: ['prod-gateway', 'staging-server'],
-    status: 'active',
-  },
-  {
-    name: 'Legacy Lockdown',
-    description: 'Freeze skill versions for legacy agents pending migration review.',
-    rulesCount: 3,
-    appliedTo: [],
-    status: 'draft',
-  },
-]
-
 function SkillsPolicies() {
+  const skills = useQuery(api.platform.list, {})
+  const instances = useQuery(api.instances.list, {})
+
+  if (!skills || !instances) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <span className="text-slate-400">Loading policies…</span>
+      </div>
+    )
+  }
+
+  // Derive policies from skill risk levels and instance distribution
+  const highRiskSkills = skills.filter((s) => s.riskLevel === 'high' || s.riskLevel === 'critical')
+  const enabledSkills = skills.filter((s) => s.isEnabled)
+  const disabledSkills = skills.filter((s) => !s.isEnabled)
+
+  const policies = [
+    {
+      name: 'High-Risk Restrictions',
+      description: `${highRiskSkills.length} high/critical risk skills detected. These should be reviewed and restricted in production.`,
+      rulesCount: highRiskSkills.length,
+      appliedTo: instances.filter((i) => i.status === 'online').map((i) => i.name),
+      status: highRiskSkills.length > 0 ? 'active' : 'inactive',
+    },
+    {
+      name: 'Enabled Skills Policy',
+      description: `${enabledSkills.length} skills are currently enabled across the fleet.`,
+      rulesCount: enabledSkills.length,
+      appliedTo: instances.map((i) => i.name),
+      status: 'active',
+    },
+    {
+      name: 'Disabled Skills Registry',
+      description: `${disabledSkills.length} skills are disabled and blocked from execution.`,
+      rulesCount: disabledSkills.length,
+      appliedTo: [],
+      status: disabledSkills.length > 0 ? 'active' : 'draft',
+    },
+  ]
+
   return (
     <div className="space-y-6">
-      <DemoDataBanner />
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -75,37 +76,37 @@ function SkillsPolicies() {
         <Card>
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-slate-400">Total Policies</span>
+              <span className="text-sm text-slate-400">Total Skills</span>
               <ShieldCheck className="w-5 h-5 text-cyan-400" />
             </div>
           </CardHeader>
           <CardContent>
-            <span className="text-3xl font-bold text-white">{policies.length}</span>
+            <span className="text-3xl font-bold text-white">{skills.length}</span>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-slate-400">Active</span>
-              <ShieldCheck className="w-5 h-5 text-emerald-400" />
+              <span className="text-sm text-slate-400">High-Risk</span>
+              <ShieldCheck className="w-5 h-5 text-amber-400" />
             </div>
           </CardHeader>
           <CardContent>
             <span className="text-3xl font-bold text-white">
-              {policies.filter((p) => p.status === 'active').length}
+              {highRiskSkills.length}
             </span>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-slate-400">Total Rules</span>
-              <FileText className="w-5 h-5 text-amber-400" />
+              <span className="text-sm text-slate-400">Enabled</span>
+              <ShieldCheck className="w-5 h-5 text-emerald-400" />
             </div>
           </CardHeader>
           <CardContent>
             <span className="text-3xl font-bold text-white">
-              {policies.reduce((sum, p) => sum + p.rulesCount, 0)}
+              {enabledSkills.length}
             </span>
           </CardContent>
         </Card>
@@ -129,13 +130,12 @@ function SkillsPolicies() {
             <CardContent>
               <p className="text-sm text-slate-400 mb-3">{policy.description}</p>
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-xs text-slate-500">
-                  <FileText className="w-3 h-3" />
-                  <span>{policy.rulesCount} rules</span>
-                </div>
+                <span className="text-xs text-slate-500">
+                  {policy.rulesCount} items
+                </span>
                 <div className="flex gap-1 flex-wrap">
                   {policy.appliedTo.length > 0 ? (
-                    policy.appliedTo.map((inst) => (
+                    policy.appliedTo.slice(0, 3).map((inst) => (
                       <Badge key={inst} variant="outline" className="text-xs">
                         <Server className="w-3 h-3 mr-1" />
                         {inst}
@@ -143,6 +143,11 @@ function SkillsPolicies() {
                     ))
                   ) : (
                     <span className="text-xs text-slate-500">not applied</span>
+                  )}
+                  {policy.appliedTo.length > 3 && (
+                    <Badge variant="outline" className="text-xs">
+                      +{policy.appliedTo.length - 3}
+                    </Badge>
                   )}
                 </div>
               </div>
