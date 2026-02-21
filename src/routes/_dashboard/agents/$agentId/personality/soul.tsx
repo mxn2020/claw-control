@@ -1,15 +1,59 @@
+import { useState, useEffect } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
-import { Card, CardHeader, CardTitle, CardContent } from '#/components/ui/card'
+import { Button } from '#/components/ui/button'
+import { Save, CheckCircle } from 'lucide-react'
+import { useQuery, useMutation } from 'convex/react'
+import { api } from '../../../../../../convex/_generated/api'
 
-export const Route = createFileRoute('/_dashboard/agents/$agentId/personality/soul')({ component: AgentPersonalitySoul })
-function AgentPersonalitySoul() {
+export const Route = createFileRoute('/_dashboard/agents/$agentId/personality/soul')({
+  component: AgentSoulEditor,
+})
+
+function AgentSoulEditor() {
+  const { agentId } = Route.useParams()
+  const agent = useQuery(api.agents.get, { id: agentId as any })
+  const updatePersonality = useMutation(api.agents.updatePersonality)
+  const [content, setContent] = useState('')
+  const [saved, setSaved] = useState(false)
+
+  useEffect(() => {
+    if (agent?.personality?.soulMd) setContent(agent.personality.soulMd)
+  }, [agent?.personality?.soulMd])
+
+  async function handleSave() {
+    try {
+      await updatePersonality({
+        id: agentId as any,
+        personality: {
+          ...agent?.personality,
+          soulMd: content,
+        },
+      })
+      setSaved(true)
+      setTimeout(() => setSaved(false), 2000)
+    } catch (err) {
+      console.error('Failed to save:', err)
+    }
+  }
+
   return (
-    <div className="space-y-6">
-      <div><h1 className="text-2xl font-bold text-white">SOUL.md</h1><p className="text-sm text-slate-400 mt-1">Core personality definition file</p></div>
-      <Card><CardHeader><CardTitle>SOUL.md Editor</CardTitle></CardHeader><CardContent>
-        <textarea className="w-full bg-slate-700 border border-slate-600 text-slate-300 text-sm rounded-lg px-3 py-2 min-h-[400px] font-mono" placeholder="# SOUL.md content loaded from VPS agent..." readOnly />
-        <p className="text-xs text-slate-500 mt-2">SOUL.md content is stored on the VPS instance. Connect a running instance to edit.</p>
-      </CardContent></Card>
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-lg font-semibold text-white">SOUL.md</h2>
+          <p className="text-xs text-slate-500">Define the agent's core persona, tone, and values</p>
+        </div>
+        <Button size="sm" onClick={handleSave}>
+          {saved ? <CheckCircle className="w-3.5 h-3.5 mr-1.5 text-emerald-400" /> : <Save className="w-3.5 h-3.5 mr-1.5" />}
+          {saved ? 'Saved!' : 'Save'}
+        </Button>
+      </div>
+      <textarea
+        className="w-full bg-slate-700 border border-slate-600 text-slate-300 text-sm rounded-lg px-3 py-2 min-h-[400px] font-mono focus:border-cyan-500 focus:outline-none"
+        value={content}
+        onChange={(e) => setContent(e.target.value)}
+        placeholder="# SOUL.md&#10;&#10;Define the agent's persona here..."
+      />
     </div>
   )
 }

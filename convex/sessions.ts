@@ -96,3 +96,16 @@ export const addMessage = mutation({
     return messageId;
   },
 });
+
+export const close = mutation({
+  args: {
+    id: v.id("sessions"),
+    status: v.optional(v.union(v.literal("closed"), v.literal("escalated"))),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.id, {
+      status: args.status ?? "closed",
+      closedAt: Date.now(),
+    });
+  },
+});

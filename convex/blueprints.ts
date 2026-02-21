@@ -37,3 +37,42 @@ export const create = mutation({
     });
   },
 });
+
+export const update = mutation({
+  args: {
+    id: v.id("blueprints"),
+    name: v.optional(v.string()),
+    description: v.optional(v.string()),
+    personality: v.optional(v.object({
+      soulMd: v.optional(v.string()),
+      agentsMd: v.optional(v.string()),
+    })),
+    toolsConfig: v.optional(v.object({
+      allowed: v.optional(v.array(v.string())),
+      denied: v.optional(v.array(v.string())),
+    })),
+    skills: v.optional(v.array(v.string())),
+    channels: v.optional(v.array(v.string())),
+    variables: v.optional(v.array(v.object({
+      key: v.string(),
+      defaultValue: v.optional(v.string()),
+      description: v.optional(v.string()),
+    }))),
+  },
+  handler: async (ctx, args) => {
+    const { id, ...fields } = args;
+    const updates: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(fields)) {
+      if (value !== undefined) updates[key] = value;
+    }
+    updates.updatedAt = Date.now();
+    await ctx.db.patch(id, updates);
+  },
+});
+
+export const remove = mutation({
+  args: { id: v.id("blueprints") },
+  handler: async (ctx, args) => {
+    await ctx.db.delete(args.id);
+  },
+});

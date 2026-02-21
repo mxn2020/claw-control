@@ -156,3 +156,25 @@ export const me = query({
         };
     },
 });
+
+export const updateUser = mutation({
+    args: {
+        token: v.string(),
+        name: v.optional(v.string()),
+    },
+    handler: async (ctx, args) => {
+        const session = await ctx.db
+            .query("userSessions")
+            .withIndex("by_token", (q) => q.eq("token", args.token))
+            .first();
+        if (!session || session.expiresAt < Date.now()) {
+            throw new Error("Not authenticated.");
+        }
+
+        const updates: Record<string, unknown> = {};
+        if (args.name !== undefined) updates.name = args.name.trim();
+        if (Object.keys(updates).length > 0) {
+            await ctx.db.patch(session.userId, updates);
+        }
+    },
+});

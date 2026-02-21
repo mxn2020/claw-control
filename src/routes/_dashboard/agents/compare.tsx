@@ -1,3 +1,4 @@
+import { DemoDataBanner } from '#/components/ui/demo-data-banner'
 import { createFileRoute } from '@tanstack/react-router'
 import {
   Card,
@@ -52,6 +53,7 @@ const comparisonRows = [
 function AgentCompare() {
   return (
     <div className="space-y-6">
+      <DemoDataBanner />
       {/* Header */}
       <div className="flex items-center gap-3">
         <GitCompareArrows className="w-6 h-6 text-cyan-400" />

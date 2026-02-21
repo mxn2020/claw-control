@@ -41,3 +41,31 @@ export const create = mutation({
     });
   },
 });
+
+export const update = mutation({
+  args: {
+    id: v.id("swarms"),
+    name: v.optional(v.string()),
+    status: v.optional(v.union(v.literal("active"), v.literal("provisioning"), v.literal("paused"), v.literal("error"))),
+    instanceIds: v.optional(v.array(v.id("instances"))),
+    agentIds: v.optional(v.array(v.id("agents"))),
+    config: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const { id, ...fields } = args;
+    const updates: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(fields)) {
+      if (value !== undefined) updates[key] = value;
+    }
+    if (Object.keys(updates).length > 0) {
+      await ctx.db.patch(id, updates);
+    }
+  },
+});
+
+export const remove = mutation({
+  args: { id: v.id("swarms") },
+  handler: async (ctx, args) => {
+    await ctx.db.delete(args.id);
+  },
+});

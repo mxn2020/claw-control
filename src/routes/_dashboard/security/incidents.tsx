@@ -1,3 +1,4 @@
+import { DemoDataBanner } from '#/components/ui/demo-data-banner'
 import { createFileRoute } from '@tanstack/react-router'
 import { Card, CardHeader, CardTitle, CardContent } from '#/components/ui/card'
 import { Badge } from '#/components/ui/badge'
@@ -123,6 +124,7 @@ const timelineVariant = (type: string) => {
 function SecurityIncidents() {
   return (
     <div className="space-y-6">
+      <DemoDataBanner />
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-white">Incidents</h1>

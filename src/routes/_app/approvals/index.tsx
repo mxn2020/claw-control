@@ -5,6 +5,9 @@ import { Badge } from '#/components/ui/badge'
 import { Button } from '#/components/ui/button'
 import { CheckCircle, XCircle, Clock, AlertTriangle, Filter } from 'lucide-react'
 import { useApprovals } from '#/lib/dataHooks'
+import { useMutation } from 'convex/react'
+import { api } from '../../../../convex/_generated/api'
+import { useAuth } from '#/lib/authContext'
 
 export const Route = createFileRoute('/_app/approvals/')({
   component: ApprovalsPage,
@@ -24,26 +27,32 @@ const timeAgo = (ms: number) => {
 }
 
 function ApprovalsPage() {
+  const { user } = useAuth()
   const allApprovals = useApprovals() || []
+  const decideMutation = useMutation(api.approvals.decide)
   const [filter, setFilter] = useState<ApprovalStatus>('pending')
-  const [decided, setDecided] = useState<Record<string, 'approved' | 'rejected'>>({})
 
   const visible = filter === 'all'
     ? allApprovals
-    : allApprovals.filter((a) =>
-      decided[a._id] ? decided[a._id] === filter : (a.status as string) === filter
-    )
+    : allApprovals.filter((a) => (a.status as string) === filter)
 
-  const pendingCount = allApprovals.filter((a) => !decided[a._id] && (a.status as string) === 'pending').length
-  const approvedCount = allApprovals.filter((a) => decided[a._id] === 'approved' || (!decided[a._id] && (a.status as string) === 'approved')).length
-  const rejectedCount = allApprovals.filter((a) => decided[a._id] === 'rejected' || (!decided[a._id] && (a.status as string) === 'rejected')).length
+  const pendingCount = allApprovals.filter((a) => (a.status as string) === 'pending').length
+  const approvedCount = allApprovals.filter((a) => (a.status as string) === 'approved').length
+  const rejectedCount = allApprovals.filter((a) => (a.status as string) === 'rejected').length
   const counts: Record<string, number> = { pending: pendingCount, approved: approvedCount, rejected: rejectedCount }
 
   const filterLabels: ApprovalStatus[] = ['pending', 'approved', 'rejected', 'all']
 
-  function decide(id: string, action: 'approved' | 'rejected') {
-    // Optimistic UI update; in Convex mode a mutation would also fire here
-    setDecided(prev => ({ ...prev, [id]: action }))
+  async function decide(id: string, action: 'approved' | 'rejected') {
+    try {
+      await decideMutation({
+        id: id as any,
+        status: action,
+        decidedBy: user?.name ?? 'unknown',
+      })
+    } catch (err) {
+      console.error('Failed to decide approval:', err)
+    }
   }
 
   return (
@@ -79,9 +88,7 @@ function ApprovalsPage() {
       {/* Approval cards */}
       <div className="space-y-3">
         {visible.map((approval) => {
-          const localDecision = decided[approval._id]
-          const effectiveStatus: string = localDecision ?? (approval.status as string)
-          const isPending = effectiveStatus === 'pending'
+          const isPending = (approval.status as string) === 'pending'
           return (
             <Card key={approval._id} className={(approval.riskLevel as string) === 'high' ? 'border-red-500/30' : ''}>
               <CardContent className="pt-4">
@@ -126,10 +133,10 @@ function ApprovalsPage() {
                       </div>
                     ) : (
                       <div className="flex items-center gap-1.5 text-xs text-slate-500">
-                        {effectiveStatus === 'approved'
+                        {(approval.status as string) === 'approved'
                           ? <CheckCircle className="w-4 h-4 text-emerald-400" />
                           : <XCircle className="w-4 h-4 text-red-400" />}
-                        <span className="capitalize">{effectiveStatus}</span>
+                        <span className="capitalize">{approval.status as string}</span>
                       </div>
                     )}
                   </div>

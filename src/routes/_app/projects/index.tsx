@@ -1,3 +1,4 @@
+import { DemoDataBanner } from '#/components/ui/demo-data-banner'
 import { createFileRoute } from '@tanstack/react-router'
 import { Card, CardHeader, CardTitle, CardContent } from '#/components/ui/card'
 import { Badge } from '#/components/ui/badge'
@@ -70,6 +71,7 @@ const statusColor = {
 function Projects() {
   return (
     <div className="space-y-6">
+      <DemoDataBanner />
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-white">Projects</h1>
