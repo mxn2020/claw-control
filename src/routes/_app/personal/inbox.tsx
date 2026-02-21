@@ -1,4 +1,3 @@
-import { DemoDataBanner } from '#/components/ui/demo-data-banner'
 import { useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import {
@@ -110,7 +109,6 @@ function PersonalInbox() {
 
   return (
     <div className="space-y-6">
-      <DemoDataBanner />
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>

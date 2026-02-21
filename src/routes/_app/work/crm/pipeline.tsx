@@ -1,4 +1,3 @@
-import { DemoDataBanner } from '#/components/ui/demo-data-banner'
 import { createFileRoute } from '@tanstack/react-router'
 import {
   Card,
@@ -75,7 +74,6 @@ function stageTotal(deals: Deal[]) {
 function CrmPipeline() {
   return (
     <div className="space-y-6">
-      <DemoDataBanner />
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-white">Pipeline</h1>
