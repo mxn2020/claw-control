@@ -15,69 +15,69 @@
 - [ ] Optional MFA (TOTP only — WebAuthn deferred)
 
 ### Fleet & Instance Management
-- [ ] Fleet overview grid (`/fleet/overview`)
+- [x] Fleet overview grid (`/fleet/overview`)
 - [ ] BYO Server provisioning path (`/fleet/instances/new` — Path 2)
 - [ ] Cloud provisioning path (`/fleet/instances/new` — Path 1, at least one provider)
-- [ ] Instance overview dashboard (`/fleet/instances/:instanceId/overview`)
+- [x] Instance overview dashboard (`/fleet/instances/:instanceId/overview`)
 - [ ] Secure web terminal (`/fleet/instances/:instanceId/terminal/shell`)
 - [ ] Remote file explorer & editor (`/fleet/instances/:instanceId/files`)
-- [ ] Instance config management (`/fleet/instances/:instanceId/config/*`)
+- [x] Instance config management (`/fleet/instances/:instanceId/config/*`)
 - [ ] Instance personality management (`/fleet/instances/:instanceId/personalities/*`)
 - [ ] Instance channel connectors (`/fleet/instances/:instanceId/channels`)
 
 ### Agent Management
-- [ ] Agent catalog (`/agents/catalog`)
-- [ ] Agent creation wizard (`/agents/new`)
+- [x] Agent catalog (`/agents/catalog`)
+- [x] Agent creation wizard (`/agents/new`)
 - [ ] Agent personality editor with inheritance UI (`/agents/:agentId/personality/*`)
 - [ ] Agent tool policy management (`/agents/:agentId/tools/*`)
 - [ ] Agent skill management (`/agents/:agentId/skills/*`)
 - [ ] Agent channel bindings (`/agents/:agentId/channels/*`)
 - [ ] Agent memory browser & editor (`/agents/:agentId/memory/*`)
-- [ ] Agent model configuration (`/agents/:agentId/model/*`)
+- [x] Agent model configuration (`/agents/:agentId/model/*`)
 
 ### Sessions
-- [ ] Unified session inbox (`/sessions/inbox`)
-- [ ] Session detail view with conversation thread (`/sessions/:sessionId/conversation`)
+- [x] Unified session inbox (`/sessions/inbox`)
+- [x] Session detail view with conversation thread (`/sessions/:sessionId/conversation`)
 - [ ] Session trace waterfall (`/sessions/:sessionId/trace`)
 - [ ] God Mode message injection
 
 ### Skills
-- [ ] Skill marketplace browser (`/skills/marketplace/browse`)
+- [x] Skill marketplace browser (`/skills/marketplace/browse`)
 - [ ] Skill security scanner (`/skills/marketplace/:skillId/scan`)
 - [ ] Skill install/deploy flow (`/skills/marketplace/:skillId/deploy`)
-- [ ] Installed skill overview (`/skills/installed`)
+- [x] Installed skill overview (`/skills/installed`)
 
 ### Channels
-- [ ] Channel connectors (Telegram, Discord, WhatsApp — minimum viable set)
-- [ ] Routing rule editor (`/channels/routing/rules`)
+- [x] Channel connectors (Telegram, Discord, WhatsApp — minimum viable set)
+- [x] Routing rule editor (`/channels/routing/rules`)
 - [ ] Channel health monitoring (`/channels/health`)
 
 ### Observability
-- [ ] Live mission control stream (`/observe/live`)
+- [x] Live mission control stream (`/observe/live`)
 - [ ] Trace waterfall viewer (`/observe/traces/waterfall`)
-- [ ] Log stream viewer (`/observe/logs/stream`)
-- [ ] Cost dashboard (`/observe/cost/dashboard`)
+- [x] Log stream viewer (`/observe/logs/stream`)
+- [x] Cost dashboard (`/observe/cost/dashboard`)
 
 ### Security
-- [ ] Security posture overview (`/security/posture/overview`)
-- [ ] Instance/agent quarantine (`/security/quarantine`)
-- [ ] Secrets vault (`/security/secrets/vault`)
+- [x] Security posture overview (`/security/posture/overview`)
+- [x] Instance/agent quarantine (`/security/quarantine`)
+- [x] Secrets vault (`/security/secrets/vault`)
 - [ ] Global kill switch (always visible)
 
 ### Audit
 - [ ] Immutable tool execution ledger (`/audit/tools`)
-- [ ] Config change log (`/audit/config-changes`)
-- [ ] Incident log (`/audit/incidents`)
+- [x] Config change log (`/audit/config-changes`)
+- [x] Incident log (`/audit/incidents`)
 
 ### Configure
-- [ ] LLM provider key vault (`/configure/providers`)
-- [ ] Org-wide defaults (`/configure/defaults`)
-- [ ] Self-hosting configuration page (`/configure/self-hosting`)
+- [x] LLM provider key vault (`/configure/providers`)
+- [x] Org-wide defaults (`/configure/defaults`)
+- [x] Self-hosting configuration page (`/configure/self-hosting`)
 
 ### Settings
-- [ ] User profile (`/settings/profile`)
+- [x] User profile (`/settings/profile`)
 - [ ] Personal API keys (`/settings/api-keys`)
-- [ ] Appearance/theme (`/settings/appearance`)
+- [x] Appearance/theme (`/settings/appearance`)
 
 ### Public Pages
 - [ ] Homepage (`/`)
@@ -122,12 +122,12 @@
 - [ ] Compliance: data subject deletion requests
 
 ### Integrations
-- [ ] Outbound webhooks with HMAC signing (`/configure/integrations`)
+- [x] Outbound webhooks with HMAC signing (`/configure/integrations`)
 - [ ] SIEM push destinations (Splunk, Datadog, Elastic)
 - [ ] Alerting channels (PagerDuty, Slack webhook, email)
 
 ### Notifications
-- [ ] Full notification preferences (`/settings/notifications`)
+- [x] Full notification preferences (`/settings/notifications`)
 - [ ] Webhook delivery log (`/settings/webhooks`)
 
 ---
@@ -170,7 +170,7 @@
 - [ ] Postmortem templates
 
 ### Advanced Agent Features
-- [ ] Agent compare / side-by-side diff (`/agents/compare`)
+- [x] Agent compare / side-by-side diff (`/agents/compare`)
 - [ ] A/B personality testing
 - [ ] Memory health scoring & conflict detection (`/agents/:agentId/memory/health`)
 - [ ] Skill drift detector (`/skills/installed/drift`)
