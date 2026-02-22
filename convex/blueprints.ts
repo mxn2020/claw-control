@@ -76,3 +76,32 @@ export const remove = mutation({
     await ctx.db.delete(args.id);
   },
 });
+
+export const deploy = mutation({
+  args: {
+    blueprintId: v.id("blueprints"),
+    orgId: v.id("organizations"),
+    instanceIds: v.array(v.id("instances")),
+  },
+  handler: async (ctx, args) => {
+    const bp = await ctx.db.get(args.blueprintId);
+    if (!bp) throw new Error("Blueprint not found");
+
+    // Increment deploy count
+    await ctx.db.patch(args.blueprintId, {
+      deployCount: (bp.deployCount || 0) + 1,
+      updatedAt: Date.now(),
+    });
+
+    // Log audit event
+    await ctx.db.insert("auditLogs", {
+      orgId: args.orgId,
+      action: "deploy",
+      resourceType: "blueprint",
+      resourceId: args.blueprintId,
+      details: `Deployed to ${args.instanceIds.length} instances`,
+      createdAt: Date.now(),
+    });
+  },
+});
+

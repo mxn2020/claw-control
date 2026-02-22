@@ -9,6 +9,11 @@ import {
   Zap,
   Radio,
 } from 'lucide-react'
+import { useQuery, useMutation } from 'convex/react'
+import { api } from '../../../../../convex/_generated/api'
+import type { Id } from '../../../../../convex/_generated/dataModel'
+import { useState, useEffect } from 'react'
+import { useToast } from '#/components/ui/toast'
 
 export const Route = createFileRoute(
   '/_dashboard/blueprints/$blueprintId/editor',
@@ -18,6 +23,38 @@ export const Route = createFileRoute(
 
 function BlueprintEditor() {
   const { blueprintId } = Route.useParams()
+  const blueprint = useQuery(api.blueprints.get, { id: blueprintId as Id<"blueprints"> })
+  const updateBlueprint = useMutation(api.blueprints.update)
+  const { toast } = useToast()
+
+  const [soulMd, setSoulMd] = useState('')
+  const [isSaving, setIsSaving] = useState(false)
+
+  useEffect(() => {
+    if (blueprint?.personality?.soulMd) {
+      setSoulMd(blueprint.personality.soulMd)
+    } else if (blueprint && !soulMd) {
+      setSoulMd('# Default Personality\\n\\nYou are a helpful assistant.')
+    }
+  }, [blueprint])
+
+  const handleSave = async () => {
+    setIsSaving(true)
+    try {
+      await updateBlueprint({
+        id: blueprintId as Id<"blueprints">,
+        personality: {
+          ...blueprint?.personality,
+          soulMd,
+        }
+      })
+      toast("Blueprint saved successfully!", "success")
+    } catch (e: any) {
+      toast(e.message, "error")
+    } finally {
+      setIsSaving(false)
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -28,13 +65,13 @@ function BlueprintEditor() {
           <div>
             <h1 className="text-2xl font-bold text-white">Blueprint Editor</h1>
             <p className="text-sm text-slate-400 mt-1">
-              Editing blueprint {blueprintId}
+              Editing blueprint: {blueprint?.name ?? blueprintId}
             </p>
           </div>
         </div>
-        <Button variant="default" size="sm">
+        <Button variant="default" size="sm" onClick={handleSave} disabled={isSaving}>
           <Save className="w-4 h-4 mr-2" />
-          Save Changes
+          {isSaving ? "Saving..." : "Save Changes"}
         </Button>
       </div>
 
@@ -49,7 +86,8 @@ function BlueprintEditor() {
         <CardContent>
           <textarea
             className="w-full min-h-[160px] rounded-lg border border-slate-700 bg-slate-900 p-4 text-sm text-slate-300 font-mono resize-y focus:outline-none focus:ring-1 focus:ring-cyan-500"
-            defaultValue={`# Customer Support Agent\n\nYou are a friendly, professional support agent.\nAlways greet the user by name when available.\nEscalate billing issues to the billing team.\nNever share internal system details.\n`}
+            value={soulMd}
+            onChange={(e) => setSoulMd(e.target.value)}
           />
         </CardContent>
       </Card>
@@ -78,14 +116,12 @@ function BlueprintEditor() {
                   <span className="text-xs text-slate-500 ml-2">{tool.server}</span>
                 </div>
                 <div
-                  className={`w-8 h-4 rounded-full relative cursor-pointer transition-colors ${
-                    tool.enabled ? 'bg-cyan-600' : 'bg-slate-600'
-                  }`}
+                  className={`w-8 h-4 rounded-full relative cursor-pointer transition-colors ${tool.enabled ? 'bg-cyan-600' : 'bg-slate-600'
+                    }`}
                 >
                   <div
-                    className={`absolute top-0.5 w-3 h-3 rounded-full bg-white transition-transform ${
-                      tool.enabled ? 'translate-x-4' : 'translate-x-0.5'
-                    }`}
+                    className={`absolute top-0.5 w-3 h-3 rounded-full bg-white transition-transform ${tool.enabled ? 'translate-x-4' : 'translate-x-0.5'
+                      }`}
                   />
                 </div>
               </div>
@@ -114,11 +150,10 @@ function BlueprintEditor() {
             ].map((skill) => (
               <button
                 key={skill.name}
-                className={`px-3 py-1.5 text-xs rounded-lg border transition-colors ${
-                  skill.selected
-                    ? 'border-cyan-500 bg-cyan-900/30 text-cyan-300'
-                    : 'border-slate-700 bg-slate-900 text-slate-400 hover:border-slate-600'
-                }`}
+                className={`px-3 py-1.5 text-xs rounded-lg border transition-colors ${skill.selected
+                  ? 'border-cyan-500 bg-cyan-900/30 text-cyan-300'
+                  : 'border-slate-700 bg-slate-900 text-slate-400 hover:border-slate-600'
+                  }`}
               >
                 {skill.name}
               </button>
@@ -149,14 +184,12 @@ function BlueprintEditor() {
               >
                 <span className="text-sm text-white">{ch.channel}</span>
                 <div
-                  className={`w-8 h-4 rounded-full relative cursor-pointer transition-colors ${
-                    ch.bound ? 'bg-cyan-600' : 'bg-slate-600'
-                  }`}
+                  className={`w-8 h-4 rounded-full relative cursor-pointer transition-colors ${ch.bound ? 'bg-cyan-600' : 'bg-slate-600'
+                    }`}
                 >
                   <div
-                    className={`absolute top-0.5 w-3 h-3 rounded-full bg-white transition-transform ${
-                      ch.bound ? 'translate-x-4' : 'translate-x-0.5'
-                    }`}
+                    className={`absolute top-0.5 w-3 h-3 rounded-full bg-white transition-transform ${ch.bound ? 'translate-x-4' : 'translate-x-0.5'
+                      }`}
                   />
                 </div>
               </div>

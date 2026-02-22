@@ -113,6 +113,7 @@ const navGroups: NavItem[] = [
     to: '/security',
     children: [
       { label: 'Posture', to: '/security' },
+      { label: 'Vulnerabilities', to: '/security/cves' },
       { label: 'Secrets', to: '/security/secrets' },
       { label: 'Quarantine', to: '/security/quarantine' },
       { label: 'Incidents', to: '/security/incidents' },

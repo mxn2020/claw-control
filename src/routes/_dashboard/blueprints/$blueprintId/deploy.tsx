@@ -7,9 +7,12 @@ import {
   Server,
   History,
 } from 'lucide-react'
-import { useQuery } from 'convex/react'
+import { useQuery, useMutation } from 'convex/react'
 import { api } from '../../../../../convex/_generated/api'
 import type { Id } from '../../../../../convex/_generated/dataModel'
+import { useAuth } from '#/lib/authContext'
+import { useState } from 'react'
+import { useToast } from '#/components/ui/toast'
 
 export const Route = createFileRoute(
   '/_dashboard/blueprints/$blueprintId/deploy',
@@ -19,11 +22,44 @@ export const Route = createFileRoute(
 
 function BlueprintDeploy() {
   const { blueprintId } = Route.useParams()
-  const blueprint = useQuery(api.blueprints.get, { id: blueprintId as Id<"blueprints"> })
-  const instances = useQuery(api.instances.list, {})
-  const auditLogs = useQuery(api.platform.listAuditLogs, {})
+  const { user } = useAuth()
+  const orgId = user?.orgId as any
+  const { toast } = useToast()
 
-  if (!blueprint || !instances) {
+  const blueprint = useQuery(api.blueprints.get, { id: blueprintId as Id<"blueprints"> })
+  const instances = useQuery(api.instances.list, orgId ? { orgId } : "skip")
+  const auditLogs = useQuery(api.platform.listAuditLogs, orgId ? { orgId } : "skip")
+  const deployBlueprint = useMutation(api.blueprints.deploy as any)
+
+  const [selectedInstances, setSelectedInstances] = useState<Set<string>>(new Set())
+  const [isDeploying, setIsDeploying] = useState(false)
+
+  const toggleInstance = (id: string) => {
+    const next = new Set(selectedInstances)
+    if (next.has(id)) next.delete(id)
+    else next.add(id)
+    setSelectedInstances(next)
+  }
+
+  const handleDeploy = async () => {
+    if (!orgId || selectedInstances.size === 0) return
+    setIsDeploying(true)
+    try {
+      await deployBlueprint({
+        blueprintId: blueprintId as Id<"blueprints">,
+        orgId,
+        instanceIds: Array.from(selectedInstances) as Id<"instances">[]
+      })
+      toast("Deployment initiated successfully!", "success")
+      setSelectedInstances(new Set())
+    } catch (e: any) {
+      toast(e.message, "error")
+    } finally {
+      setIsDeploying(false)
+    }
+  }
+
+  if (!blueprint || !instances || !auditLogs) {
     return (
       <div className="flex items-center justify-center h-64">
         <span className="text-slate-400">Loading deploy data…</span>
@@ -68,13 +104,18 @@ function BlueprintDeploy() {
             <p className="text-sm text-slate-500">No instances available</p>
           ) : (
             <div className="space-y-2">
-              {instances.map((inst) => (
+              {instances!.map((inst) => (
                 <div
                   key={inst._id}
-                  className="flex items-center justify-between py-3 px-4 rounded-lg border border-slate-700 bg-slate-900 hover:border-slate-600 transition-colors cursor-pointer"
+                  onClick={() => toggleInstance(inst._id)}
+                  className={`flex items-center justify-between py-3 px-4 rounded-lg border transition-colors cursor-pointer ${selectedInstances.has(inst._id) ? 'border-cyan-500 bg-cyan-900/20' : 'border-slate-700 bg-slate-900 hover:border-slate-600'
+                    }`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-4 h-4 rounded border-2 border-slate-600" />
+                    <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${selectedInstances.has(inst._id) ? 'border-cyan-500 bg-cyan-500' : 'border-slate-600'
+                      }`}>
+                      {selectedInstances.has(inst._id) && <span className="bg-white w-2 h-2 rounded-sm" />}
+                    </div>
                     <span className="text-sm text-white">{inst.name}</span>
                   </div>
                   <div className="flex items-center gap-2">
@@ -102,9 +143,14 @@ function BlueprintDeploy() {
 
       {/* Deploy */}
       <div>
-        <Button variant="default" size="sm">
+        <Button
+          variant="default"
+          size="sm"
+          disabled={selectedInstances.size === 0 || isDeploying}
+          onClick={handleDeploy}
+        >
           <Rocket className="w-4 h-4 mr-2" />
-          Deploy to Selected Instances
+          {isDeploying ? "Deploying..." : `Deploy to ${selectedInstances.size} Instance${selectedInstances.size !== 1 ? 's' : ''}`}
         </Button>
       </div>
 

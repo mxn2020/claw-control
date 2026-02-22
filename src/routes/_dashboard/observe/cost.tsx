@@ -46,7 +46,7 @@ function CostPage() {
       </div>
 
       {/* Summary */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
@@ -57,6 +57,20 @@ function CostPage() {
           <CardContent>
             <p className="text-3xl font-bold text-white">${totalCost.toFixed(2)}</p>
             <p className="text-xs text-slate-500 mt-1">{records.length} records</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-slate-400">30d Projection</span>
+              <TrendingDown className="w-5 h-5 text-amber-400" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold text-white">
+              ${(dateEntries.length > 0 ? (totalCost / dateEntries.length) * 30 : 0).toFixed(2)}
+            </p>
+            <p className="text-xs text-slate-500 mt-1">Based on recent avg</p>
           </CardContent>
         </Card>
         <Card>

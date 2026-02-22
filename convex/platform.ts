@@ -150,3 +150,35 @@ export const getStats = query({
     };
   },
 });
+
+export const listTraces = query({
+  args: { orgId: v.optional(v.id("organizations")) },
+  handler: async (ctx, args) => {
+    // For traces, we look at the messages table to find slow queries/tool calls
+    const messages = await ctx.db.query("messages").order("desc").take(100);
+    const traces = [];
+
+    for (const msg of messages) {
+      if (msg.role !== "assistant" && msg.role !== "tool") continue;
+
+      const session = await ctx.db.get(msg.sessionId);
+      if (!session) continue;
+      if (args.orgId && session.orgId !== args.orgId) continue;
+
+      const agent = await ctx.db.get(session.agentId);
+
+      traces.push({
+        _id: msg._id,
+        createdAt: msg.createdAt,
+        role: msg.role,
+        content: msg.content,
+        timingMs: msg.timingMs || 0,
+        tokens: msg.tokens || 0,
+        agentName: agent?.name || "Unknown Agent",
+        sessionId: session._id,
+      });
+    }
+
+    return traces;
+  },
+});

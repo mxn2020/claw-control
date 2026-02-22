@@ -9,16 +9,22 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as StatusRouteImport } from './routes/status'
+import { Route as SecurityRouteImport } from './routes/security'
+import { Route as ChangelogRouteImport } from './routes/changelog'
 import { Route as DashboardRouteImport } from './routes/_dashboard'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DocsIndexRouteImport } from './routes/docs/index'
+import { Route as DocsQuickstartRouteImport } from './routes/docs/quickstart'
 import { Route as AppHomeRouteImport } from './routes/_app/home'
 import { Route as DashboardSwarmsIndexRouteImport } from './routes/_dashboard/swarms/index'
 import { Route as DashboardSkillsIndexRouteImport } from './routes/_dashboard/skills/index'
 import { Route as DashboardSettingsIndexRouteImport } from './routes/_dashboard/settings/index'
 import { Route as DashboardSessionsIndexRouteImport } from './routes/_dashboard/sessions/index'
 import { Route as DashboardSecurityIndexRouteImport } from './routes/_dashboard/security/index'
+import { Route as DashboardOrgIndexRouteImport } from './routes/_dashboard/org/index'
 import { Route as DashboardObserveIndexRouteImport } from './routes/_dashboard/observe/index'
 import { Route as DashboardFleetIndexRouteImport } from './routes/_dashboard/fleet/index'
 import { Route as DashboardConfigureIndexRouteImport } from './routes/_dashboard/configure/index'
@@ -43,6 +49,7 @@ import { Route as AppBriefingIndexRouteImport } from './routes/_app/briefing/ind
 import { Route as AppAutomationsIndexRouteImport } from './routes/_app/automations/index'
 import { Route as AppApprovalsIndexRouteImport } from './routes/_app/approvals/index'
 import { Route as DashboardSwarmsTemplatesRouteImport } from './routes/_dashboard/swarms/templates'
+import { Route as DashboardSwarmsNewRouteImport } from './routes/_dashboard/swarms/new'
 import { Route as DashboardSkillsPoliciesRouteImport } from './routes/_dashboard/skills/policies'
 import { Route as DashboardSkillsMarketplaceRouteImport } from './routes/_dashboard/skills/marketplace'
 import { Route as DashboardSkillsInstalledRouteImport } from './routes/_dashboard/skills/installed'
@@ -56,6 +63,14 @@ import { Route as DashboardSecuritySecretsRouteImport } from './routes/_dashboar
 import { Route as DashboardSecurityQuarantineRouteImport } from './routes/_dashboard/security/quarantine'
 import { Route as DashboardSecurityPostureRouteImport } from './routes/_dashboard/security/posture'
 import { Route as DashboardSecurityIncidentsRouteImport } from './routes/_dashboard/security/incidents'
+import { Route as DashboardSecurityCvesRouteImport } from './routes/_dashboard/security/cves'
+import { Route as DashboardOrgTeamsRouteImport } from './routes/_dashboard/org/teams'
+import { Route as DashboardOrgSsoRouteImport } from './routes/_dashboard/org/sso'
+import { Route as DashboardOrgSiemRouteImport } from './routes/_dashboard/org/siem'
+import { Route as DashboardOrgMembersRouteImport } from './routes/_dashboard/org/members'
+import { Route as DashboardOrgComplianceRouteImport } from './routes/_dashboard/org/compliance'
+import { Route as DashboardOrgBillingRouteImport } from './routes/_dashboard/org/billing'
+import { Route as DashboardOrgAuditRouteImport } from './routes/_dashboard/org/audit'
 import { Route as DashboardObserveTracesRouteImport } from './routes/_dashboard/observe/traces'
 import { Route as DashboardObserveLogsRouteImport } from './routes/_dashboard/observe/logs'
 import { Route as DashboardObserveLiveRouteImport } from './routes/_dashboard/observe/live'
@@ -205,6 +220,21 @@ import { Route as DashboardFleetInstancesInstanceIdChannelsHealthRouteImport } f
 import { Route as DashboardFleetInstancesInstanceIdChannelsConnectorsRouteImport } from './routes/_dashboard/fleet/instances/$instanceId/channels/connectors'
 import { Route as DashboardFleetInstancesInstanceIdAgentsNewRouteImport } from './routes/_dashboard/fleet/instances/$instanceId/agents/new'
 
+const StatusRoute = StatusRouteImport.update({
+  id: '/status',
+  path: '/status',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SecurityRoute = SecurityRouteImport.update({
+  id: '/security',
+  path: '/security',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChangelogRoute = ChangelogRouteImport.update({
+  id: '/changelog',
+  path: '/changelog',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DashboardRoute = DashboardRouteImport.update({
   id: '/_dashboard',
   getParentRoute: () => rootRouteImport,
@@ -220,6 +250,16 @@ const AppRoute = AppRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocsIndexRoute = DocsIndexRouteImport.update({
+  id: '/docs/',
+  path: '/docs/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocsQuickstartRoute = DocsQuickstartRouteImport.update({
+  id: '/docs/quickstart',
+  path: '/docs/quickstart',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppHomeRoute = AppHomeRouteImport.update({
@@ -250,6 +290,11 @@ const DashboardSessionsIndexRoute = DashboardSessionsIndexRouteImport.update({
 const DashboardSecurityIndexRoute = DashboardSecurityIndexRouteImport.update({
   id: '/security/',
   path: '/security/',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardOrgIndexRoute = DashboardOrgIndexRouteImport.update({
+  id: '/org/',
+  path: '/org/',
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardObserveIndexRoute = DashboardObserveIndexRouteImport.update({
@@ -374,6 +419,11 @@ const DashboardSwarmsTemplatesRoute =
     path: '/swarms/templates',
     getParentRoute: () => DashboardRoute,
   } as any)
+const DashboardSwarmsNewRoute = DashboardSwarmsNewRouteImport.update({
+  id: '/swarms/new',
+  path: '/swarms/new',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardSkillsPoliciesRoute = DashboardSkillsPoliciesRouteImport.update({
   id: '/skills/policies',
   path: '/skills/policies',
@@ -451,6 +501,46 @@ const DashboardSecurityIncidentsRoute =
     path: '/security/incidents',
     getParentRoute: () => DashboardRoute,
   } as any)
+const DashboardSecurityCvesRoute = DashboardSecurityCvesRouteImport.update({
+  id: '/security/cves',
+  path: '/security/cves',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardOrgTeamsRoute = DashboardOrgTeamsRouteImport.update({
+  id: '/org/teams',
+  path: '/org/teams',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardOrgSsoRoute = DashboardOrgSsoRouteImport.update({
+  id: '/org/sso',
+  path: '/org/sso',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardOrgSiemRoute = DashboardOrgSiemRouteImport.update({
+  id: '/org/siem',
+  path: '/org/siem',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardOrgMembersRoute = DashboardOrgMembersRouteImport.update({
+  id: '/org/members',
+  path: '/org/members',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardOrgComplianceRoute = DashboardOrgComplianceRouteImport.update({
+  id: '/org/compliance',
+  path: '/org/compliance',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardOrgBillingRoute = DashboardOrgBillingRouteImport.update({
+  id: '/org/billing',
+  path: '/org/billing',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardOrgAuditRoute = DashboardOrgAuditRouteImport.update({
+  id: '/org/audit',
+  path: '/org/audit',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardObserveTracesRoute = DashboardObserveTracesRouteImport.update({
   id: '/observe/traces',
   path: '/observe/traces',
@@ -1304,7 +1394,12 @@ const DashboardFleetInstancesInstanceIdAgentsNewRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/changelog': typeof ChangelogRoute
+  '/security': typeof SecurityRoute
+  '/status': typeof StatusRoute
   '/home': typeof AppHomeRoute
+  '/docs/quickstart': typeof DocsQuickstartRoute
+  '/docs/': typeof DocsIndexRoute
   '/automations/triggers': typeof AppAutomationsTriggersRoute
   '/browser/sessions': typeof AppBrowserSessionsRoute
   '/canvas/$canvasId': typeof AppCanvasCanvasIdRoute
@@ -1348,6 +1443,14 @@ export interface FileRoutesByFullPath {
   '/observe/live': typeof DashboardObserveLiveRoute
   '/observe/logs': typeof DashboardObserveLogsRoute
   '/observe/traces': typeof DashboardObserveTracesRoute
+  '/org/audit': typeof DashboardOrgAuditRoute
+  '/org/billing': typeof DashboardOrgBillingRoute
+  '/org/compliance': typeof DashboardOrgComplianceRoute
+  '/org/members': typeof DashboardOrgMembersRoute
+  '/org/siem': typeof DashboardOrgSiemRoute
+  '/org/sso': typeof DashboardOrgSsoRoute
+  '/org/teams': typeof DashboardOrgTeamsRoute
+  '/security/cves': typeof DashboardSecurityCvesRoute
   '/security/incidents': typeof DashboardSecurityIncidentsRoute
   '/security/posture': typeof DashboardSecurityPostureRoute
   '/security/quarantine': typeof DashboardSecurityQuarantineRoute
@@ -1361,6 +1464,7 @@ export interface FileRoutesByFullPath {
   '/skills/installed': typeof DashboardSkillsInstalledRoute
   '/skills/marketplace': typeof DashboardSkillsMarketplaceRoute
   '/skills/policies': typeof DashboardSkillsPoliciesRoute
+  '/swarms/new': typeof DashboardSwarmsNewRoute
   '/swarms/templates': typeof DashboardSwarmsTemplatesRoute
   '/approvals/': typeof AppApprovalsIndexRoute
   '/automations/': typeof AppAutomationsIndexRoute
@@ -1385,6 +1489,7 @@ export interface FileRoutesByFullPath {
   '/configure/': typeof DashboardConfigureIndexRoute
   '/fleet/': typeof DashboardFleetIndexRoute
   '/observe/': typeof DashboardObserveIndexRoute
+  '/org/': typeof DashboardOrgIndexRoute
   '/security/': typeof DashboardSecurityIndexRoute
   '/sessions/': typeof DashboardSessionsIndexRoute
   '/settings/': typeof DashboardSettingsIndexRoute
@@ -1498,7 +1603,12 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/changelog': typeof ChangelogRoute
+  '/security': typeof DashboardSecurityIndexRoute
+  '/status': typeof StatusRoute
   '/home': typeof AppHomeRoute
+  '/docs/quickstart': typeof DocsQuickstartRoute
+  '/docs': typeof DocsIndexRoute
   '/automations/triggers': typeof AppAutomationsTriggersRoute
   '/browser/sessions': typeof AppBrowserSessionsRoute
   '/canvas/$canvasId': typeof AppCanvasCanvasIdRoute
@@ -1542,6 +1652,14 @@ export interface FileRoutesByTo {
   '/observe/live': typeof DashboardObserveLiveRoute
   '/observe/logs': typeof DashboardObserveLogsRoute
   '/observe/traces': typeof DashboardObserveTracesRoute
+  '/org/audit': typeof DashboardOrgAuditRoute
+  '/org/billing': typeof DashboardOrgBillingRoute
+  '/org/compliance': typeof DashboardOrgComplianceRoute
+  '/org/members': typeof DashboardOrgMembersRoute
+  '/org/siem': typeof DashboardOrgSiemRoute
+  '/org/sso': typeof DashboardOrgSsoRoute
+  '/org/teams': typeof DashboardOrgTeamsRoute
+  '/security/cves': typeof DashboardSecurityCvesRoute
   '/security/incidents': typeof DashboardSecurityIncidentsRoute
   '/security/posture': typeof DashboardSecurityPostureRoute
   '/security/quarantine': typeof DashboardSecurityQuarantineRoute
@@ -1554,6 +1672,7 @@ export interface FileRoutesByTo {
   '/skills/installed': typeof DashboardSkillsInstalledRoute
   '/skills/marketplace': typeof DashboardSkillsMarketplaceRoute
   '/skills/policies': typeof DashboardSkillsPoliciesRoute
+  '/swarms/new': typeof DashboardSwarmsNewRoute
   '/swarms/templates': typeof DashboardSwarmsTemplatesRoute
   '/approvals': typeof AppApprovalsIndexRoute
   '/automations': typeof AppAutomationsIndexRoute
@@ -1578,7 +1697,7 @@ export interface FileRoutesByTo {
   '/configure': typeof DashboardConfigureIndexRoute
   '/fleet': typeof DashboardFleetIndexRoute
   '/observe': typeof DashboardObserveIndexRoute
-  '/security': typeof DashboardSecurityIndexRoute
+  '/org': typeof DashboardOrgIndexRoute
   '/sessions': typeof DashboardSessionsIndexRoute
   '/settings': typeof DashboardSettingsIndexRoute
   '/skills': typeof DashboardSkillsIndexRoute
@@ -1695,7 +1814,12 @@ export interface FileRoutesById {
   '/_app': typeof AppRouteWithChildren
   '/_auth': typeof AuthRouteWithChildren
   '/_dashboard': typeof DashboardRouteWithChildren
+  '/changelog': typeof ChangelogRoute
+  '/security': typeof SecurityRoute
+  '/status': typeof StatusRoute
   '/_app/home': typeof AppHomeRoute
+  '/docs/quickstart': typeof DocsQuickstartRoute
+  '/docs/': typeof DocsIndexRoute
   '/_app/automations/triggers': typeof AppAutomationsTriggersRoute
   '/_app/browser/sessions': typeof AppBrowserSessionsRoute
   '/_app/canvas/$canvasId': typeof AppCanvasCanvasIdRoute
@@ -1739,6 +1863,14 @@ export interface FileRoutesById {
   '/_dashboard/observe/live': typeof DashboardObserveLiveRoute
   '/_dashboard/observe/logs': typeof DashboardObserveLogsRoute
   '/_dashboard/observe/traces': typeof DashboardObserveTracesRoute
+  '/_dashboard/org/audit': typeof DashboardOrgAuditRoute
+  '/_dashboard/org/billing': typeof DashboardOrgBillingRoute
+  '/_dashboard/org/compliance': typeof DashboardOrgComplianceRoute
+  '/_dashboard/org/members': typeof DashboardOrgMembersRoute
+  '/_dashboard/org/siem': typeof DashboardOrgSiemRoute
+  '/_dashboard/org/sso': typeof DashboardOrgSsoRoute
+  '/_dashboard/org/teams': typeof DashboardOrgTeamsRoute
+  '/_dashboard/security/cves': typeof DashboardSecurityCvesRoute
   '/_dashboard/security/incidents': typeof DashboardSecurityIncidentsRoute
   '/_dashboard/security/posture': typeof DashboardSecurityPostureRoute
   '/_dashboard/security/quarantine': typeof DashboardSecurityQuarantineRoute
@@ -1752,6 +1884,7 @@ export interface FileRoutesById {
   '/_dashboard/skills/installed': typeof DashboardSkillsInstalledRoute
   '/_dashboard/skills/marketplace': typeof DashboardSkillsMarketplaceRoute
   '/_dashboard/skills/policies': typeof DashboardSkillsPoliciesRoute
+  '/_dashboard/swarms/new': typeof DashboardSwarmsNewRoute
   '/_dashboard/swarms/templates': typeof DashboardSwarmsTemplatesRoute
   '/_app/approvals/': typeof AppApprovalsIndexRoute
   '/_app/automations/': typeof AppAutomationsIndexRoute
@@ -1776,6 +1909,7 @@ export interface FileRoutesById {
   '/_dashboard/configure/': typeof DashboardConfigureIndexRoute
   '/_dashboard/fleet/': typeof DashboardFleetIndexRoute
   '/_dashboard/observe/': typeof DashboardObserveIndexRoute
+  '/_dashboard/org/': typeof DashboardOrgIndexRoute
   '/_dashboard/security/': typeof DashboardSecurityIndexRoute
   '/_dashboard/sessions/': typeof DashboardSessionsIndexRoute
   '/_dashboard/settings/': typeof DashboardSettingsIndexRoute
@@ -1891,7 +2025,12 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/changelog'
+    | '/security'
+    | '/status'
     | '/home'
+    | '/docs/quickstart'
+    | '/docs/'
     | '/automations/triggers'
     | '/browser/sessions'
     | '/canvas/$canvasId'
@@ -1935,6 +2074,14 @@ export interface FileRouteTypes {
     | '/observe/live'
     | '/observe/logs'
     | '/observe/traces'
+    | '/org/audit'
+    | '/org/billing'
+    | '/org/compliance'
+    | '/org/members'
+    | '/org/siem'
+    | '/org/sso'
+    | '/org/teams'
+    | '/security/cves'
     | '/security/incidents'
     | '/security/posture'
     | '/security/quarantine'
@@ -1948,6 +2095,7 @@ export interface FileRouteTypes {
     | '/skills/installed'
     | '/skills/marketplace'
     | '/skills/policies'
+    | '/swarms/new'
     | '/swarms/templates'
     | '/approvals/'
     | '/automations/'
@@ -1972,6 +2120,7 @@ export interface FileRouteTypes {
     | '/configure/'
     | '/fleet/'
     | '/observe/'
+    | '/org/'
     | '/security/'
     | '/sessions/'
     | '/settings/'
@@ -2085,7 +2234,12 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/changelog'
+    | '/security'
+    | '/status'
     | '/home'
+    | '/docs/quickstart'
+    | '/docs'
     | '/automations/triggers'
     | '/browser/sessions'
     | '/canvas/$canvasId'
@@ -2129,6 +2283,14 @@ export interface FileRouteTypes {
     | '/observe/live'
     | '/observe/logs'
     | '/observe/traces'
+    | '/org/audit'
+    | '/org/billing'
+    | '/org/compliance'
+    | '/org/members'
+    | '/org/siem'
+    | '/org/sso'
+    | '/org/teams'
+    | '/security/cves'
     | '/security/incidents'
     | '/security/posture'
     | '/security/quarantine'
@@ -2141,6 +2303,7 @@ export interface FileRouteTypes {
     | '/skills/installed'
     | '/skills/marketplace'
     | '/skills/policies'
+    | '/swarms/new'
     | '/swarms/templates'
     | '/approvals'
     | '/automations'
@@ -2165,7 +2328,7 @@ export interface FileRouteTypes {
     | '/configure'
     | '/fleet'
     | '/observe'
-    | '/security'
+    | '/org'
     | '/sessions'
     | '/settings'
     | '/skills'
@@ -2281,7 +2444,12 @@ export interface FileRouteTypes {
     | '/_app'
     | '/_auth'
     | '/_dashboard'
+    | '/changelog'
+    | '/security'
+    | '/status'
     | '/_app/home'
+    | '/docs/quickstart'
+    | '/docs/'
     | '/_app/automations/triggers'
     | '/_app/browser/sessions'
     | '/_app/canvas/$canvasId'
@@ -2325,6 +2493,14 @@ export interface FileRouteTypes {
     | '/_dashboard/observe/live'
     | '/_dashboard/observe/logs'
     | '/_dashboard/observe/traces'
+    | '/_dashboard/org/audit'
+    | '/_dashboard/org/billing'
+    | '/_dashboard/org/compliance'
+    | '/_dashboard/org/members'
+    | '/_dashboard/org/siem'
+    | '/_dashboard/org/sso'
+    | '/_dashboard/org/teams'
+    | '/_dashboard/security/cves'
     | '/_dashboard/security/incidents'
     | '/_dashboard/security/posture'
     | '/_dashboard/security/quarantine'
@@ -2338,6 +2514,7 @@ export interface FileRouteTypes {
     | '/_dashboard/skills/installed'
     | '/_dashboard/skills/marketplace'
     | '/_dashboard/skills/policies'
+    | '/_dashboard/swarms/new'
     | '/_dashboard/swarms/templates'
     | '/_app/approvals/'
     | '/_app/automations/'
@@ -2362,6 +2539,7 @@ export interface FileRouteTypes {
     | '/_dashboard/configure/'
     | '/_dashboard/fleet/'
     | '/_dashboard/observe/'
+    | '/_dashboard/org/'
     | '/_dashboard/security/'
     | '/_dashboard/sessions/'
     | '/_dashboard/settings/'
@@ -2479,10 +2657,36 @@ export interface RootRouteChildren {
   AppRoute: typeof AppRouteWithChildren
   AuthRoute: typeof AuthRouteWithChildren
   DashboardRoute: typeof DashboardRouteWithChildren
+  ChangelogRoute: typeof ChangelogRoute
+  SecurityRoute: typeof SecurityRoute
+  StatusRoute: typeof StatusRoute
+  DocsQuickstartRoute: typeof DocsQuickstartRoute
+  DocsIndexRoute: typeof DocsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/status': {
+      id: '/status'
+      path: '/status'
+      fullPath: '/status'
+      preLoaderRoute: typeof StatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/security': {
+      id: '/security'
+      path: '/security'
+      fullPath: '/security'
+      preLoaderRoute: typeof SecurityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/changelog': {
+      id: '/changelog'
+      path: '/changelog'
+      fullPath: '/changelog'
+      preLoaderRoute: typeof ChangelogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_dashboard': {
       id: '/_dashboard'
       path: ''
@@ -2509,6 +2713,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/docs/': {
+      id: '/docs/'
+      path: '/docs'
+      fullPath: '/docs/'
+      preLoaderRoute: typeof DocsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/docs/quickstart': {
+      id: '/docs/quickstart'
+      path: '/docs/quickstart'
+      fullPath: '/docs/quickstart'
+      preLoaderRoute: typeof DocsQuickstartRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_app/home': {
@@ -2551,6 +2769,13 @@ declare module '@tanstack/react-router' {
       path: '/security'
       fullPath: '/security/'
       preLoaderRoute: typeof DashboardSecurityIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/org/': {
+      id: '/_dashboard/org/'
+      path: '/org'
+      fullPath: '/org/'
+      preLoaderRoute: typeof DashboardOrgIndexRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/_dashboard/observe/': {
@@ -2721,6 +2946,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardSwarmsTemplatesRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/_dashboard/swarms/new': {
+      id: '/_dashboard/swarms/new'
+      path: '/swarms/new'
+      fullPath: '/swarms/new'
+      preLoaderRoute: typeof DashboardSwarmsNewRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/_dashboard/skills/policies': {
       id: '/_dashboard/skills/policies'
       path: '/skills/policies'
@@ -2810,6 +3042,62 @@ declare module '@tanstack/react-router' {
       path: '/security/incidents'
       fullPath: '/security/incidents'
       preLoaderRoute: typeof DashboardSecurityIncidentsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/security/cves': {
+      id: '/_dashboard/security/cves'
+      path: '/security/cves'
+      fullPath: '/security/cves'
+      preLoaderRoute: typeof DashboardSecurityCvesRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/org/teams': {
+      id: '/_dashboard/org/teams'
+      path: '/org/teams'
+      fullPath: '/org/teams'
+      preLoaderRoute: typeof DashboardOrgTeamsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/org/sso': {
+      id: '/_dashboard/org/sso'
+      path: '/org/sso'
+      fullPath: '/org/sso'
+      preLoaderRoute: typeof DashboardOrgSsoRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/org/siem': {
+      id: '/_dashboard/org/siem'
+      path: '/org/siem'
+      fullPath: '/org/siem'
+      preLoaderRoute: typeof DashboardOrgSiemRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/org/members': {
+      id: '/_dashboard/org/members'
+      path: '/org/members'
+      fullPath: '/org/members'
+      preLoaderRoute: typeof DashboardOrgMembersRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/org/compliance': {
+      id: '/_dashboard/org/compliance'
+      path: '/org/compliance'
+      fullPath: '/org/compliance'
+      preLoaderRoute: typeof DashboardOrgComplianceRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/org/billing': {
+      id: '/_dashboard/org/billing'
+      path: '/org/billing'
+      fullPath: '/org/billing'
+      preLoaderRoute: typeof DashboardOrgBillingRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/org/audit': {
+      id: '/_dashboard/org/audit'
+      path: '/org/audit'
+      fullPath: '/org/audit'
+      preLoaderRoute: typeof DashboardOrgAuditRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/_dashboard/observe/traces': {
@@ -4018,6 +4306,14 @@ interface DashboardRouteChildren {
   DashboardObserveLiveRoute: typeof DashboardObserveLiveRoute
   DashboardObserveLogsRoute: typeof DashboardObserveLogsRoute
   DashboardObserveTracesRoute: typeof DashboardObserveTracesRoute
+  DashboardOrgAuditRoute: typeof DashboardOrgAuditRoute
+  DashboardOrgBillingRoute: typeof DashboardOrgBillingRoute
+  DashboardOrgComplianceRoute: typeof DashboardOrgComplianceRoute
+  DashboardOrgMembersRoute: typeof DashboardOrgMembersRoute
+  DashboardOrgSiemRoute: typeof DashboardOrgSiemRoute
+  DashboardOrgSsoRoute: typeof DashboardOrgSsoRoute
+  DashboardOrgTeamsRoute: typeof DashboardOrgTeamsRoute
+  DashboardSecurityCvesRoute: typeof DashboardSecurityCvesRoute
   DashboardSecurityIncidentsRoute: typeof DashboardSecurityIncidentsRoute
   DashboardSecurityPostureRoute: typeof DashboardSecurityPostureRoute
   DashboardSecurityQuarantineRoute: typeof DashboardSecurityQuarantineRoute
@@ -4031,6 +4327,7 @@ interface DashboardRouteChildren {
   DashboardSkillsInstalledRoute: typeof DashboardSkillsInstalledRoute
   DashboardSkillsMarketplaceRoute: typeof DashboardSkillsMarketplaceRoute
   DashboardSkillsPoliciesRoute: typeof DashboardSkillsPoliciesRoute
+  DashboardSwarmsNewRoute: typeof DashboardSwarmsNewRoute
   DashboardSwarmsTemplatesRoute: typeof DashboardSwarmsTemplatesRoute
   DashboardAgentsIndexRoute: typeof DashboardAgentsIndexRoute
   DashboardAuditIndexRoute: typeof DashboardAuditIndexRoute
@@ -4039,6 +4336,7 @@ interface DashboardRouteChildren {
   DashboardConfigureIndexRoute: typeof DashboardConfigureIndexRoute
   DashboardFleetIndexRoute: typeof DashboardFleetIndexRoute
   DashboardObserveIndexRoute: typeof DashboardObserveIndexRoute
+  DashboardOrgIndexRoute: typeof DashboardOrgIndexRoute
   DashboardSecurityIndexRoute: typeof DashboardSecurityIndexRoute
   DashboardSessionsIndexRoute: typeof DashboardSessionsIndexRoute
   DashboardSettingsIndexRoute: typeof DashboardSettingsIndexRoute
@@ -4161,6 +4459,14 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardObserveLiveRoute: DashboardObserveLiveRoute,
   DashboardObserveLogsRoute: DashboardObserveLogsRoute,
   DashboardObserveTracesRoute: DashboardObserveTracesRoute,
+  DashboardOrgAuditRoute: DashboardOrgAuditRoute,
+  DashboardOrgBillingRoute: DashboardOrgBillingRoute,
+  DashboardOrgComplianceRoute: DashboardOrgComplianceRoute,
+  DashboardOrgMembersRoute: DashboardOrgMembersRoute,
+  DashboardOrgSiemRoute: DashboardOrgSiemRoute,
+  DashboardOrgSsoRoute: DashboardOrgSsoRoute,
+  DashboardOrgTeamsRoute: DashboardOrgTeamsRoute,
+  DashboardSecurityCvesRoute: DashboardSecurityCvesRoute,
   DashboardSecurityIncidentsRoute: DashboardSecurityIncidentsRoute,
   DashboardSecurityPostureRoute: DashboardSecurityPostureRoute,
   DashboardSecurityQuarantineRoute: DashboardSecurityQuarantineRoute,
@@ -4174,6 +4480,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardSkillsInstalledRoute: DashboardSkillsInstalledRoute,
   DashboardSkillsMarketplaceRoute: DashboardSkillsMarketplaceRoute,
   DashboardSkillsPoliciesRoute: DashboardSkillsPoliciesRoute,
+  DashboardSwarmsNewRoute: DashboardSwarmsNewRoute,
   DashboardSwarmsTemplatesRoute: DashboardSwarmsTemplatesRoute,
   DashboardAgentsIndexRoute: DashboardAgentsIndexRoute,
   DashboardAuditIndexRoute: DashboardAuditIndexRoute,
@@ -4182,6 +4489,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardConfigureIndexRoute: DashboardConfigureIndexRoute,
   DashboardFleetIndexRoute: DashboardFleetIndexRoute,
   DashboardObserveIndexRoute: DashboardObserveIndexRoute,
+  DashboardOrgIndexRoute: DashboardOrgIndexRoute,
   DashboardSecurityIndexRoute: DashboardSecurityIndexRoute,
   DashboardSessionsIndexRoute: DashboardSessionsIndexRoute,
   DashboardSettingsIndexRoute: DashboardSettingsIndexRoute,
@@ -4366,6 +4674,11 @@ const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRouteWithChildren,
   AuthRoute: AuthRouteWithChildren,
   DashboardRoute: DashboardRouteWithChildren,
+  ChangelogRoute: ChangelogRoute,
+  SecurityRoute: SecurityRoute,
+  StatusRoute: StatusRoute,
+  DocsQuickstartRoute: DocsQuickstartRoute,
+  DocsIndexRoute: DocsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

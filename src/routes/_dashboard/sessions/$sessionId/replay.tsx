@@ -3,7 +3,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '#/components/ui/card'
 import { Badge } from '#/components/ui/badge'
 import { Play, Pause, SkipForward, SkipBack, ListOrdered, ChevronRight } from 'lucide-react'
 import { useQuery } from 'convex/react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { api } from '../../../../../convex/_generated/api'
 import type { Id } from '../../../../../convex/_generated/dataModel'
 
@@ -16,8 +16,25 @@ function SessionReplay() {
   const messages = useQuery(api.sessions.getMessages, { sessionId: sessionId as Id<"sessions"> })
   const msgList = messages ?? []
   const [currentStep, setCurrentStep] = useState(1)
+  const [isPlaying, setIsPlaying] = useState(false)
 
   const active = msgList[currentStep - 1]
+
+  useEffect(() => {
+    let interval: number | undefined
+    if (isPlaying && msgList.length > 0) {
+      interval = window.setInterval(() => {
+        setCurrentStep((prev) => {
+          if (prev >= msgList.length) {
+            setIsPlaying(false)
+            return prev
+          }
+          return prev + 1
+        })
+      }, 2000)
+    }
+    return () => clearInterval(interval)
+  }, [isPlaying, msgList.length])
 
   return (
     <div className="space-y-6">
@@ -32,11 +49,17 @@ function SessionReplay() {
         <Badge variant="info">Step {currentStep} / {msgList.length}</Badge>
       </div>
 
-      <div className="flex items-center justify-center gap-3">
-        <button type="button" onClick={() => setCurrentStep(Math.max(1, currentStep - 1))} className="inline-flex items-center gap-1 rounded-lg bg-slate-700 px-3 py-2 text-sm text-white hover:bg-slate-600 transition-colors"><SkipBack className="w-4 h-4" /></button>
-        <button type="button" className="inline-flex items-center gap-1 rounded-lg bg-cyan-600 px-4 py-2 text-sm font-medium text-white hover:bg-cyan-500 transition-colors"><Play className="w-4 h-4" />Play</button>
-        <button type="button" className="inline-flex items-center gap-1 rounded-lg bg-slate-700 px-4 py-2 text-sm font-medium text-white hover:bg-slate-600 transition-colors"><Pause className="w-4 h-4" />Pause</button>
-        <button type="button" onClick={() => setCurrentStep(Math.min(msgList.length, currentStep + 1))} className="inline-flex items-center gap-1 rounded-lg bg-slate-700 px-3 py-2 text-sm text-white hover:bg-slate-600 transition-colors"><SkipForward className="w-4 h-4" /></button>
+      <div className="flex items-center justify-center gap-4 py-4 bg-slate-900 rounded-lg border border-slate-800">
+        <button type="button" onClick={() => setCurrentStep(Math.max(1, currentStep - 1))} className="inline-flex items-center gap-1 rounded-lg bg-slate-800 px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-slate-700 transition-colors"><SkipBack className="w-4 h-4" /></button>
+        {isPlaying ? (
+          <button type="button" onClick={() => setIsPlaying(false)} className="inline-flex items-center gap-2 rounded-lg bg-amber-600/20 text-amber-500 border border-amber-500/30 px-6 py-2 text-sm font-medium hover:bg-amber-600/30 transition-colors"><Pause className="w-4 h-4" />Pause</button>
+        ) : (
+          <button type="button" onClick={() => {
+            if (currentStep >= msgList.length) setCurrentStep(1);
+            setIsPlaying(true);
+          }} className="inline-flex items-center gap-2 rounded-lg bg-cyan-600/20 text-cyan-400 border border-cyan-500/30 px-6 py-2 text-sm font-medium hover:bg-cyan-600/30 transition-colors"><Play className="w-4 h-4" />Play</button>
+        )}
+        <button type="button" onClick={() => setCurrentStep(Math.min(msgList.length, currentStep + 1))} className="inline-flex items-center gap-1 rounded-lg bg-slate-800 px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-slate-700 transition-colors"><SkipForward className="w-4 h-4" /></button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
