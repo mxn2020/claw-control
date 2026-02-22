@@ -8,6 +8,12 @@ export const list = query({
     date: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    if (args.orgId && args.date) {
+      return await ctx.db
+        .query("usageRecords")
+        .withIndex("by_org_date", (q) => q.eq("orgId", args.orgId!).eq("date", args.date!))
+        .collect();
+    }
     if (args.date) {
       return await ctx.db
         .query("usageRecords")

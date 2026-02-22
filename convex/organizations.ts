@@ -82,7 +82,7 @@ export const listMembers = query({
 export const updateRole = mutation({
   args: {
     memberId: v.id("orgMembers"),
-    role: v.union(v.literal("owner"), v.literal("admin"), v.literal("member"), v.literal("viewer")),
+    role: v.union(v.literal("owner"), v.literal("admin"), v.literal("operator"), v.literal("viewer")),
   },
   handler: async (ctx, args) => {
     // In a real app we'd check if the caller is an owner/admin
@@ -101,7 +101,7 @@ export const inviteMember = mutation({
   args: {
     orgId: v.id("organizations"),
     email: v.string(),
-    role: v.union(v.literal("owner"), v.literal("admin"), v.literal("member"), v.literal("viewer")),
+    role: v.union(v.literal("owner"), v.literal("admin"), v.literal("operator"), v.literal("viewer")),
   },
   handler: async (ctx, args) => {
     // Basic mock implementation for OSS:

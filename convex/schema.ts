@@ -17,8 +17,37 @@ export default defineSchema({
     userId: v.id("users"),
     token: v.string(),
     expiresAt: v.number(),
+    mfaVerified: v.optional(v.boolean()),
+    ipAddress: v.optional(v.string()),
+    userAgent: v.optional(v.string()),
     createdAt: v.number(),
   }).index("by_token", ["token"]).index("by_user", ["userId"]),
+
+  // SSO Connections
+  ssoConnections: defineTable({
+    orgId: v.id("organizations"),
+    provider: v.union(v.literal("saml"), v.literal("oidc")),
+    domain: v.string(), // E.g., 'acme.com'
+    issuer: v.string(),
+    clientId: v.optional(v.string()),
+    clientSecret: v.optional(v.string()),
+    ssoUrl: v.optional(v.string()),
+    x509Certificate: v.optional(v.string()),
+    active: v.boolean(),
+    createdAt: v.number(),
+  }).index("by_org", ["orgId"]).index("by_domain", ["domain"]),
+
+  // WebAuthn Credentials
+  webAuthnCredentials: defineTable({
+    userId: v.id("users"),
+    credentialId: v.string(),
+    publicKey: v.string(), // Base64 format
+    counter: v.number(),
+    deviceType: v.string(),
+    backedUp: v.boolean(),
+    transports: v.optional(v.array(v.string())),
+    createdAt: v.number(),
+  }).index("by_user", ["userId"]).index("by_credential", ["credentialId"]),
 
   // API Keys (for CLI / integrations)
   apiKeys: defineTable({
@@ -35,6 +64,11 @@ export default defineSchema({
     slug: v.string(),
     ownerId: v.string(),
     plan: v.union(v.literal("free"), v.literal("pro"), v.literal("enterprise")),
+    stripeCustomerId: v.optional(v.string()),
+    stripeSubscriptionId: v.optional(v.string()),
+    stripePriceId: v.optional(v.string()),
+    billingEmail: v.optional(v.string()),
+    requireMfa: v.optional(v.boolean()),
     createdAt: v.number(),
   }).index("by_slug", ["slug"]).index("by_owner", ["ownerId"]),
 
@@ -42,9 +76,25 @@ export default defineSchema({
   orgMembers: defineTable({
     orgId: v.id("organizations"),
     userId: v.string(),
-    role: v.union(v.literal("owner"), v.literal("admin"), v.literal("member"), v.literal("viewer")),
+    role: v.union(v.literal("owner"), v.literal("admin"), v.literal("operator"), v.literal("viewer")),
     joinedAt: v.number(),
   }).index("by_org", ["orgId"]).index("by_user", ["userId"]),
+
+  // Organization invitations
+  orgInvitations: defineTable({
+    orgId: v.id("organizations"),
+    inviterId: v.string(),
+    email: v.string(),
+    role: v.union(
+      v.literal("admin"),
+      v.literal("operator"),
+      v.literal("viewer")
+    ),
+    token: v.string(),
+    expiresAt: v.number(),
+    status: v.union(v.literal("pending"), v.literal("accepted"), v.literal("expired")),
+    createdAt: v.number(),
+  }).index("by_org", ["orgId"]).index("by_token", ["token"]).index("by_email", ["email"]),
 
   // Teams
   teams: defineTable({
@@ -65,6 +115,7 @@ export default defineSchema({
   // Fleet Instances
   instances: defineTable({
     orgId: v.id("organizations"),
+    teamId: v.optional(v.id("teams")),
     name: v.string(),
     status: v.union(
       v.literal("online"),
@@ -76,6 +127,7 @@ export default defineSchema({
     provider: v.optional(v.string()),
     region: v.optional(v.string()),
     version: v.optional(v.string()),
+    tier: v.optional(v.string()), // Used for Cloud/Managed provisioning
     agentCount: v.number(),
     cpuUsage: v.optional(v.number()),
     memoryUsage: v.optional(v.number()),
@@ -227,14 +279,34 @@ export default defineSchema({
 
   // Audit Log
   auditLogs: defineTable({
-    orgId: v.id("organizations"),
-    userId: v.optional(v.string()),
+    orgId: v.optional(v.id("organizations")),
+    userId: v.optional(v.string()), // Kept as string for external/legacy compatibility, though id("users") is preferred
     action: v.string(),
     resourceType: v.string(),
     resourceId: v.optional(v.string()),
     details: v.optional(v.string()),
+    metadata: v.optional(v.any()), // JSON payloads for diffs/details
+    ipAddress: v.optional(v.string()),
+    userAgent: v.optional(v.string()),
     createdAt: v.number(),
-  }).index("by_org", ["orgId"]).index("by_resource", ["resourceType", "resourceId"]),
+  }).index("by_org", ["orgId"]).index("by_resource", ["resourceType", "resourceId"]).index("by_action", ["action"]),
+
+  // Alert Channels
+  alertChannels: defineTable({
+    orgId: v.id("organizations"),
+    name: v.string(),
+    type: v.union(v.literal("slack"), v.literal("pagerduty"), v.literal("email")),
+    webhookUrl: v.optional(v.string()), // For Slack/PD
+    emailAddress: v.optional(v.string()), // For Email
+    events: v.array(v.union(
+      v.literal("instance_down"),
+      v.literal("agent_error"),
+      v.literal("billing_alert"),
+      v.literal("security_alert")
+    )),
+    active: v.boolean(),
+    createdAt: v.number(),
+  }).index("by_org", ["orgId"]),
 
   // Tasks
   tasks: defineTable({
@@ -362,15 +434,34 @@ export default defineSchema({
   // Usage Records
   usageRecords: defineTable({
     orgId: v.id("organizations"),
-    userId: v.string(),
-    agentId: v.optional(v.string()),
+    userId: v.string(), // Kept for legacy compatibility and individual tracking
+    instanceId: v.optional(v.id("instances")),
+    agentId: v.optional(v.string()), // Changed from v.id("agents") to v.string() since the original schema uses v.string() and we have an agentId field
     model: v.optional(v.string()),
-    tokensUsed: v.number(),
-    cost: v.number(),
     taskType: v.optional(v.string()),
+    tokensUsed: v.number(), // Mapped to 'amount' conceptually
+    cost: v.number(),
     date: v.string(),
     createdAt: v.number(),
-  }).index("by_org", ["orgId"]).index("by_user", ["userId"]).index("by_date", ["date"]),
+  })
+    .index("by_user", ["userId"])
+    .index("by_org", ["orgId"])
+    .index("by_date", ["date"])
+    .index("by_org_date", ["orgId", "date"]), // Added composite index for billing dashboard
+
+  // Billing Invoices
+  invoices: defineTable({
+    orgId: v.id("organizations"),
+    stripeInvoiceId: v.string(),
+    amountDue: v.number(),
+    amountPaid: v.number(),
+    status: v.union(v.literal("draft"), v.literal("open"), v.literal("paid"), v.literal("uncollectible"), v.literal("void")),
+    periodStart: v.number(),
+    periodEnd: v.number(),
+    hostedInvoiceUrl: v.optional(v.string()),
+    invoicePdf: v.optional(v.string()),
+    createdAt: v.number(),
+  }).index("by_org", ["orgId"]),
 
   // Approvals
   approvals: defineTable({

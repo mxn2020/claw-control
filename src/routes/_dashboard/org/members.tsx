@@ -9,13 +9,16 @@ import { useState } from 'react'
 export const Route = createFileRoute('/_dashboard/org/members')({ component: OrgMembersPage })
 
 function OrgMembersPage() {
-    const { user } = useAuth()
+    const { user, token } = useAuth()
     const orgId = user?.orgId as any
 
-    const membersQuery = useQuery(api.organizations.listMembers, orgId ? { orgId } : "skip")
-    const updateRole = useMutation(api.organizations.updateRole)
-    const removeMember = useMutation(api.organizations.removeMember)
-    const inviteMember = useMutation(api.organizations.inviteMember)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const convexApi = api as Record<string, any>
+
+    const membersQuery = useQuery(convexApi.orgs?.getMembers ?? null, orgId && token ? { orgId, token } : "skip")
+    const updateRole = useMutation(convexApi.orgs?.updateMemberRole ?? null)
+    const removeMember = useMutation(convexApi.orgs?.removeMember ?? null)
+    const inviteMember = useMutation(convexApi.orgs?.inviteMember ?? null)
 
     const [isInviting, setIsInviting] = useState(false)
     const [inviteEmail, setInviteEmail] = useState("")
@@ -25,9 +28,10 @@ function OrgMembersPage() {
     const members = membersQuery ?? []
 
     const handleInvite = async () => {
+        if (!token) return
         setInviteError("")
         try {
-            await inviteMember({ orgId, email: inviteEmail, role: inviteRole })
+            await inviteMember({ orgId, token, email: inviteEmail, role: inviteRole })
             setIsInviting(false)
             setInviteEmail("")
         } catch (err: any) {
@@ -103,7 +107,7 @@ function OrgMembersPage() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-800/50">
-                            {members.map(member => (
+                            {members.map((member: any) => (
                                 <tr key={member.id} className="hover:bg-slate-800/30 transition-colors">
                                     <td className="px-6 py-4">
                                         <div className="font-medium text-slate-200">{member.name}</div>
@@ -112,7 +116,7 @@ function OrgMembersPage() {
                                     <td className="px-6 py-4">
                                         <select
                                             value={member.role}
-                                            onChange={(e) => updateRole({ memberId: member.id, role: e.target.value as any })}
+                                            onChange={(e) => updateRole({ orgId, token: token!, memberId: member.id, newRole: e.target.value as any })}
                                             disabled={member.userId === user?.id} // Don't let users change their own role here
                                             className="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-slate-300 outline-none focus:border-cyan-500"
                                         >
@@ -127,7 +131,7 @@ function OrgMembersPage() {
                                     </td>
                                     <td className="px-6 py-4 text-right">
                                         <button
-                                            onClick={() => removeMember({ memberId: member.id })}
+                                            onClick={() => removeMember({ orgId, token: token!, memberId: member.id })}
                                             disabled={member.userId === user?.id}
                                             className="text-slate-500 hover:text-red-400 disabled:opacity-20 transition-colors"
                                             title="Remove member"

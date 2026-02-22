@@ -68,10 +68,21 @@ export const register = mutation({
 
         // Create session
         const token = generateToken();
-        await ctx.db.insert("userSessions", {
+        const sessionId = await ctx.db.insert("userSessions", {
             userId,
             token,
             expiresAt: Date.now() + SESSION_TTL_MS,
+            mfaVerified: false,
+            createdAt: Date.now(),
+        });
+
+        // Audit Log
+        await ctx.db.insert("auditLogs", {
+            orgId,
+            userId: userId.toString(),
+            action: "register",
+            resourceType: "user",
+            resourceId: userId.toString(),
             createdAt: Date.now(),
         });
 
@@ -108,6 +119,7 @@ export const login = mutation({
             userId: user._id,
             token,
             expiresAt: Date.now() + SESSION_TTL_MS,
+            mfaVerified: false,
             createdAt: Date.now(),
         });
 
@@ -133,6 +145,7 @@ export const mfaLogin = mutation({
             userId: user._id,
             token,
             expiresAt: Date.now() + SESSION_TTL_MS,
+            mfaVerified: true,
             createdAt: Date.now(),
         });
 
@@ -289,6 +302,7 @@ export const resetPassword = mutation({
             userId: session.userId,
             token: newToken,
             expiresAt: Date.now() + SESSION_TTL_MS,
+            mfaVerified: false,
             createdAt: Date.now(),
         });
 

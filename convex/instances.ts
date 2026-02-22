@@ -1,48 +1,70 @@
-import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
+import { protectedMutation, protectedQuery, getTeamIdsForUser, hasPermission } from "./custom_auth";
 
-export const list = query({
-  args: { orgId: v.optional(v.id("organizations")) },
-  handler: async (ctx, args) => {
-    if (args.orgId) {
-      return await ctx.db
-        .query("instances")
-        .withIndex("by_org", (q) => q.eq("orgId", args.orgId!))
-        .collect();
+export const list = protectedQuery(
+  { orgId: v.id("organizations") },
+  "viewer",
+  async (ctx, args, auth) => {
+    let instances = await ctx.db
+      .query("instances")
+      .withIndex("by_org", (q) => q.eq("orgId", args.orgId))
+      .collect();
+
+    // If they aren't an admin, filter by their team
+    if (auth.member && !hasPermission(auth.member.role, "admin")) {
+      const userTeams = await getTeamIdsForUser(ctx, args.orgId, auth.user._id);
+      instances = instances.filter(i => !i.teamId || userTeams.includes(i.teamId));
     }
-    return await ctx.db.query("instances").collect();
-  },
-});
 
-export const get = query({
-  args: { id: v.id("instances") },
-  handler: async (ctx, args) => {
-    return await ctx.db.get(args.id);
-  },
-});
+    return instances;
+  }
+);
 
-export const create = mutation({
-  args: {
+export const get = protectedQuery(
+  { id: v.id("instances") },
+  "viewer",
+  async (ctx, args, auth) => {
+    const instance = (await ctx.db.get(args.id)) as any;
+    if (!instance || (auth.orgId && instance.orgId !== auth.orgId)) return null;
+
+    if (auth.member && !hasPermission(auth.member.role, "admin")) {
+      if (instance.teamId) {
+        const userTeams = await getTeamIdsForUser(ctx, instance.orgId, auth.user._id);
+        if (!userTeams.includes(instance.teamId)) return null;
+      }
+    }
+
+    return instance;
+  }
+);
+
+export const create = protectedMutation(
+  {
     orgId: v.id("organizations"),
     name: v.string(),
     provider: v.optional(v.string()),
     region: v.optional(v.string()),
+    teamId: v.optional(v.id("teams")),
+    tier: v.optional(v.string())
   },
-  handler: async (ctx, args) => {
+  "admin", // Only admins can spin up instances
+  async (ctx, args) => {
     return await ctx.db.insert("instances", {
       orgId: args.orgId,
       name: args.name,
       status: "provisioning",
       provider: args.provider,
       region: args.region,
+      tier: args.tier,
+      teamId: args.teamId,
       agentCount: 0,
       createdAt: Date.now(),
     });
-  },
-});
+  }
+);
 
-export const updateStatus = mutation({
-  args: {
+export const updateStatus = protectedMutation(
+  {
     id: v.id("instances"),
     status: v.union(
       v.literal("online"),
@@ -52,13 +74,23 @@ export const updateStatus = mutation({
       v.literal("quarantined")
     ),
   },
-  handler: async (ctx, args) => {
-    await ctx.db.patch(args.id, { status: args.status });
-  },
-});
+  "operator",
+  async (ctx, args, auth) => {
+    const inst = (await ctx.db.get(args.id)) as any;
+    if (!inst) throw new Error("Not found");
+    if (auth.member && !hasPermission(auth.member.role, "admin")) {
+      if (inst.teamId) {
+        const userTeams = await getTeamIdsForUser(ctx, inst.orgId, auth.user._id);
+        if (!userTeams.includes(inst.teamId)) throw new Error("Permission Denied.");
+      }
+    }
 
-export const update = mutation({
-  args: {
+    await ctx.db.patch(args.id, { status: args.status });
+  }
+);
+
+export const update = protectedMutation(
+  {
     id: v.id("instances"),
     name: v.optional(v.string()),
     provider: v.optional(v.string()),
@@ -67,15 +99,17 @@ export const update = mutation({
     cpuUsage: v.optional(v.number()),
     memoryUsage: v.optional(v.number()),
     lastHeartbeat: v.optional(v.number()),
+    teamId: v.optional(v.id("teams")),
+    tier: v.optional(v.string()),
     config: v.optional(v.object({
       providers: v.optional(v.array(v.string())),
       defaultModel: v.optional(v.string()),
       sandboxMode: v.optional(v.boolean()),
     })),
   },
-  handler: async (ctx, args) => {
+  "admin",
+  async (ctx, args) => {
     const { id, ...fields } = args;
-    // Filter out undefined values
     const updates: Record<string, unknown> = {};
     for (const [key, value] of Object.entries(fields)) {
       if (value !== undefined) updates[key] = value;
@@ -83,103 +117,151 @@ export const update = mutation({
     if (Object.keys(updates).length > 0) {
       await ctx.db.patch(id, updates);
     }
-  },
-});
+  }
+);
 
-export const remove = mutation({
-  args: { id: v.id("instances") },
-  handler: async (ctx, args) => {
+export const remove = protectedMutation(
+  { id: v.id("instances") },
+  "admin",
+  async (ctx, args) => {
     await ctx.db.delete(args.id);
-  },
-});
+  }
+);
 
-export const quarantine = mutation({
-  args: {
+export const quarantine = protectedMutation(
+  {
     id: v.id("instances"),
     reason: v.string(),
   },
-  handler: async (ctx, args) => {
-    const instance = await ctx.db.get(args.id);
+  "operator", // Operators can quarantine
+  async (ctx, args, auth) => {
+    const instance = (await ctx.db.get(args.id)) as any;
     if (!instance) throw new Error("Instance not found");
+
+    if (auth.member && !hasPermission(auth.member.role, "admin")) {
+      if (instance.teamId) {
+        const userTeams = await getTeamIdsForUser(ctx, instance.orgId, auth.user._id);
+        if (!userTeams.includes(instance.teamId)) throw new Error("Permission Denied.");
+      }
+    }
 
     await ctx.db.patch(args.id, { status: "quarantined" });
 
     await ctx.db.insert("auditLogs", {
       orgId: instance.orgId,
+      userId: auth.user._id.toString(),
       action: "quarantine_instance",
       resourceType: "instance",
       resourceId: instance._id,
       details: args.reason,
       createdAt: Date.now(),
     });
-  },
-});
+  }
+);
 
-export const unquarantine = mutation({
-  args: {
+export const unquarantine = protectedMutation(
+  {
     id: v.id("instances"),
     reason: v.string(),
   },
-  handler: async (ctx, args) => {
-    const instance = await ctx.db.get(args.id);
+  "operator",
+  async (ctx, args, auth) => {
+    const instance = (await ctx.db.get(args.id)) as any;
     if (!instance) throw new Error("Instance not found");
 
-    await ctx.db.patch(args.id, { status: "offline" }); // Unquarantine usually reverts to offline state for safe restart
+    if (auth.member && !hasPermission(auth.member.role, "admin")) {
+      if (instance.teamId) {
+        const userTeams = await getTeamIdsForUser(ctx, instance.orgId, auth.user._id);
+        if (!userTeams.includes(instance.teamId)) throw new Error("Permission Denied.");
+      }
+    }
+
+    await ctx.db.patch(args.id, { status: "offline" });
 
     await ctx.db.insert("auditLogs", {
       orgId: instance.orgId,
+      userId: auth.user._id.toString(),
       action: "unquarantine_instance",
       resourceType: "instance",
       resourceId: instance._id,
       details: args.reason,
       createdAt: Date.now(),
     });
-  },
-});
+  }
+);
 
-export const pauseAll = mutation({
-  args: { orgId: v.id("organizations") },
-  handler: async (ctx, args) => {
-    const instances = await ctx.db
+export const pauseAll = protectedMutation(
+  { orgId: v.id("organizations"), teamScope: v.optional(v.id("teams")) },
+  "operator",
+  async (ctx, args, auth) => {
+    let instances = await ctx.db
       .query("instances")
       .withIndex("by_org", (q) => q.eq("orgId", args.orgId))
       .collect();
+
+    if (args.teamScope) {
+      instances = instances.filter(i => i.teamId === args.teamScope);
+    }
+
+    if (auth.member && !hasPermission(auth.member.role, "admin")) {
+      const userTeams = await getTeamIdsForUser(ctx, args.orgId, auth.user._id);
+      instances = instances.filter(i => !i.teamId || userTeams.includes(i.teamId));
+    }
+
+    let count = 0;
     for (const instance of instances) {
       if (instance.status !== "offline") {
         await ctx.db.patch(instance._id, { status: "offline" });
+        count++;
       }
     }
-    // Log the kill switch activation
+
     await ctx.db.insert("auditLogs", {
       orgId: args.orgId,
+      userId: auth.user._id.toString(),
       action: "kill_switch_activated",
       resourceType: "fleet",
-      details: `Paused ${instances.length} instances`,
+      details: `Paused ${count} instances`,
       createdAt: Date.now(),
     });
-    return { paused: instances.length };
-  },
-});
+    return { paused: count };
+  }
+);
 
-export const resumeAll = mutation({
-  args: { orgId: v.id("organizations") },
-  handler: async (ctx, args) => {
-    const instances = await ctx.db
+export const resumeAll = protectedMutation(
+  { orgId: v.id("organizations"), teamScope: v.optional(v.id("teams")) },
+  "operator",
+  async (ctx, args, auth) => {
+    let instances = await ctx.db
       .query("instances")
       .withIndex("by_org", (q) => q.eq("orgId", args.orgId))
       .collect();
+
+    if (args.teamScope) {
+      instances = instances.filter(i => i.teamId === args.teamScope);
+    }
+
+    if (auth.member && !hasPermission(auth.member.role, "admin")) {
+      const userTeams = await getTeamIdsForUser(ctx, args.orgId, auth.user._id);
+      instances = instances.filter(i => !i.teamId || userTeams.includes(i.teamId));
+    }
+
+    let count = 0;
     for (const instance of instances) {
       if (instance.status === "offline") {
         await ctx.db.patch(instance._id, { status: "online" });
+        count++;
       }
     }
+
     await ctx.db.insert("auditLogs", {
       orgId: args.orgId,
+      userId: auth.user._id.toString(),
       action: "kill_switch_deactivated",
       resourceType: "fleet",
-      details: `Resumed ${instances.length} instances`,
+      details: `Resumed ${count} instances`,
       createdAt: Date.now(),
     });
-    return { resumed: instances.length };
-  },
-});
+    return { resumed: count };
+  }
+);

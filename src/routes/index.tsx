@@ -65,6 +65,7 @@ function HomePage() {
           </div>
           <nav className="hidden md:flex items-center gap-6 text-sm text-gray-400">
             <a href="#features" className="hover:text-white transition-colors">Features</a>
+            <Link to="/pricing" className="hover:text-white transition-colors">Pricing</Link>
             <Link to="/fleet" className="hover:text-white transition-colors">Dashboard</Link>
           </nav>
           <div className="flex items-center gap-3">

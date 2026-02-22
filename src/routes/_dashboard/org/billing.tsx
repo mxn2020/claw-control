@@ -1,21 +1,28 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { Card, CardHeader, CardTitle, CardContent } from '#/components/ui/card'
 import { CreditCard, Activity, Zap, CheckCircle2, Download } from 'lucide-react'
-import { useQuery } from 'convex/react'
+import { useQuery, useMutation } from 'convex/react'
 import { api } from '../../../../convex/_generated/api'
 import { useAuth } from '#/lib/authContext'
+import { useState } from 'react'
 import { Badge } from '#/components/ui/badge'
 
 export const Route = createFileRoute('/_dashboard/org/billing')({ component: OrgBillingPage })
 
 function OrgBillingPage() {
-    const { user } = useAuth()
+    const { user, token } = useAuth()
     const orgId = user?.orgId as any
+
+    const createCheckoutSession = useMutation(api.stripe.createCheckoutSession)
+    const createPortalSession = useMutation(api.stripe.createPortalSession)
+
+    const [isManaging, setIsManaging] = useState(false)
 
     const dateStr = new Date().toISOString().substring(0, 7) // "YYYY-MM"
     const usageStats = useQuery(api.usage.getOrgStats, orgId ? { orgId, month: dateStr } : "skip")
     const usageRecords = useQuery(api.usage.list, orgId ? { orgId } : "skip")
     const org = useQuery(api.organizations.get, orgId ? { id: orgId } : "skip")
+    const invoices = useQuery(api.invoices.list, orgId ? { orgId } : "skip")
 
     if (!orgId) return <div className="p-8 text-slate-400">Loading...</div>
 
@@ -23,15 +30,22 @@ function OrgBillingPage() {
     const totalCost = usageStats?.totalCost || 0
     const totalTokens = usageStats?.totalTokens || 0
 
-    // Build invoice-like monthly summaries from usage records
-    const monthlyTotals: Record<string, number> = {}
-    for (const r of (usageRecords ?? [])) {
-        const month = r.date.substring(0, 7)
-        monthlyTotals[month] = (monthlyTotals[month] ?? 0) + r.cost
+    const handleManageSubscription = async () => {
+        if (!token) return
+        try {
+            setIsManaging(true)
+            if (currentPlan === 'free') {
+                const { url } = await createCheckoutSession({ orgId, token, priceId: 'price_pro_tier' })
+                window.location.href = url
+            } else {
+                const { url } = await createPortalSession({ orgId, token })
+                window.location.href = url
+            }
+        } catch (err) {
+            console.error("Failed to redirect to billing", err)
+            setIsManaging(false)
+        }
     }
-    const invoiceMonths = Object.entries(monthlyTotals)
-        .sort((a, b) => b[0].localeCompare(a[0]))
-        .slice(0, 6)
 
     return (
         <div className="space-y-6">
@@ -43,8 +57,12 @@ function OrgBillingPage() {
                     </h1>
                     <p className="text-sm text-slate-400 mt-1">Manage your subscription plan, payment methods, and monitor API costs</p>
                 </div>
-                <button className="bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-                    Manage Subscription
+                <button
+                    onClick={handleManageSubscription}
+                    disabled={isManaging}
+                    className="bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+                >
+                    {isManaging ? "Redirecting..." : (currentPlan === 'free' ? "Upgrade to Pro" : "Manage Subscription")}
                 </button>
             </div>
 
@@ -109,20 +127,32 @@ function OrgBillingPage() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-800/50">
-                            {invoiceMonths.length === 0 && (
-                                <tr><td colSpan={4} className="px-6 py-8 text-center text-slate-500">No usage data yet.</td></tr>
+                            {(!invoices || invoices.length === 0) && (
+                                <tr><td colSpan={4} className="px-6 py-8 text-center text-slate-500">No invoices generated yet.</td></tr>
                             )}
-                            {invoiceMonths.map(([month, cost]) => (
-                                <tr key={month} className="hover:bg-slate-800/30 transition-colors">
-                                    <td className="px-6 py-4 text-slate-300">{month}</td>
-                                    <td className="px-6 py-4 text-slate-300">${cost.toFixed(2)}</td>
+                            {invoices?.map((invoice: any) => (
+                                <tr key={invoice._id} className="hover:bg-slate-800/30 transition-colors">
+                                    <td className="px-6 py-4 text-slate-300">
+                                        {new Date(invoice.periodStart).toLocaleDateString()} - {new Date(invoice.periodEnd).toLocaleDateString()}
+                                    </td>
+                                    <td className="px-6 py-4 text-slate-300">${(invoice.amountDue / 100).toFixed(2)}</td>
                                     <td className="px-6 py-4">
-                                        <Badge variant="success">Settled</Badge>
+                                        {invoice.status === 'paid' ? (
+                                            <Badge variant="success">Paid</Badge>
+                                        ) : invoice.status === 'open' ? (
+                                            <Badge variant="warning">Open</Badge>
+                                        ) : (
+                                            <Badge variant="default" className="capitalize">{invoice.status}</Badge>
+                                        )}
                                     </td>
                                     <td className="px-6 py-4 text-right">
-                                        <button className="text-slate-400 hover:text-cyan-400 transition-colors" title="Download PDF">
-                                            <Download className="w-4 h-4 ml-auto" />
-                                        </button>
+                                        {invoice.invoicePdf ? (
+                                            <a href={invoice.invoicePdf} target="_blank" rel="noreferrer" className="text-slate-400 hover:text-cyan-400 inline-block p-2 transition-colors" title="Download PDF">
+                                                <Download className="w-4 h-4 ml-auto" />
+                                            </a>
+                                        ) : (
+                                            <span className="text-slate-600">-</span>
+                                        )}
                                     </td>
                                 </tr>
                             ))}

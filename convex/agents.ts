@@ -1,55 +1,80 @@
-import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
+import { protectedMutation, protectedQuery, getTeamIdsForUser, hasPermission } from "./custom_auth";
 
-export const list = query({
-  args: {
+export const list = protectedQuery(
+  {
     orgId: v.optional(v.id("organizations")),
     instanceId: v.optional(v.id("instances")),
   },
-  handler: async (ctx, args) => {
+  "viewer",
+  async (ctx, args, auth) => {
+    let agents = [];
     if (args.instanceId) {
-      return await ctx.db
+      agents = await ctx.db
         .query("agents")
         .withIndex("by_instance", (q) => q.eq("instanceId", args.instanceId!))
         .collect();
-    }
-    if (args.orgId) {
-      return await ctx.db
+    } else if (args.orgId) {
+      agents = await ctx.db
         .query("agents")
         .withIndex("by_org", (q) => q.eq("orgId", args.orgId!))
         .collect();
+    } else {
+      agents = await ctx.db.query("agents").collect();
     }
-    return await ctx.db.query("agents").collect();
-  },
-});
 
-export const get = query({
-  args: { id: v.id("agents") },
-  handler: async (ctx, args) => {
-    return await ctx.db.get(args.id);
-  },
-});
+    if (auth.orgId) {
+      agents = agents.filter((a: any) => a.orgId === auth.orgId);
+    }
 
-export const create = mutation({
-  args: {
+    if (auth.member && !hasPermission(auth.member.role, "admin")) {
+      const userTeams = await getTeamIdsForUser(ctx, auth.orgId!, auth.user._id);
+      agents = agents.filter((a: any) => !a.teamId || userTeams.includes(a.teamId));
+    }
+
+    return agents;
+  }
+);
+
+export const get = protectedQuery(
+  { id: v.id("agents") },
+  "viewer",
+  async (ctx, args, auth) => {
+    const agent = (await ctx.db.get(args.id)) as any;
+    if (!agent || (auth.orgId && agent.orgId !== auth.orgId)) return null;
+
+    if (auth.member && !hasPermission(auth.member.role, "admin")) {
+      if (agent.teamId) {
+        const userTeams = await getTeamIdsForUser(ctx, agent.orgId, auth.user._id);
+        if (!userTeams.includes(agent.teamId)) return null;
+      }
+    }
+    return agent;
+  }
+);
+
+export const create = protectedMutation(
+  {
     orgId: v.id("organizations"),
     instanceId: v.id("instances"),
     name: v.string(),
     model: v.optional(v.string()),
+    teamId: v.optional(v.id("teams"))
   },
-  handler: async (ctx, args) => {
+  "admin",
+  async (ctx, args, auth) => {
     const agentId = await ctx.db.insert("agents", {
       orgId: args.orgId,
       instanceId: args.instanceId,
       name: args.name,
       status: "idle",
       model: args.model,
+      teamId: args.teamId,
       sessionCount: 0,
       createdAt: Date.now(),
-    });
+    } as any);
 
-    // Update instance agent count
-    const instance = await ctx.db.get(args.instanceId);
+    const instance = (await ctx.db.get(args.instanceId)) as any;
     if (instance) {
       await ctx.db.patch(args.instanceId, {
         agentCount: instance.agentCount + 1,
@@ -57,11 +82,11 @@ export const create = mutation({
     }
 
     return agentId;
-  },
-});
+  }
+);
 
-export const updateStatus = mutation({
-  args: {
+export const updateStatus = protectedMutation(
+  {
     id: v.id("agents"),
     status: v.union(
       v.literal("active"),
@@ -71,13 +96,22 @@ export const updateStatus = mutation({
       v.literal("quarantined")
     ),
   },
-  handler: async (ctx, args) => {
+  "operator",
+  async (ctx, args, auth) => {
+    const agent = (await ctx.db.get(args.id)) as any;
+    if (!agent) throw new Error("Not found");
+    if (auth.member && !hasPermission(auth.member.role, "admin")) {
+      if (agent.teamId) {
+        const userTeams = await getTeamIdsForUser(ctx, agent.orgId, auth.user._id);
+        if (!userTeams.includes(agent.teamId)) throw new Error("Permission Denied.");
+      }
+    }
     await ctx.db.patch(args.id, { status: args.status });
-  },
-});
+  }
+);
 
-export const updatePersonality = mutation({
-  args: {
+export const updatePersonality = protectedMutation(
+  {
     id: v.id("agents"),
     personality: v.object({
       soulMd: v.optional(v.string()),
@@ -85,15 +119,17 @@ export const updatePersonality = mutation({
       userMd: v.optional(v.string()),
     }),
   },
-  handler: async (ctx, args) => {
+  "admin",
+  async (ctx, args) => {
     await ctx.db.patch(args.id, { personality: args.personality });
-  },
-});
+  }
+);
 
-export const update = mutation({
-  args: {
+export const update = protectedMutation(
+  {
     id: v.id("agents"),
     model: v.optional(v.string()),
+    teamId: v.optional(v.id("teams")),
     toolsConfig: v.optional(v.object({
       allowed: v.optional(v.array(v.string())),
       denied: v.optional(v.array(v.string())),
@@ -101,23 +137,25 @@ export const update = mutation({
     })),
     channelBindings: v.optional(v.array(v.string())),
   },
-  handler: async (ctx, args) => {
+  "admin",
+  async (ctx, args) => {
     const { id, ...fields } = args;
-    // Filter out undefined fields
     const patch: Record<string, unknown> = {};
     if (fields.model !== undefined) patch.model = fields.model;
+    if (fields.teamId !== undefined) (patch as any).teamId = fields.teamId;
     if (fields.toolsConfig !== undefined) patch.toolsConfig = fields.toolsConfig;
     if (fields.channelBindings !== undefined) patch.channelBindings = fields.channelBindings;
     await ctx.db.patch(id, patch);
-  },
-});
+  }
+);
 
-export const remove = mutation({
-  args: { id: v.id("agents") },
-  handler: async (ctx, args) => {
-    const agent = await ctx.db.get(args.id);
+export const remove = protectedMutation(
+  { id: v.id("agents") },
+  "admin",
+  async (ctx, args) => {
+    const agent = (await ctx.db.get(args.id)) as any;
     if (agent) {
-      const instance = await ctx.db.get(agent.instanceId);
+      const instance = (await ctx.db.get(agent.instanceId)) as any;
       if (instance) {
         await ctx.db.patch(agent.instanceId, {
           agentCount: Math.max(0, instance.agentCount - 1),
@@ -125,22 +163,30 @@ export const remove = mutation({
       }
     }
     await ctx.db.delete(args.id);
-  },
-});
+  }
+);
 
-export const quarantine = mutation({
-  args: {
+export const quarantine = protectedMutation(
+  {
     id: v.id("agents"),
     reason: v.string(),
   },
-  handler: async (ctx, args) => {
-    const agent = await ctx.db.get(args.id);
+  "operator",
+  async (ctx, args, auth) => {
+    const agent = (await ctx.db.get(args.id)) as any;
     if (!agent) throw new Error("Agent not found");
+    if (auth.member && !hasPermission(auth.member.role, "admin")) {
+      if (agent.teamId) {
+        const userTeams = await getTeamIdsForUser(ctx, agent.orgId, auth.user._id);
+        if (!userTeams.includes(agent.teamId)) throw new Error("Permission Denied.");
+      }
+    }
 
     await ctx.db.patch(args.id, { status: "quarantined" });
 
     await ctx.db.insert("auditLogs", {
       orgId: agent.orgId,
+      userId: auth.user._id.toString(),
       action: "quarantine_agent",
       resourceType: "agent",
       resourceId: agent._id,
@@ -148,21 +194,29 @@ export const quarantine = mutation({
       createdAt: Date.now(),
     });
   }
-});
+);
 
-export const unquarantine = mutation({
-  args: {
+export const unquarantine = protectedMutation(
+  {
     id: v.id("agents"),
     reason: v.string(),
   },
-  handler: async (ctx, args) => {
-    const agent = await ctx.db.get(args.id);
+  "operator",
+  async (ctx, args, auth) => {
+    const agent = (await ctx.db.get(args.id)) as any;
     if (!agent) throw new Error("Agent not found");
+    if (auth.member && !hasPermission(auth.member.role, "admin")) {
+      if (agent.teamId) {
+        const userTeams = await getTeamIdsForUser(ctx, agent.orgId, auth.user._id);
+        if (!userTeams.includes(agent.teamId)) throw new Error("Permission Denied.");
+      }
+    }
 
-    await ctx.db.patch(args.id, { status: "paused" }); // Usually unquarantine resumes to paused or idle
+    await ctx.db.patch(args.id, { status: "paused" });
 
     await ctx.db.insert("auditLogs", {
       orgId: agent.orgId,
+      userId: auth.user._id.toString(),
       action: "unquarantine_agent",
       resourceType: "agent",
       resourceId: agent._id,
@@ -170,36 +224,58 @@ export const unquarantine = mutation({
       createdAt: Date.now(),
     });
   }
-});
+);
 
-export const pauseAll = mutation({
-  args: { orgId: v.id("organizations") },
-  handler: async (ctx, args) => {
-    const agents = await ctx.db
+export const pauseAll = protectedMutation(
+  { orgId: v.id("organizations"), teamScope: v.optional(v.id("teams")) },
+  "operator",
+  async (ctx, args, auth) => {
+    let agents = await ctx.db
       .query("agents")
       .withIndex("by_org", (q) => q.eq("orgId", args.orgId))
       .collect();
+
+    if (args.teamScope) {
+      agents = agents.filter((a: any) => a.teamId === args.teamScope);
+    }
+
+    if (auth.member && !hasPermission(auth.member.role, "admin")) {
+      const userTeams = await getTeamIdsForUser(ctx, args.orgId, auth.user._id);
+      agents = agents.filter((a: any) => !a.teamId || userTeams.includes(a.teamId));
+    }
+
     for (const agent of agents) {
       if (agent.status !== "paused") {
         await ctx.db.patch(agent._id, { status: "paused" });
       }
     }
     return { paused: agents.length };
-  },
-});
+  }
+);
 
-export const resumeAll = mutation({
-  args: { orgId: v.id("organizations") },
-  handler: async (ctx, args) => {
-    const agents = await ctx.db
+export const resumeAll = protectedMutation(
+  { orgId: v.id("organizations"), teamScope: v.optional(v.id("teams")) },
+  "operator",
+  async (ctx, args, auth) => {
+    let agents = await ctx.db
       .query("agents")
       .withIndex("by_org", (q) => q.eq("orgId", args.orgId))
       .collect();
+
+    if (args.teamScope) {
+      agents = agents.filter((a: any) => a.teamId === args.teamScope);
+    }
+
+    if (auth.member && !hasPermission(auth.member.role, "admin")) {
+      const userTeams = await getTeamIdsForUser(ctx, args.orgId, auth.user._id);
+      agents = agents.filter((a: any) => !a.teamId || userTeams.includes(a.teamId));
+    }
+
     for (const agent of agents) {
       if (agent.status === "paused") {
         await ctx.db.patch(agent._id, { status: "idle" });
       }
     }
     return { resumed: agents.length };
-  },
-});
+  }
+);

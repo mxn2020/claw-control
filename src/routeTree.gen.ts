@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as StatusRouteImport } from './routes/status'
 import { Route as SecurityRouteImport } from './routes/security'
+import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as ChangelogRouteImport } from './routes/changelog'
 import { Route as DashboardRouteImport } from './routes/_dashboard'
 import { Route as AuthRouteImport } from './routes/_auth'
@@ -18,6 +19,7 @@ import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DocsIndexRouteImport } from './routes/docs/index'
 import { Route as DocsQuickstartRouteImport } from './routes/docs/quickstart'
+import { Route as AuthDeviceRouteImport } from './routes/_auth/device'
 import { Route as AppHomeRouteImport } from './routes/_app/home'
 import { Route as DashboardSwarmsIndexRouteImport } from './routes/_dashboard/swarms/index'
 import { Route as DashboardSkillsIndexRouteImport } from './routes/_dashboard/skills/index'
@@ -65,8 +67,10 @@ import { Route as DashboardSecurityPostureRouteImport } from './routes/_dashboar
 import { Route as DashboardSecurityIncidentsRouteImport } from './routes/_dashboard/security/incidents'
 import { Route as DashboardSecurityCvesRouteImport } from './routes/_dashboard/security/cves'
 import { Route as DashboardOrgTeamsRouteImport } from './routes/_dashboard/org/teams'
+import { Route as DashboardOrgSwitchRouteImport } from './routes/_dashboard/org/switch'
 import { Route as DashboardOrgSsoRouteImport } from './routes/_dashboard/org/sso'
 import { Route as DashboardOrgSiemRouteImport } from './routes/_dashboard/org/siem'
+import { Route as DashboardOrgNewRouteImport } from './routes/_dashboard/org/new'
 import { Route as DashboardOrgMembersRouteImport } from './routes/_dashboard/org/members'
 import { Route as DashboardOrgComplianceRouteImport } from './routes/_dashboard/org/compliance'
 import { Route as DashboardOrgBillingRouteImport } from './routes/_dashboard/org/billing'
@@ -230,6 +234,11 @@ const SecurityRoute = SecurityRouteImport.update({
   path: '/security',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PricingRoute = PricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ChangelogRoute = ChangelogRouteImport.update({
   id: '/changelog',
   path: '/changelog',
@@ -261,6 +270,11 @@ const DocsQuickstartRoute = DocsQuickstartRouteImport.update({
   id: '/docs/quickstart',
   path: '/docs/quickstart',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthDeviceRoute = AuthDeviceRouteImport.update({
+  id: '/device',
+  path: '/device',
+  getParentRoute: () => AuthRoute,
 } as any)
 const AppHomeRoute = AppHomeRouteImport.update({
   id: '/home',
@@ -511,6 +525,11 @@ const DashboardOrgTeamsRoute = DashboardOrgTeamsRouteImport.update({
   path: '/org/teams',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardOrgSwitchRoute = DashboardOrgSwitchRouteImport.update({
+  id: '/org/switch',
+  path: '/org/switch',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardOrgSsoRoute = DashboardOrgSsoRouteImport.update({
   id: '/org/sso',
   path: '/org/sso',
@@ -519,6 +538,11 @@ const DashboardOrgSsoRoute = DashboardOrgSsoRouteImport.update({
 const DashboardOrgSiemRoute = DashboardOrgSiemRouteImport.update({
   id: '/org/siem',
   path: '/org/siem',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardOrgNewRoute = DashboardOrgNewRouteImport.update({
+  id: '/org/new',
+  path: '/org/new',
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardOrgMembersRoute = DashboardOrgMembersRouteImport.update({
@@ -1395,9 +1419,11 @@ const DashboardFleetInstancesInstanceIdAgentsNewRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/changelog': typeof ChangelogRoute
+  '/pricing': typeof PricingRoute
   '/security': typeof SecurityRoute
   '/status': typeof StatusRoute
   '/home': typeof AppHomeRoute
+  '/device': typeof AuthDeviceRoute
   '/docs/quickstart': typeof DocsQuickstartRoute
   '/docs/': typeof DocsIndexRoute
   '/automations/triggers': typeof AppAutomationsTriggersRoute
@@ -1447,8 +1473,10 @@ export interface FileRoutesByFullPath {
   '/org/billing': typeof DashboardOrgBillingRoute
   '/org/compliance': typeof DashboardOrgComplianceRoute
   '/org/members': typeof DashboardOrgMembersRoute
+  '/org/new': typeof DashboardOrgNewRoute
   '/org/siem': typeof DashboardOrgSiemRoute
   '/org/sso': typeof DashboardOrgSsoRoute
+  '/org/switch': typeof DashboardOrgSwitchRoute
   '/org/teams': typeof DashboardOrgTeamsRoute
   '/security/cves': typeof DashboardSecurityCvesRoute
   '/security/incidents': typeof DashboardSecurityIncidentsRoute
@@ -1604,9 +1632,11 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/changelog': typeof ChangelogRoute
+  '/pricing': typeof PricingRoute
   '/security': typeof DashboardSecurityIndexRoute
   '/status': typeof StatusRoute
   '/home': typeof AppHomeRoute
+  '/device': typeof AuthDeviceRoute
   '/docs/quickstart': typeof DocsQuickstartRoute
   '/docs': typeof DocsIndexRoute
   '/automations/triggers': typeof AppAutomationsTriggersRoute
@@ -1656,8 +1686,10 @@ export interface FileRoutesByTo {
   '/org/billing': typeof DashboardOrgBillingRoute
   '/org/compliance': typeof DashboardOrgComplianceRoute
   '/org/members': typeof DashboardOrgMembersRoute
+  '/org/new': typeof DashboardOrgNewRoute
   '/org/siem': typeof DashboardOrgSiemRoute
   '/org/sso': typeof DashboardOrgSsoRoute
+  '/org/switch': typeof DashboardOrgSwitchRoute
   '/org/teams': typeof DashboardOrgTeamsRoute
   '/security/cves': typeof DashboardSecurityCvesRoute
   '/security/incidents': typeof DashboardSecurityIncidentsRoute
@@ -1815,9 +1847,11 @@ export interface FileRoutesById {
   '/_auth': typeof AuthRouteWithChildren
   '/_dashboard': typeof DashboardRouteWithChildren
   '/changelog': typeof ChangelogRoute
+  '/pricing': typeof PricingRoute
   '/security': typeof SecurityRoute
   '/status': typeof StatusRoute
   '/_app/home': typeof AppHomeRoute
+  '/_auth/device': typeof AuthDeviceRoute
   '/docs/quickstart': typeof DocsQuickstartRoute
   '/docs/': typeof DocsIndexRoute
   '/_app/automations/triggers': typeof AppAutomationsTriggersRoute
@@ -1867,8 +1901,10 @@ export interface FileRoutesById {
   '/_dashboard/org/billing': typeof DashboardOrgBillingRoute
   '/_dashboard/org/compliance': typeof DashboardOrgComplianceRoute
   '/_dashboard/org/members': typeof DashboardOrgMembersRoute
+  '/_dashboard/org/new': typeof DashboardOrgNewRoute
   '/_dashboard/org/siem': typeof DashboardOrgSiemRoute
   '/_dashboard/org/sso': typeof DashboardOrgSsoRoute
+  '/_dashboard/org/switch': typeof DashboardOrgSwitchRoute
   '/_dashboard/org/teams': typeof DashboardOrgTeamsRoute
   '/_dashboard/security/cves': typeof DashboardSecurityCvesRoute
   '/_dashboard/security/incidents': typeof DashboardSecurityIncidentsRoute
@@ -2026,9 +2062,11 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/changelog'
+    | '/pricing'
     | '/security'
     | '/status'
     | '/home'
+    | '/device'
     | '/docs/quickstart'
     | '/docs/'
     | '/automations/triggers'
@@ -2078,8 +2116,10 @@ export interface FileRouteTypes {
     | '/org/billing'
     | '/org/compliance'
     | '/org/members'
+    | '/org/new'
     | '/org/siem'
     | '/org/sso'
+    | '/org/switch'
     | '/org/teams'
     | '/security/cves'
     | '/security/incidents'
@@ -2235,9 +2275,11 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/changelog'
+    | '/pricing'
     | '/security'
     | '/status'
     | '/home'
+    | '/device'
     | '/docs/quickstart'
     | '/docs'
     | '/automations/triggers'
@@ -2287,8 +2329,10 @@ export interface FileRouteTypes {
     | '/org/billing'
     | '/org/compliance'
     | '/org/members'
+    | '/org/new'
     | '/org/siem'
     | '/org/sso'
+    | '/org/switch'
     | '/org/teams'
     | '/security/cves'
     | '/security/incidents'
@@ -2445,9 +2489,11 @@ export interface FileRouteTypes {
     | '/_auth'
     | '/_dashboard'
     | '/changelog'
+    | '/pricing'
     | '/security'
     | '/status'
     | '/_app/home'
+    | '/_auth/device'
     | '/docs/quickstart'
     | '/docs/'
     | '/_app/automations/triggers'
@@ -2497,8 +2543,10 @@ export interface FileRouteTypes {
     | '/_dashboard/org/billing'
     | '/_dashboard/org/compliance'
     | '/_dashboard/org/members'
+    | '/_dashboard/org/new'
     | '/_dashboard/org/siem'
     | '/_dashboard/org/sso'
+    | '/_dashboard/org/switch'
     | '/_dashboard/org/teams'
     | '/_dashboard/security/cves'
     | '/_dashboard/security/incidents'
@@ -2658,6 +2706,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRouteWithChildren
   DashboardRoute: typeof DashboardRouteWithChildren
   ChangelogRoute: typeof ChangelogRoute
+  PricingRoute: typeof PricingRoute
   SecurityRoute: typeof SecurityRoute
   StatusRoute: typeof StatusRoute
   DocsQuickstartRoute: typeof DocsQuickstartRoute
@@ -2678,6 +2727,13 @@ declare module '@tanstack/react-router' {
       path: '/security'
       fullPath: '/security'
       preLoaderRoute: typeof SecurityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pricing': {
+      id: '/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof PricingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/changelog': {
@@ -2728,6 +2784,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/docs/quickstart'
       preLoaderRoute: typeof DocsQuickstartRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_auth/device': {
+      id: '/_auth/device'
+      path: '/device'
+      fullPath: '/device'
+      preLoaderRoute: typeof AuthDeviceRouteImport
+      parentRoute: typeof AuthRoute
     }
     '/_app/home': {
       id: '/_app/home'
@@ -3058,6 +3121,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardOrgTeamsRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/_dashboard/org/switch': {
+      id: '/_dashboard/org/switch'
+      path: '/org/switch'
+      fullPath: '/org/switch'
+      preLoaderRoute: typeof DashboardOrgSwitchRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/_dashboard/org/sso': {
       id: '/_dashboard/org/sso'
       path: '/org/sso'
@@ -3070,6 +3140,13 @@ declare module '@tanstack/react-router' {
       path: '/org/siem'
       fullPath: '/org/siem'
       preLoaderRoute: typeof DashboardOrgSiemRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/org/new': {
+      id: '/_dashboard/org/new'
+      path: '/org/new'
+      fullPath: '/org/new'
+      preLoaderRoute: typeof DashboardOrgNewRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/_dashboard/org/members': {
@@ -4230,12 +4307,14 @@ const AppRouteChildren: AppRouteChildren = {
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
 interface AuthRouteChildren {
+  AuthDeviceRoute: typeof AuthDeviceRoute
   AuthAuthLoginRoute: typeof AuthAuthLoginRoute
   AuthAuthRecoveryRoute: typeof AuthAuthRecoveryRoute
   AuthAuthRegisterRoute: typeof AuthAuthRegisterRoute
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
+  AuthDeviceRoute: AuthDeviceRoute,
   AuthAuthLoginRoute: AuthAuthLoginRoute,
   AuthAuthRecoveryRoute: AuthAuthRecoveryRoute,
   AuthAuthRegisterRoute: AuthAuthRegisterRoute,
@@ -4310,8 +4389,10 @@ interface DashboardRouteChildren {
   DashboardOrgBillingRoute: typeof DashboardOrgBillingRoute
   DashboardOrgComplianceRoute: typeof DashboardOrgComplianceRoute
   DashboardOrgMembersRoute: typeof DashboardOrgMembersRoute
+  DashboardOrgNewRoute: typeof DashboardOrgNewRoute
   DashboardOrgSiemRoute: typeof DashboardOrgSiemRoute
   DashboardOrgSsoRoute: typeof DashboardOrgSsoRoute
+  DashboardOrgSwitchRoute: typeof DashboardOrgSwitchRoute
   DashboardOrgTeamsRoute: typeof DashboardOrgTeamsRoute
   DashboardSecurityCvesRoute: typeof DashboardSecurityCvesRoute
   DashboardSecurityIncidentsRoute: typeof DashboardSecurityIncidentsRoute
@@ -4463,8 +4544,10 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardOrgBillingRoute: DashboardOrgBillingRoute,
   DashboardOrgComplianceRoute: DashboardOrgComplianceRoute,
   DashboardOrgMembersRoute: DashboardOrgMembersRoute,
+  DashboardOrgNewRoute: DashboardOrgNewRoute,
   DashboardOrgSiemRoute: DashboardOrgSiemRoute,
   DashboardOrgSsoRoute: DashboardOrgSsoRoute,
+  DashboardOrgSwitchRoute: DashboardOrgSwitchRoute,
   DashboardOrgTeamsRoute: DashboardOrgTeamsRoute,
   DashboardSecurityCvesRoute: DashboardSecurityCvesRoute,
   DashboardSecurityIncidentsRoute: DashboardSecurityIncidentsRoute,
@@ -4675,6 +4758,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRouteWithChildren,
   DashboardRoute: DashboardRouteWithChildren,
   ChangelogRoute: ChangelogRoute,
+  PricingRoute: PricingRoute,
   SecurityRoute: SecurityRoute,
   StatusRoute: StatusRoute,
   DocsQuickstartRoute: DocsQuickstartRoute,

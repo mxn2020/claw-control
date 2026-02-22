@@ -4,7 +4,7 @@ import { Button } from '#/components/ui/button'
 import { Input } from '#/components/ui/input'
 import { Card, CardHeader, CardTitle, CardContent } from '#/components/ui/card'
 import { Badge } from '#/components/ui/badge'
-import { useMutation } from 'convex/react'
+import { useMutation, useQuery } from 'convex/react'
 import { api } from '../../../../../convex/_generated/api'
 import { useAuth } from '#/lib/authContext'
 import { useToast } from '#/components/ui/toast'
@@ -30,10 +30,18 @@ function NewInstancePage() {
   const [name, setName] = useState('')
   const [provider, setProvider] = useState('Self-hosted')
   const [region, setRegion] = useState('local')
+  const [teamId, setTeamId] = useState<string>('none')
+  const [tier, setTier] = useState<string>('Shared-Nano')
+
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [registrationToken, setRegistrationToken] = useState<string | null>(null)
+  const [managedSuccess, setManagedSuccess] = useState(false)
+
   const [copied, setCopied] = useState(false)
+
+  // Load teams
+  const orgTeams = useQuery(api.teams.list, user?.orgId ? { orgId: user.orgId as Id<"organizations"> } : "skip")
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -43,16 +51,27 @@ function NewInstancePage() {
     setError(null)
     try {
       const orgId = user.orgId as Id<"organizations">
-      const instanceId = await createInstance({
+
+      const payload: any = {
         orgId,
         name: name.trim(),
-        provider,
-        region,
-      })
-      // Generate a mock registration token for copy
-      const token = `claw_reg_${instanceId.toString().slice(-8)}_${Date.now().toString(36)}`
-      setRegistrationToken(token)
-      toast('Instance registered successfully', 'success')
+        provider: mode === 'cloud' ? provider : 'Self-hosted',
+        region: mode === 'cloud' ? region : 'local',
+      }
+
+      if (teamId !== 'none') payload.teamId = teamId as Id<"teams">;
+      if (mode === 'cloud') payload.tier = tier;
+
+      const instanceId = await createInstance(payload)
+
+      if (mode === 'cloud') {
+        setManagedSuccess(true)
+        toast('Cloud provisioning started!', 'success')
+      } else {
+        const token = `claw_reg_${instanceId.toString().slice(-8)}_${Date.now().toString(36)}`
+        setRegistrationToken(token)
+        toast('Instance registered successfully', 'success')
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create instance.')
     } finally {
@@ -127,7 +146,63 @@ function NewInstancePage() {
     )
   }
 
-  // Success state — show registration token
+  // Success state — Managed Cloud
+  if (managedSuccess) {
+    return (
+      <div className="max-w-xl space-y-6">
+        <div className="text-center py-4">
+          <div className="w-14 h-14 rounded-full bg-violet-500/20 flex items-center justify-center mx-auto mb-4">
+            <Cloud className="w-7 h-7 text-violet-400" />
+          </div>
+          <h2 className="text-xl font-bold text-white mb-1">Provisioning Started</h2>
+          <p className="text-sm text-slate-400">
+            ClawControl is spinning up your new Managed Cloud instance. This usually takes 2-3 minutes.
+          </p>
+        </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base flex items-center gap-2">
+              <Server className="w-4 h-4 text-violet-400" />
+              Instance Details
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 text-sm text-slate-300">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <span className="text-slate-500 block text-xs uppercase tracking-wider mb-1">Name</span>
+                <span className="font-medium text-white">{name}</span>
+              </div>
+              <div>
+                <span className="text-slate-500 block text-xs uppercase tracking-wider mb-1">Configuration</span>
+                <span>{provider} • {region}</span>
+              </div>
+              <div>
+                <span className="text-slate-500 block text-xs uppercase tracking-wider mb-1">Compute Tier</span>
+                <span>{tier}</span>
+              </div>
+              <div>
+                <span className="text-slate-500 block text-xs uppercase tracking-wider mb-1">Status</span>
+                <Badge className="bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 border-amber-500/20">Provisioning</Badge>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="flex gap-3 justify-center">
+          <Button variant="outline" onClick={() => navigate({ to: '/fleet' })}>
+            Back to Fleet
+          </Button>
+          <Button onClick={() => navigate({ to: '/fleet/instances' })}>
+            <Server className="w-4 h-4 mr-1.5" />
+            View Instances
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
+  // Success state — BYO Server token
   if (registrationToken) {
     return (
       <div className="max-w-xl space-y-6">
@@ -223,28 +298,58 @@ function NewInstancePage() {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <label className="block text-sm font-medium text-slate-300">Provider</label>
-                <select
-                  className="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                  value={provider}
-                  onChange={(e) => setProvider(e.target.value)}
-                >
-                  {PROVIDERS.map((p) => <option key={p}>{p}</option>)}
-                </select>
-              </div>
-              <div className="space-y-1.5">
-                <label className="block text-sm font-medium text-slate-300">Region</label>
-                <select
-                  className="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                  value={region}
-                  onChange={(e) => setRegion(e.target.value)}
-                >
-                  {REGIONS.map((r) => <option key={r}>{r}</option>)}
-                </select>
-              </div>
+            <div className="space-y-1.5">
+              <label className="block text-sm font-medium text-slate-300">Team Scoping (Optional)</label>
+              <select
+                className="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                value={teamId}
+                onChange={(e) => setTeamId(e.target.value)}
+              >
+                <option value="none">No Team (Global)</option>
+                {orgTeams?.map((t) => <option key={t._id} value={t._id}>{t.name}</option>)}
+              </select>
+              <p className="text-xs text-slate-500 pt-1">Only admins and users within this team will be able to access the instance.</p>
             </div>
+
+            {mode === 'cloud' && (
+              <div className="space-y-1.5">
+                <label className="block text-sm font-medium text-slate-300">Compute Tier</label>
+                <select
+                  className="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                  value={tier}
+                  onChange={(e) => setTier(e.target.value)}
+                >
+                  <option value="Shared-Nano">Shared-Nano (0.5 vCPU, 1GB RAM) - $5/mo</option>
+                  <option value="Dedicated-Micro">Dedicated-Micro (1 vCPU, 4GB RAM) - $15/mo</option>
+                  <option value="Dedicated-Standard">Dedicated-Standard (4 vCPU, 16GB RAM) - $40/mo</option>
+                </select>
+              </div>
+            )}
+
+            {mode === 'cloud' && (
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <label className="block text-sm font-medium text-slate-300">Provider</label>
+                  <select
+                    className="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    value={provider}
+                    onChange={(e) => setProvider(e.target.value)}
+                  >
+                    {PROVIDERS.filter(p => p !== 'Self-hosted' && p !== 'Other').map((p) => <option key={p}>{p}</option>)}
+                  </select>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="block text-sm font-medium text-slate-300">Region</label>
+                  <select
+                    className="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    value={region}
+                    onChange={(e) => setRegion(e.target.value)}
+                  >
+                    {REGIONS.filter(r => r !== 'local').map((r) => <option key={r}>{r}</option>)}
+                  </select>
+                </div>
+              </div>
+            )}
 
             {mode === 'byo' && (
               <div className="rounded-lg border border-cyan-500/20 bg-cyan-500/5 p-4 text-sm text-slate-300">
