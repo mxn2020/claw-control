@@ -4,6 +4,7 @@ import { CreditCard, Activity, Zap, CheckCircle2, Download } from 'lucide-react'
 import { useQuery } from 'convex/react'
 import { api } from '../../../../convex/_generated/api'
 import { useAuth } from '#/lib/authContext'
+import { Badge } from '#/components/ui/badge'
 
 export const Route = createFileRoute('/_dashboard/org/billing')({ component: OrgBillingPage })
 
@@ -11,16 +12,26 @@ function OrgBillingPage() {
     const { user } = useAuth()
     const orgId = user?.orgId as any
 
-    // Start of current month date string
     const dateStr = new Date().toISOString().substring(0, 7) // "YYYY-MM"
-
     const usageStats = useQuery(api.usage.getOrgStats, orgId ? { orgId, month: dateStr } : "skip")
+    const usageRecords = useQuery(api.usage.list, orgId ? { orgId } : "skip")
+    const org = useQuery(api.organizations.get, orgId ? { id: orgId } : "skip")
 
     if (!orgId) return <div className="p-8 text-slate-400">Loading...</div>
 
-    const currentPlan = "Pro" // In reality, fetch from org details
+    const currentPlan = org?.plan ?? 'free'
     const totalCost = usageStats?.totalCost || 0
     const totalTokens = usageStats?.totalTokens || 0
+
+    // Build invoice-like monthly summaries from usage records
+    const monthlyTotals: Record<string, number> = {}
+    for (const r of (usageRecords ?? [])) {
+        const month = r.date.substring(0, 7)
+        monthlyTotals[month] = (monthlyTotals[month] ?? 0) + r.cost
+    }
+    const invoiceMonths = Object.entries(monthlyTotals)
+        .sort((a, b) => b[0].localeCompare(a[0]))
+        .slice(0, 6)
 
     return (
         <div className="space-y-6">
@@ -46,13 +57,13 @@ function OrgBillingPage() {
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div className="flex items-end gap-2">
-                            <span className="text-4xl font-bold text-white">{currentPlan}</span>
+                            <span className="text-4xl font-bold text-white capitalize">{currentPlan}</span>
                             <span className="text-slate-400 mb-1">/ month</span>
                         </div>
                         <ul className="space-y-2 text-sm text-slate-300">
                             <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400" /> Unlimited agents</li>
-                            <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400" /> Advanced RBAC</li>
-                            <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400" /> Priority support</li>
+                            <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400" /> {currentPlan === 'enterprise' ? 'Advanced RBAC + SSO' : 'Basic RBAC'}</li>
+                            <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400" /> {currentPlan === 'enterprise' ? 'Priority support' : 'Community support'}</li>
                         </ul>
                     </CardContent>
                 </Card>
@@ -85,40 +96,36 @@ function OrgBillingPage() {
 
             <Card>
                 <CardHeader>
-                    <CardTitle>Invoices</CardTitle>
+                    <CardTitle>Usage History</CardTitle>
                 </CardHeader>
                 <CardContent className="p-0">
                     <table className="w-full text-sm text-left">
                         <thead className="bg-slate-900/50 text-slate-400 border-b border-slate-800">
                             <tr>
-                                <th className="px-6 py-3 font-medium">Date</th>
+                                <th className="px-6 py-3 font-medium">Month</th>
                                 <th className="px-6 py-3 font-medium">Amount</th>
                                 <th className="px-6 py-3 font-medium">Status</th>
                                 <th className="px-6 py-3 font-medium text-right">Invoice</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-800/50">
-                            {/* Mock Invoices */}
-                            <tr className="hover:bg-slate-800/30 transition-colors">
-                                <td className="px-6 py-4 text-slate-300">Oct 01, 2024</td>
-                                <td className="px-6 py-4 text-slate-300">$49.00</td>
-                                <td className="px-6 py-4"><span className="text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded text-xs font-medium border border-emerald-500/20">Paid</span></td>
-                                <td className="px-6 py-4 text-right">
-                                    <button className="text-slate-400 hover:text-cyan-400 transition-colors" title="Download PDF">
-                                        <Download className="w-4 h-4 ml-auto" />
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr className="hover:bg-slate-800/30 transition-colors">
-                                <td className="px-6 py-4 text-slate-300">Sep 01, 2024</td>
-                                <td className="px-6 py-4 text-slate-300">$49.00</td>
-                                <td className="px-6 py-4"><span className="text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded text-xs font-medium border border-emerald-500/20">Paid</span></td>
-                                <td className="px-6 py-4 text-right">
-                                    <button className="text-slate-400 hover:text-cyan-400 transition-colors" title="Download PDF">
-                                        <Download className="w-4 h-4 ml-auto" />
-                                    </button>
-                                </td>
-                            </tr>
+                            {invoiceMonths.length === 0 && (
+                                <tr><td colSpan={4} className="px-6 py-8 text-center text-slate-500">No usage data yet.</td></tr>
+                            )}
+                            {invoiceMonths.map(([month, cost]) => (
+                                <tr key={month} className="hover:bg-slate-800/30 transition-colors">
+                                    <td className="px-6 py-4 text-slate-300">{month}</td>
+                                    <td className="px-6 py-4 text-slate-300">${cost.toFixed(2)}</td>
+                                    <td className="px-6 py-4">
+                                        <Badge variant="success">Settled</Badge>
+                                    </td>
+                                    <td className="px-6 py-4 text-right">
+                                        <button className="text-slate-400 hover:text-cyan-400 transition-colors" title="Download PDF">
+                                            <Download className="w-4 h-4 ml-auto" />
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
                         </tbody>
                     </table>
                 </CardContent>

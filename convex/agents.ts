@@ -90,6 +90,28 @@ export const updatePersonality = mutation({
   },
 });
 
+export const update = mutation({
+  args: {
+    id: v.id("agents"),
+    model: v.optional(v.string()),
+    toolsConfig: v.optional(v.object({
+      allowed: v.optional(v.array(v.string())),
+      denied: v.optional(v.array(v.string())),
+      sandboxMode: v.optional(v.boolean()),
+    })),
+    channelBindings: v.optional(v.array(v.string())),
+  },
+  handler: async (ctx, args) => {
+    const { id, ...fields } = args;
+    // Filter out undefined fields
+    const patch: Record<string, unknown> = {};
+    if (fields.model !== undefined) patch.model = fields.model;
+    if (fields.toolsConfig !== undefined) patch.toolsConfig = fields.toolsConfig;
+    if (fields.channelBindings !== undefined) patch.channelBindings = fields.channelBindings;
+    await ctx.db.patch(id, patch);
+  },
+});
+
 export const remove = mutation({
   args: { id: v.id("agents") },
   handler: async (ctx, args) => {

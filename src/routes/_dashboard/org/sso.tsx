@@ -1,15 +1,20 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { Card, CardHeader, CardTitle, CardContent } from '#/components/ui/card'
-import { KeyRound, ShieldCheck, Power, Settings2, Save } from 'lucide-react'
+import { KeyRound, ShieldCheck, Save } from 'lucide-react'
 import { useAuth } from '#/lib/authContext'
+import { useQuery } from 'convex/react'
+import { api } from '../../../../convex/_generated/api'
 
 export const Route = createFileRoute('/_dashboard/org/sso')({ component: OrgSSOPage })
 
 function OrgSSOPage() {
     const { user } = useAuth()
     const orgId = user?.orgId as any
+    const org = useQuery(api.organizations.get, orgId ? { id: orgId } : "skip")
 
     if (!orgId) return <div className="p-8 text-slate-400">Loading...</div>
+
+    const isEnterprise = org?.plan === 'enterprise'
 
     return (
         <div className="space-y-6">
@@ -23,8 +28,18 @@ function OrgSSOPage() {
                 </div>
             </div>
 
+            {!isEnterprise && (
+                <Card className="border-amber-500/30 bg-amber-950/10">
+                    <CardContent className="py-4">
+                        <p className="text-sm text-amber-400">
+                            SSO is available on the Enterprise plan. Your organization is currently on the <strong>{org?.plan ?? 'free'}</strong> plan.
+                        </p>
+                    </CardContent>
+                </Card>
+            )}
+
             <div className="max-w-4xl space-y-6">
-                <Card className="border-cyan-500/20 bg-cyan-950/5">
+                <Card className={`border-cyan-500/20 bg-cyan-950/5 ${!isEnterprise ? 'opacity-60 pointer-events-none' : ''}`}>
                     <CardHeader>
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
@@ -88,7 +103,7 @@ function OrgSSOPage() {
                     </CardContent>
                 </Card>
 
-                <Card>
+                <Card className={!isEnterprise ? 'opacity-60 pointer-events-none' : ''}>
                     <CardHeader>
                         <CardTitle>Strict Authentication Policies</CardTitle>
                     </CardHeader>
@@ -96,7 +111,7 @@ function OrgSSOPage() {
                         <div className="flex items-center justify-between p-4 bg-slate-900/50 border border-slate-800 rounded-lg">
                             <div>
                                 <h4 className="text-sm font-medium text-white mb-1">Require SSO for all users</h4>
-                                <p className="text-xs text-slate-400">If enabled, users can only log in via your configured Identity Provider. Username and password logins will be disabled.</p>
+                                <p className="text-xs text-slate-400">If enabled, users can only log in via your configured Identity Provider.</p>
                             </div>
                             <div className="w-12 h-6 bg-slate-700 rounded-full relative cursor-not-allowed opacity-50">
                                 <div className="w-4 h-4 bg-slate-400 rounded-full absolute left-1 top-1"></div>

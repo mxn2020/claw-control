@@ -1,10 +1,19 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { Card, CardHeader, CardTitle, CardContent } from '#/components/ui/card'
 import { FileCheck, Download, Server, Clock, ShieldCheck } from 'lucide-react'
+import { useAuth } from '#/lib/authContext'
+import { useQuery } from 'convex/react'
+import { api } from '../../../../convex/_generated/api'
 
 export const Route = createFileRoute('/_dashboard/org/compliance')({ component: OrgCompliancePage })
 
 function OrgCompliancePage() {
+    const { user } = useAuth()
+    const orgId = user?.orgId as any
+    const org = useQuery(api.organizations.get, orgId ? { id: orgId } : "skip")
+
+    if (!orgId) return <div className="p-8 text-slate-400">Loading...</div>
+
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between border-b border-slate-800 pb-4">
@@ -13,7 +22,10 @@ function OrgCompliancePage() {
                         <FileCheck className="w-6 h-6 text-cyan-400" />
                         Compliance & Data
                     </h1>
-                    <p className="text-sm text-slate-400 mt-1">Manage data residency, retention policies, and compliance exports</p>
+                    <p className="text-sm text-slate-400 mt-1">
+                        Manage data residency, retention policies, and compliance exports
+                        {org ? ` — ${org.name} (${org.plan} plan)` : ''}
+                    </p>
                 </div>
             </div>
 
