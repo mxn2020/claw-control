@@ -3,14 +3,18 @@ import { useQuery } from 'convex/react'
 import { api } from '../../convex/_generated/api'
 import { DataContext } from './dataContext'
 import type { AppData } from './dataContext'
+import { useAuth } from './authContext'
 
 /**
  * ConvexDataProvider — subscribes to all Convex queries and exposes results
  * via DataContext.
  *
- * Must be rendered inside a <ConvexProvider>.
+ * Must be rendered inside a <ConvexProvider> and <AuthProvider>.
  */
 export function ConvexDataProvider({ children }: { children: ReactNode }) {
+  const { user } = useAuth()
+  const userId = user?.id
+
   const instances = useQuery(api.instances.list, {})
   const agents = useQuery(api.agents.list, {})
   const tasks = useQuery(api.tasks.list, {})
@@ -23,7 +27,10 @@ export function ConvexDataProvider({ children }: { children: ReactNode }) {
   const sessions = useQuery(api.sessions.list, {})
   const nodes = useQuery(api.nodes.list, {})
   const memoryFiles = useQuery(api.memoryFiles.list, {})
-  const voiceSettings = useQuery(api.voiceSettings.getByUser, { userId: 'user_demo' })
+  const voiceSettings = useQuery(
+    api.voiceSettings.getByUser,
+    userId ? { userId } : 'skip'
+  )
 
   const value: AppData = {
     instances,
