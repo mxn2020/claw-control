@@ -1,37 +1,41 @@
-import { query, mutation } from "./_generated/server";
+import { mutation } from "./_generated/server";
 import { v } from "convex/values";
+import { protectedQuery, protectedMutation } from "./custom_auth";
 
-export const list = query({
-  args: {
+export const list = protectedQuery(
+  {
     orgId: v.optional(v.id("organizations")),
     userId: v.optional(v.string()),
   },
-  handler: async (ctx, args) => {
+  "viewer",
+  async (ctx, args, auth) => {
     if (args.userId) {
       return await ctx.db
         .query("nodes")
         .withIndex("by_user", (q) => q.eq("userId", args.userId!))
         .collect();
     }
-    if (args.orgId) {
+    const orgId = args.orgId || auth.orgId;
+    if (orgId) {
       return await ctx.db
         .query("nodes")
-        .withIndex("by_org", (q) => q.eq("orgId", args.orgId!))
+        .withIndex("by_org", (q) => q.eq("orgId", orgId as any))
         .collect();
     }
     return await ctx.db.query("nodes").collect();
-  },
-});
+  }
+);
 
-export const get = query({
-  args: { id: v.id("nodes") },
-  handler: async (ctx, args) => {
+export const get = protectedQuery(
+  { id: v.id("nodes") },
+  "viewer",
+  async (ctx, args) => {
     return await ctx.db.get(args.id);
-  },
-});
+  }
+);
 
-export const create = mutation({
-  args: {
+export const create = protectedMutation(
+  {
     orgId: v.id("organizations"),
     userId: v.string(),
     name: v.string(),
@@ -53,7 +57,8 @@ export const create = mutation({
       })
     ),
   },
-  handler: async (ctx, args) => {
+  "admin",
+  async (ctx, args) => {
     return await ctx.db.insert("nodes", {
       orgId: args.orgId,
       userId: args.userId,
@@ -65,11 +70,11 @@ export const create = mutation({
       lastSeen: Date.now(),
       createdAt: Date.now(),
     });
-  },
-});
+  }
+);
 
-export const update = mutation({
-  args: {
+export const update = protectedMutation(
+  {
     id: v.id("nodes"),
     status: v.optional(
       v.union(v.literal("online"), v.literal("offline"), v.literal("sleeping"))
@@ -85,25 +90,27 @@ export const update = mutation({
       })
     ),
   },
-  handler: async (ctx, args) => {
+  "operator",
+  async (ctx, args) => {
     const { id, ...fields } = args;
     const updates: Record<string, unknown> = {};
     if (fields.status !== undefined) updates.status = fields.status;
     if (fields.lastSeen !== undefined) updates.lastSeen = fields.lastSeen;
     if (fields.capabilities !== undefined) updates.capabilities = fields.capabilities;
     await ctx.db.patch(id, updates);
-  },
-});
+  }
+);
 
-export const remove = mutation({
-  args: { id: v.id("nodes") },
-  handler: async (ctx, args) => {
+export const remove = protectedMutation(
+  { id: v.id("nodes") },
+  "admin",
+  async (ctx, args) => {
     await ctx.db.delete(args.id);
-  },
-});
+  }
+);
 
-export const initiatePairing = mutation({
-  args: {
+export const initiatePairing = protectedMutation(
+  {
     orgId: v.id("organizations"),
     userId: v.string(),
     name: v.string(),
@@ -115,9 +122,10 @@ export const initiatePairing = mutation({
       v.literal("windows")
     ),
   },
-  handler: async (ctx, args) => {
+  "admin",
+  async (ctx, args) => {
     const pairingCode = Math.floor(100000 + Math.random() * 900000).toString();
-    const pairingExpiresAt = Date.now() + 15 * 60 * 1000; // 15 minutes
+    const pairingExpiresAt = Date.now() + 15 * 60 * 1000;
 
     const nodeId = await ctx.db.insert("nodes", {
       orgId: args.orgId,
@@ -131,9 +139,10 @@ export const initiatePairing = mutation({
     });
 
     return { nodeId, pairingCode, pairingExpiresAt };
-  },
-});
+  }
+);
 
+// Device claim stays unauthenticated — called by the device itself with a pairing code
 export const claimDevice = mutation({
   args: {
     pairingCode: v.string(),
@@ -154,7 +163,7 @@ export const claimDevice = mutation({
     await ctx.db.patch(node._id, {
       status: "online",
       osVersion: args.osVersion,
-      pairingCode: undefined, // Clear code
+      pairingCode: undefined,
       pairingExpiresAt: undefined,
       lastSeen: Date.now(),
     });

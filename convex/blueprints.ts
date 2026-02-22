@@ -1,33 +1,37 @@
-import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
+import { protectedQuery, protectedMutation } from "./custom_auth";
 
-export const list = query({
-  args: { orgId: v.optional(v.id("organizations")) },
-  handler: async (ctx, args) => {
-    if (args.orgId) {
+export const list = protectedQuery(
+  { orgId: v.optional(v.id("organizations")) },
+  "viewer",
+  async (ctx, args, auth) => {
+    const orgId = args.orgId || auth.orgId;
+    if (orgId) {
       return await ctx.db
         .query("blueprints")
-        .withIndex("by_org", (q) => q.eq("orgId", args.orgId!))
+        .withIndex("by_org", (q) => q.eq("orgId", orgId as any))
         .collect();
     }
     return await ctx.db.query("blueprints").collect();
-  },
-});
+  }
+);
 
-export const get = query({
-  args: { id: v.id("blueprints") },
-  handler: async (ctx, args) => {
+export const get = protectedQuery(
+  { id: v.id("blueprints") },
+  "viewer",
+  async (ctx, args) => {
     return await ctx.db.get(args.id);
-  },
-});
+  }
+);
 
-export const create = mutation({
-  args: {
+export const create = protectedMutation(
+  {
     orgId: v.id("organizations"),
     name: v.string(),
     description: v.optional(v.string()),
   },
-  handler: async (ctx, args) => {
+  "admin",
+  async (ctx, args) => {
     return await ctx.db.insert("blueprints", {
       orgId: args.orgId,
       name: args.name,
@@ -35,11 +39,11 @@ export const create = mutation({
       deployCount: 0,
       createdAt: Date.now(),
     });
-  },
-});
+  }
+);
 
-export const update = mutation({
-  args: {
+export const update = protectedMutation(
+  {
     id: v.id("blueprints"),
     name: v.optional(v.string()),
     description: v.optional(v.string()),
@@ -59,7 +63,8 @@ export const update = mutation({
       description: v.optional(v.string()),
     }))),
   },
-  handler: async (ctx, args) => {
+  "operator",
+  async (ctx, args) => {
     const { id, ...fields } = args;
     const updates: Record<string, unknown> = {};
     for (const [key, value] of Object.entries(fields)) {
@@ -67,33 +72,33 @@ export const update = mutation({
     }
     updates.updatedAt = Date.now();
     await ctx.db.patch(id, updates);
-  },
-});
+  }
+);
 
-export const remove = mutation({
-  args: { id: v.id("blueprints") },
-  handler: async (ctx, args) => {
+export const remove = protectedMutation(
+  { id: v.id("blueprints") },
+  "admin",
+  async (ctx, args) => {
     await ctx.db.delete(args.id);
-  },
-});
+  }
+);
 
-export const deploy = mutation({
-  args: {
+export const deploy = protectedMutation(
+  {
     blueprintId: v.id("blueprints"),
     orgId: v.id("organizations"),
     instanceIds: v.array(v.id("instances")),
   },
-  handler: async (ctx, args) => {
+  "admin",
+  async (ctx, args) => {
     const bp = await ctx.db.get(args.blueprintId);
     if (!bp) throw new Error("Blueprint not found");
 
-    // Increment deploy count
     await ctx.db.patch(args.blueprintId, {
-      deployCount: (bp.deployCount || 0) + 1,
+      deployCount: ((bp as any).deployCount || 0) + 1,
       updatedAt: Date.now(),
-    });
+    } as any);
 
-    // Log audit event
     await ctx.db.insert("auditLogs", {
       orgId: args.orgId,
       action: "deploy",
@@ -102,6 +107,5 @@ export const deploy = mutation({
       details: `Deployed to ${args.instanceIds.length} instances`,
       createdAt: Date.now(),
     });
-  },
-});
-
+  }
+);
