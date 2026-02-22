@@ -106,6 +106,23 @@ function HomePage() {
             </Link>
           </div>
 
+          {/* Demo Embed Placeholder */}
+          <div className="mt-16 relative mx-auto w-full max-w-4xl aspect-video bg-slate-800/80 border border-slate-700 rounded-xl overflow-hidden shadow-2xl flex items-center justify-center group">
+            <div className="absolute inset-0 bg-gradient-to-tr from-cyan-500/10 to-purple-500/10" />
+            <div className="text-center z-10">
+              <div className="w-16 h-16 rounded-full bg-cyan-500/20 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                <div className="w-0 h-0 border-t-8 border-t-transparent border-l-[12px] border-l-cyan-400 border-b-8 border-b-transparent ml-1" />
+              </div>
+              <p className="text-slate-300 font-medium">Watch Demo: Managing 1,000 Agents</p>
+            </div>
+            {/* Fake browser UI */}
+            <div className="absolute top-0 left-0 right-0 h-10 bg-slate-900 border-b border-slate-800 flex items-center px-4 gap-2">
+              <div className="w-3 h-3 rounded-full bg-slate-700" />
+              <div className="w-3 h-3 rounded-full bg-slate-700" />
+              <div className="w-3 h-3 rounded-full bg-slate-700" />
+            </div>
+          </div>
+
           {/* Stats */}
           <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
             {[
