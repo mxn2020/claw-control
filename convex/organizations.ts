@@ -134,3 +134,20 @@ export const inviteMember = mutation({
     });
   },
 });
+
+export const update = mutation({
+  args: {
+    id: v.id("organizations"),
+    name: v.optional(v.string()),
+    requireMfa: v.optional(v.boolean()),
+    requireSso: v.optional(v.boolean()),
+  },
+  handler: async (ctx, args) => {
+    const { id, ...fields } = args;
+    const patch: Record<string, unknown> = {};
+    if (fields.name !== undefined) patch.name = fields.name;
+    if (fields.requireMfa !== undefined) patch.requireMfa = fields.requireMfa;
+    if (fields.requireSso !== undefined) (patch as any).requireSso = fields.requireSso;
+    await ctx.db.patch(id, patch);
+  },
+});
