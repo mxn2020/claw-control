@@ -27,7 +27,8 @@ interface AuthContextValue {
     user: AuthUser | null;
     isLoading: boolean;
     token: string | null;
-    login: (email: string, password: string) => Promise<void>;
+    login: (email: string, password: string) => Promise<{ mfaRequired: true; userId: string } | void>;
+    mfaLogin: (userId: string, totpCode: string) => Promise<void>;
     register: (name: string, email: string, password: string) => Promise<void>;
     logout: () => Promise<void>;
     setOrg: (orgId: string) => void;
@@ -46,6 +47,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const convexApi = api as Record<string, any>;
     const meResult = useQuery(convexApi.auth?.me ?? null, { token: token ?? undefined });
     const loginMutation = useMutation(convexApi.auth?.login ?? null);
+    const mfaLoginMutation = useMutation(convexApi.auth?.mfaLogin ?? null);
     const registerMutation = useMutation(convexApi.auth?.register ?? null);
     const logoutMutation = useMutation(convexApi.auth?.logout ?? null);
 
@@ -79,13 +81,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setActiveOrgId(orgId);
     }, []);
 
+
     const login = useCallback(
         async (email: string, password: string) => {
             const result = await loginMutation({ email, password });
+            if (result.mfaRequired) {
+                return { mfaRequired: true as const, userId: result.userId as string };
+            }
             localStorage.setItem(TOKEN_KEY, result.token);
             setToken(result.token);
         },
         [loginMutation]
+    );
+
+    const mfaLogin = useCallback(
+        async (userId: string, totpCode: string) => {
+            const result = await mfaLoginMutation({ userId: userId as import("../../convex/_generated/dataModel").Id<"users">, totpCode });
+            localStorage.setItem(TOKEN_KEY, result.token);
+            setToken(result.token);
+        },
+        [mfaLoginMutation]
     );
 
     const register = useCallback(
@@ -114,6 +129,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isLoading,
         token,
         login,
+        mfaLogin,
         register,
         logout,
         setOrg,
@@ -138,6 +154,7 @@ export function MockAuthProvider({ children }: { children: ReactNode }) {
         isLoading: false,
         token: "mock_token",
         login: async () => { },
+        mfaLogin: async () => { },
         register: async () => { },
         logout: async () => { },
         setOrg: (_orgId: string) => { },

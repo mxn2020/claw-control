@@ -1,10 +1,10 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { useAuth } from '#/lib/authContext'
+import { useMutation, useQuery } from 'convex/react'
 import { Card, CardHeader, CardTitle, CardContent } from '#/components/ui/card'
 import { Badge } from '#/components/ui/badge'
 import { Button } from '#/components/ui/button'
-import { Input } from '#/components/ui/input'
-import { Download, ArrowLeft, Server, Bot } from 'lucide-react'
-import { useQuery } from 'convex/react'
+import { ArrowLeft, Bot, Download, Server } from 'lucide-react'
 import { api } from '../../../../../../convex/_generated/api'
 import { useToast } from '#/components/ui/toast'
 import { useState } from 'react'
@@ -19,10 +19,15 @@ function SkillDeploy() {
     const { toast } = useToast()
 
     const discoverItems = useQuery(api.discover.list, { type: 'skill' })
-    const skill = discoverItems?.find(s => s._id === skillId)
+    const skill = discoverItems?.find((s: any) => s._id === skillId)
 
-    const agents = useQuery(api.agents.list, {}) ?? []
-    const instances = useQuery(api.instances.list, {}) ?? []
+    const { user } = useAuth()
+    const agents = useQuery(api.agents.list, user?.orgId ? { orgId: user.orgId } : 'skip') ?? []
+    const instances = useQuery(api.instances.list, user?.orgId ? { orgId: user.orgId } : 'skip') ?? []
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const convexApi = api as Record<string, any>
+    const installSkill = useMutation(convexApi.skills?.install ?? null)
 
     const [targetType, setTargetType] = useState<'global' | 'instance' | 'agent'>('global')
     const [targetId, setTargetId] = useState<string>('')
@@ -37,12 +42,22 @@ function SkillDeploy() {
     }
 
     async function handleDeploy() {
+        if (!user?.orgId || !skill) return
         setDeploying(true)
-        // Simulate deployment delay
-        await new Promise(resolve => setTimeout(resolve, 1500))
-        setDeploying(false)
-        toast(`${skill?.title} deployed successfully`, 'success')
-        navigate({ to: '/skills/installed' })
+        try {
+            await installSkill({
+                orgId: user.orgId,
+                discoverItemId: skill._id,
+                targetType,
+                targetId: targetType !== 'global' ? targetId : undefined
+            })
+            toast(`${skill.title} deployed successfully`, 'success')
+            navigate({ to: '/skills/installed' })
+        } catch (err) {
+            toast(err instanceof Error ? err.message : 'Failed to deploy skill', 'error')
+        } finally {
+            setDeploying(false)
+        }
     }
 
     return (
@@ -111,7 +126,7 @@ function SkillDeploy() {
                                     onChange={(e) => setTargetId(e.target.value)}
                                 >
                                     <option value="" disabled>Choose an instance...</option>
-                                    {instances.map(inst => (
+                                    {instances.map((inst: any) => (
                                         <option key={inst._id} value={inst._id}>{inst.name} ({inst.status})</option>
                                     ))}
                                 </select>
@@ -127,7 +142,7 @@ function SkillDeploy() {
                                     onChange={(e) => setTargetId(e.target.value)}
                                 >
                                     <option value="" disabled>Choose an agent...</option>
-                                    {agents.map(ag => (
+                                    {agents.map((ag: any) => (
                                         <option key={ag._id} value={ag._id}>{ag.name} ({ag.status})</option>
                                     ))}
                                 </select>

@@ -7,6 +7,8 @@ export default defineSchema({
     email: v.string(),
     name: v.string(),
     passwordHash: v.string(),
+    mfaSecret: v.optional(v.string()),
+    mfaEnabled: v.optional(v.boolean()),
     createdAt: v.number(),
   }).index("by_email", ["email"]),
 
@@ -337,6 +339,8 @@ export default defineSchema({
       notifications: v.optional(v.boolean()),
       voiceWake: v.optional(v.boolean()),
     })),
+    pairingCode: v.optional(v.string()),
+    pairingExpiresAt: v.optional(v.number()),
     lastSeen: v.optional(v.number()),
     createdAt: v.number(),
   }).index("by_org", ["orgId"]).index("by_user", ["userId"]),

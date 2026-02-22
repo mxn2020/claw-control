@@ -3,14 +3,19 @@ import { Card, CardHeader, CardTitle, CardContent } from '#/components/ui/card'
 import { Badge } from '#/components/ui/badge'
 import { useQuery } from 'convex/react'
 import { api } from '../../../../convex/_generated/api'
+import { useAuth } from '#/lib/authContext'
+import type { Id } from '../../../../convex/_generated/dataModel'
 
 export const Route = createFileRoute('/_dashboard/skills/installed')({
   component: SkillsInstalled,
 })
 
 function SkillsInstalled() {
-  const skills = useQuery(api.platform.list, {})
-  const skillList = (skills ?? []).filter((s) => s.isEnabled)
+  const { user } = useAuth()
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const convexApi = api as Record<string, any>
+  const skills = useQuery(convexApi.skills?.listInstalled ?? null, user?.orgId ? { orgId: user.orgId as Id<"organizations"> } : 'skip')
+  const skillList = (skills ?? []).filter((s: any) => s.isEnabled)
 
   return (
     <div className="space-y-6">

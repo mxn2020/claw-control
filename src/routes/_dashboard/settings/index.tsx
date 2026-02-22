@@ -3,7 +3,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { Card, CardHeader, CardTitle, CardContent } from '#/components/ui/card'
 import { Button } from '#/components/ui/button'
 import { Input } from '#/components/ui/input'
-import { User, Save, CheckCircle, Key, Plus, Trash2, Copy, Eye, EyeOff } from 'lucide-react'
+import { User, Save, CheckCircle, Key, Plus, Trash2, Copy, Eye, EyeOff, ShieldCheck, ShieldAlert } from 'lucide-react'
 import { Badge } from '#/components/ui/badge'
 import { useAuth } from '#/lib/authContext'
 import { useMutation, useQuery } from 'convex/react'
@@ -19,6 +19,15 @@ function SettingsProfile() {
   const [name, setName] = useState(user?.name ?? '')
   const [email] = useState(user?.email ?? '')
   const [saved, setSaved] = useState(false)
+
+  // MFA
+  const setupMfa = useMutation(api.auth.setupMfa)
+  const verifyAndEnableMfa = useMutation(api.auth.verifyAndEnableMfa)
+  const disableMfa = useMutation(api.auth.disableMfa)
+  const [mfaSecret, setMfaSecret] = useState<string | null>(null)
+  const [mfaCode, setMfaCode] = useState('')
+  const [mfaLoading, setMfaLoading] = useState(false)
+  const isMfaEnabled = (user as any)?.mfaEnabled
 
   // API Keys
   const apiKeys = useQuery(api.apiKeys.list, user?.id ? { userId: user.id as any } : 'skip')
@@ -48,6 +57,44 @@ function SettingsProfile() {
       setNewKeyName('')
     } catch (err) {
       console.error('Failed to create API key:', err)
+    }
+  }
+
+  async function handleSetupMfa() {
+    if (!token) return
+    setMfaLoading(true)
+    try {
+      const { mfaSecret } = await setupMfa({ token })
+      setMfaSecret(mfaSecret)
+    } finally {
+      setMfaLoading(false)
+    }
+  }
+
+  async function handleVerifyMfa() {
+    if (!token || !mfaCode) return
+    setMfaLoading(true)
+    try {
+      await verifyAndEnableMfa({ token, totpCode: mfaCode })
+      setMfaSecret(null)
+      setMfaCode('')
+      // A full page reload or auth refetch is needed to update the user object
+      window.location.reload()
+    } catch (err) {
+      console.error('Failed to verify MFA:', err)
+    } finally {
+      setMfaLoading(false)
+    }
+  }
+
+  async function handleDisableMfa() {
+    if (!token) return
+    setMfaLoading(true)
+    try {
+      await disableMfa({ token })
+      window.location.reload()
+    } finally {
+      setMfaLoading(false)
     }
   }
 
@@ -105,6 +152,69 @@ function SettingsProfile() {
               </Button>
             </div>
           </form>
+        </CardContent>
+      </Card>
+
+      {/* Security / MFA */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            {isMfaEnabled ? <ShieldCheck className="w-5 h-5 text-emerald-400" /> : <ShieldAlert className="w-5 h-5 text-amber-400" />}
+            <CardTitle>Two-Factor Authentication</CardTitle>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <p className="text-sm text-slate-400">
+              Add an extra layer of security to your account by enabling Two-Factor Authentication (TOTP).
+            </p>
+
+            {isMfaEnabled ? (
+              <div className="flex items-center justify-between p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-emerald-400">MFA is currently active</p>
+                  <p className="text-xs text-slate-400">Your account is secured with a TOTP authenticator.</p>
+                </div>
+                <Button variant="destructive" size="sm" onClick={handleDisableMfa} disabled={mfaLoading}>
+                  Disable MFA
+                </Button>
+              </div>
+            ) : mfaSecret ? (
+              <div className="space-y-4 p-4 border border-slate-700/50 rounded-lg bg-slate-800/50">
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-white">Setup Authenticator App</p>
+                  <p className="text-xs text-slate-400">Enter this code manually into your authenticator app (like Authy or Google Authenticator).</p>
+                  <code className="block w-full p-2 bg-slate-900 border border-slate-700/50 rounded mx-auto text-center font-mono tracking-widest text-emerald-400">
+                    {mfaSecret}
+                  </code>
+                </div>
+                <div className="space-y-2 pt-4 border-t border-slate-700/50">
+                  <label className="text-sm font-medium text-slate-300">Verify Code</label>
+                  <div className="flex gap-2">
+                    <Input
+                      value={mfaCode}
+                      onChange={(e) => setMfaCode(e.target.value.replace(/\D/g, ''))}
+                      maxLength={6}
+                      placeholder="000000"
+                      className="tracking-widest text-center"
+                    />
+                    <Button onClick={handleVerifyMfa} disabled={mfaCode.length < 6 || mfaLoading}>
+                      Verify
+                    </Button>
+                    <Button variant="ghost" onClick={() => setMfaSecret(null)}>
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="pt-2">
+                <Button onClick={handleSetupMfa} disabled={mfaLoading}>
+                  Enable Two-Factor Authentication
+                </Button>
+              </div>
+            )}
+          </div>
         </CardContent>
       </Card>
 

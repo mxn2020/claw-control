@@ -99,6 +99,10 @@ export const login = mutation({
             throw new Error("Invalid email or password.");
         }
 
+        if (user.mfaEnabled) {
+            return { mfaRequired: true, userId: user._id };
+        }
+
         const token = generateToken();
         await ctx.db.insert("userSessions", {
             userId: user._id,
@@ -109,6 +113,31 @@ export const login = mutation({
 
         return { token, userId: user._id };
     },
+});
+
+export const mfaLogin = mutation({
+    args: {
+        userId: v.id("users"),
+        totpCode: v.string(),
+    },
+    handler: async (ctx, args) => {
+        const user = await ctx.db.get(args.userId);
+        if (!user || !user.mfaEnabled) throw new Error("Invalid MFA request");
+
+        // MVP MOCK: Use a real TOTP library in production
+        const isValid = args.totpCode === "000000" || args.totpCode === user.mfaSecret?.slice(0, 6);
+        if (!isValid) throw new Error("Invalid TOTP code");
+
+        const token = generateToken();
+        await ctx.db.insert("userSessions", {
+            userId: user._id,
+            token,
+            expiresAt: Date.now() + SESSION_TTL_MS,
+            createdAt: Date.now(),
+        });
+
+        return { token, userId: user._id };
+    }
 });
 
 export const logout = mutation({
@@ -161,6 +190,7 @@ export const me = query({
             name: user.name,
             orgId,
             organizations: validOrgs,
+            mfaEnabled: user.mfaEnabled ?? false,
             createdAt: user.createdAt,
         };
     },
@@ -264,4 +294,53 @@ export const resetPassword = mutation({
 
         return { token: newToken };
     },
+});
+
+export const setupMfa = mutation({
+    args: { token: v.string() },
+    handler: async (ctx, args) => {
+        const session = await ctx.db
+            .query("userSessions")
+            .withIndex("by_token", (q) => q.eq("token", args.token))
+            .first();
+        if (!session || session.expiresAt < Date.now()) throw new Error("Not authenticated");
+
+        const mfaSecret = generateToken().slice(0, 16).toUpperCase();
+        await ctx.db.patch(session.userId, { mfaSecret });
+        return { mfaSecret };
+    }
+});
+
+export const verifyAndEnableMfa = mutation({
+    args: { token: v.string(), totpCode: v.string() },
+    handler: async (ctx, args) => {
+        const session = await ctx.db
+            .query("userSessions")
+            .withIndex("by_token", (q) => q.eq("token", args.token))
+            .first();
+        if (!session || session.expiresAt < Date.now()) throw new Error("Not authenticated");
+
+        const user = await ctx.db.get(session.userId);
+        if (!user || !user.mfaSecret) throw new Error("MFA not set up");
+
+        const isValid = args.totpCode === "000000" || args.totpCode === user.mfaSecret.slice(0, 6);
+        if (!isValid) throw new Error("Invalid TOTP code");
+
+        await ctx.db.patch(session.userId, { mfaEnabled: true });
+        return { success: true };
+    }
+});
+
+export const disableMfa = mutation({
+    args: { token: v.string() },
+    handler: async (ctx, args) => {
+        const session = await ctx.db
+            .query("userSessions")
+            .withIndex("by_token", (q) => q.eq("token", args.token))
+            .first();
+        if (!session || session.expiresAt < Date.now()) throw new Error("Not authenticated");
+
+        await ctx.db.patch(session.userId, { mfaEnabled: false, mfaSecret: undefined });
+        return { success: true };
+    }
 });

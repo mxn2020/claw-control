@@ -4,7 +4,7 @@
 import { useState } from 'react'
 import { Link, useLocation } from '@tanstack/react-router'
 import { useAuth } from '#/lib/authContext'
-import { useMutation } from 'convex/react'
+import { useMutation, useQuery } from 'convex/react'
 import { api } from '../../convex/_generated/api'
 import { useToast } from '#/components/ui/toast'
 import type { Id } from '../../convex/_generated/dataModel'
@@ -232,12 +232,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const { toast } = useToast()
 
   // Kill switch state
-  const [killSwitchActive, setKillSwitchActive] = useState(false)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const convexApi = api as Record<string, any>
+  const instances = useQuery(convexApi.instances?.list ?? null, user?.orgId ? { orgId: user.orgId as Id<"organizations"> } : 'skip')
+  const killSwitchActive = instances && instances.length > 0
+    ? instances.every((i: any) => i.status === 'offline')
+    : false
+
   const [showKillConfirm, setShowKillConfirm] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const convexApi = api as Record<string, any>
   const pauseAllInstances = useMutation(convexApi.instances?.pauseAll ?? null)
   const resumeAllInstances = useMutation(convexApi.instances?.resumeAll ?? null)
   const pauseAllAgents = useMutation(convexApi.agents?.pauseAll ?? null)
@@ -252,13 +256,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         // Resume
         await resumeAllInstances({ orgId })
         await resumeAllAgents({ orgId })
-        setKillSwitchActive(false)
         toast('All instances and agents resumed', 'success')
       } else {
         // Pause
         await pauseAllInstances({ orgId })
         await pauseAllAgents({ orgId })
-        setKillSwitchActive(true)
         toast('Kill switch activated — all agents paused', 'error')
       }
     } catch (err) {

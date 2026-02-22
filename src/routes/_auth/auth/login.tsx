@@ -10,10 +10,12 @@ export const Route = createFileRoute('/_auth/auth/login')({
 })
 
 function LoginPage() {
-    const { login } = useAuth()
+    const { login, mfaLogin } = useAuth()
     const navigate = useNavigate()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [totpCode, setTotpCode] = useState('')
+    const [mfaPendingUserId, setMfaPendingUserId] = useState<string | null>(null)
     const [showPassword, setShowPassword] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [isSubmitting, setIsSubmitting] = useState(false)
@@ -23,8 +25,17 @@ function LoginPage() {
         setError(null)
         setIsSubmitting(true)
         try {
-            await login(email, password)
-            await navigate({ to: '/home' })
+            if (mfaPendingUserId) {
+                await mfaLogin(mfaPendingUserId, totpCode)
+                await navigate({ to: '/' })
+            } else {
+                const result = await login(email, password)
+                if (result?.mfaRequired) {
+                    setMfaPendingUserId(result.userId)
+                } else {
+                    await navigate({ to: '/' })
+                }
+            }
         } catch (err: unknown) {
             setError(err instanceof Error ? err.message : 'Login failed. Please try again.')
         } finally {
@@ -40,46 +51,66 @@ function LoginPage() {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-1.5">
-                    <label htmlFor="email" className="block text-sm font-medium text-slate-300">
-                        Email
-                    </label>
-                    <Input
-                        id="email"
-                        type="email"
-                        autoComplete="email"
-                        placeholder="you@example.com"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                        className="w-full"
-                    />
-                </div>
+                {!mfaPendingUserId ? (
+                    <>
+                        <div className="space-y-1.5">
+                            <label htmlFor="email" className="block text-sm font-medium text-slate-300">
+                                Email
+                            </label>
+                            <Input
+                                id="email"
+                                type="email"
+                                autoComplete="email"
+                                placeholder="you@example.com"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                                className="w-full"
+                            />
+                        </div>
 
-                <div className="space-y-1.5">
-                    <label htmlFor="password" className="block text-sm font-medium text-slate-300">
-                        Password
-                    </label>
-                    <div className="relative">
+                        <div className="space-y-1.5">
+                            <label htmlFor="password" className="block text-sm font-medium text-slate-300">
+                                Password
+                            </label>
+                            <div className="relative">
+                                <Input
+                                    id="password"
+                                    type={showPassword ? 'text' : 'password'}
+                                    autoComplete="current-password"
+                                    placeholder="••••••••"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                    className="w-full pr-10"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-300"
+                                >
+                                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                </button>
+                            </div>
+                        </div>
+                    </>
+                ) : (
+                    <div className="space-y-1.5">
+                        <label htmlFor="totpCode" className="block text-sm font-medium text-slate-300">
+                            Authentication Code
+                        </label>
                         <Input
-                            id="password"
-                            type={showPassword ? 'text' : 'password'}
-                            autoComplete="current-password"
-                            placeholder="••••••••"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            id="totpCode"
+                            type="text"
+                            maxLength={6}
+                            placeholder="000000"
+                            value={totpCode}
+                            onChange={(e) => setTotpCode(e.target.value.replace(/\D/g, ''))}
                             required
-                            className="w-full pr-10"
+                            className="w-full tracking-widest text-center text-lg"
                         />
-                        <button
-                            type="button"
-                            onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-300"
-                        >
-                            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                        </button>
                     </div>
-                </div>
+                )}
 
                 {error && (
                     <div className="bg-red-500/10 border border-red-500/30 rounded-lg px-3 py-2.5 text-sm text-red-400">

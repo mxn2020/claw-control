@@ -101,3 +101,64 @@ export const remove = mutation({
     await ctx.db.delete(args.id);
   },
 });
+
+export const initiatePairing = mutation({
+  args: {
+    orgId: v.id("organizations"),
+    userId: v.string(),
+    name: v.string(),
+    deviceType: v.union(
+      v.literal("macos"),
+      v.literal("iphone"),
+      v.literal("android"),
+      v.literal("linux"),
+      v.literal("windows")
+    ),
+  },
+  handler: async (ctx, args) => {
+    const pairingCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const pairingExpiresAt = Date.now() + 15 * 60 * 1000; // 15 minutes
+
+    const nodeId = await ctx.db.insert("nodes", {
+      orgId: args.orgId,
+      userId: args.userId,
+      name: args.name,
+      deviceType: args.deviceType,
+      status: "offline",
+      pairingCode,
+      pairingExpiresAt,
+      createdAt: Date.now(),
+    });
+
+    return { nodeId, pairingCode, pairingExpiresAt };
+  },
+});
+
+export const claimDevice = mutation({
+  args: {
+    pairingCode: v.string(),
+    osVersion: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const nodes = await ctx.db
+      .query("nodes")
+      .filter((q) => q.eq(q.field("pairingCode"), args.pairingCode))
+      .collect();
+
+    const node = nodes[0];
+
+    if (!node || !node.pairingExpiresAt || node.pairingExpiresAt < Date.now()) {
+      throw new Error("Invalid or expired pairing code");
+    }
+
+    await ctx.db.patch(node._id, {
+      status: "online",
+      osVersion: args.osVersion,
+      pairingCode: undefined, // Clear code
+      pairingExpiresAt: undefined,
+      lastSeen: Date.now(),
+    });
+
+    return { success: true, nodeId: node._id, orgId: node.orgId, userId: node.userId };
+  },
+});
