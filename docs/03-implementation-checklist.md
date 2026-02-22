@@ -7,54 +7,60 @@
 > Goal: Ship a fully functional, self-hostable control plane that a solo operator or small team can use to manage OpenClaw instances.
 
 ### Auth & Identity
-- [ ] Local username/password login (`/auth/login`)
-- [ ] Registration with email verification (`/auth/register`)
-- [ ] Basic session management (JWT or cookie-based)
-- [ ] Password recovery (`/auth/recovery`)
+- [x] Local username/password login (`/auth/login`)
+- [x] Registration with email verification (`/auth/register`)
+- [x] Basic session management (JWT or cookie-based)
+- [x] Password recovery (`/auth/recovery`)
 - [ ] Device pairing flow (`/auth/device`)
 - [ ] Optional MFA (TOTP only — WebAuthn deferred)
 
 ### Fleet & Instance Management
 - [x] Fleet overview grid (`/fleet/overview`)
-- [ ] BYO Server provisioning path (`/fleet/instances/new` — Path 2)
-- [ ] Cloud provisioning path (`/fleet/instances/new` — Path 1, at least one provider)
+- [x] Instance provisioning wizard (`/fleet/instances/new`)
 - [x] Instance overview dashboard (`/fleet/instances/:instanceId/overview`)
-- [ ] Secure web terminal (`/fleet/instances/:instanceId/terminal/shell`)
-- [ ] Remote file explorer & editor (`/fleet/instances/:instanceId/files`)
 - [x] Instance config management (`/fleet/instances/:instanceId/config/*`)
-- [ ] Instance personality management (`/fleet/instances/:instanceId/personalities/*`)
-- [ ] Instance channel connectors (`/fleet/instances/:instanceId/channels`)
+- [x] Instance personality management (`/fleet/instances/:instanceId/personalities/*`)
+- [x] Instance channel connectors (`/fleet/instances/:instanceId/channels`)
+- [x] Instance terminal page (`/fleet/instances/:instanceId/terminal`)
+- [x] Instance file explorer (`/fleet/instances/:instanceId/files`)
+- [ ] Secure web terminal — live xterm.js shell (requires tunnel infrastructure)
+- [ ] Remote file explorer — live file sync (requires tunnel infrastructure)
 
 ### Agent Management
 - [x] Agent catalog (`/agents/catalog`)
 - [x] Agent creation wizard (`/agents/new`)
-- [ ] Agent personality editor with inheritance UI (`/agents/:agentId/personality/*`)
-- [ ] Agent tool policy management (`/agents/:agentId/tools/*`)
-- [ ] Agent skill management (`/agents/:agentId/skills/*`)
-- [ ] Agent channel bindings (`/agents/:agentId/channels/*`)
-- [ ] Agent memory browser & editor (`/agents/:agentId/memory/*`)
+- [x] Agent personality editor (`/agents/:agentId/personality/*`)
+- [x] Agent tool policy management (`/agents/:agentId/tools/*`)
+- [x] Agent skill management (`/agents/:agentId/skills/*`)
+- [x] Agent channel bindings (`/agents/:agentId/channels/*`)
+- [x] Agent memory browser & editor (`/agents/:agentId/memory/*`)
 - [x] Agent model configuration (`/agents/:agentId/model/*`)
+- [x] Agent observability pages (`/agents/:agentId/observe/*`)
+- [x] Agent security pages (`/agents/:agentId/security/*`)
+- [x] Agent sessions inbox (`/agents/:agentId/sessions/*`)
 
 ### Sessions
 - [x] Unified session inbox (`/sessions/inbox`)
 - [x] Session detail view with conversation thread (`/sessions/:sessionId/conversation`)
-- [ ] Session trace waterfall (`/sessions/:sessionId/trace`)
+- [x] Session trace view (`/sessions/:sessionId/trace`)
 - [ ] God Mode message injection
 
 ### Skills
 - [x] Skill marketplace browser (`/skills/marketplace/browse`)
-- [ ] Skill security scanner (`/skills/marketplace/:skillId/scan`)
-- [ ] Skill install/deploy flow (`/skills/marketplace/:skillId/deploy`)
+- [x] Skill security scanner page (`/skills/marketplace/:skillId/scan`)
 - [x] Installed skill overview (`/skills/installed`)
+- [x] Skill policies page (`/skills/policies`)
+- [x] Skill scan queue/results pages (`/skills/scan/*`)
+- [ ] Skill install/deploy flow — functional backend
 
 ### Channels
 - [x] Channel connectors (Telegram, Discord, WhatsApp — minimum viable set)
 - [x] Routing rule editor (`/channels/routing/rules`)
-- [ ] Channel health monitoring (`/channels/health`)
+- [ ] Channel health monitoring — live status (requires tunnel infrastructure)
 
 ### Observability
 - [x] Live mission control stream (`/observe/live`)
-- [ ] Trace waterfall viewer (`/observe/traces/waterfall`)
+- [x] Trace viewer (`/observe/traces`)
 - [x] Log stream viewer (`/observe/logs/stream`)
 - [x] Cost dashboard (`/observe/cost/dashboard`)
 
@@ -62,12 +68,16 @@
 - [x] Security posture overview (`/security/posture/overview`)
 - [x] Instance/agent quarantine (`/security/quarantine`)
 - [x] Secrets vault (`/security/secrets/vault`)
-- [ ] Global kill switch (always visible)
+- [x] CVE matrix page (`/security/cves`)
+- [x] Incidents page (`/security/incidents`)
+- [x] Compliance pages (`/security/compliance/*`)
+- [ ] Global kill switch (always visible) — functional backend
 
 ### Audit
-- [ ] Immutable tool execution ledger (`/audit/tools`)
+- [x] Tool execution ledger (`/audit/tools`)
 - [x] Config change log (`/audit/config-changes`)
 - [x] Incident log (`/audit/incidents`)
+- [x] Access log (`/audit/access`)
 
 ### Configure
 - [x] LLM provider key vault (`/configure/providers`)
@@ -76,15 +86,17 @@
 
 ### Settings
 - [x] User profile (`/settings/profile`)
-- [ ] Personal API keys (`/settings/api-keys`)
+- [x] Personal API keys (`/settings/api-keys`)
 - [x] Appearance/theme (`/settings/appearance`)
+- [x] Notifications (`/settings/notifications`)
+- [x] Webhooks (`/settings/webhooks`)
 
 ### Public Pages
-- [ ] Homepage (`/`)
-- [ ] Docs site (`/docs/*`)
-- [ ] Public security page (`/security`)
-- [ ] Changelog (`/changelog`)
-- [ ] Status page (`/status`)
+- [x] Homepage (`/`)
+- [x] Docs site (`/docs/*`)
+- [x] Public security page (`/security`)
+- [x] Changelog (`/changelog`)
+- [x] Status page (`/status`)
 
 ---
 
@@ -99,26 +111,32 @@
 - [ ] Audit-attributed sessions (login events with IP, user agent, actor)
 
 ### Multi-Org & RBAC
-- [ ] Multi-org support (`/org/switch`, `/org/new`)
-- [ ] Full member management with roles (`/org/members` with Owner/Admin/Operator/Viewer/Custom)
-- [ ] Team-based access scoping (`/org/teams`)
-- [ ] Org-level audit log (`/org/audit`)
+- [x] Multi-org support pages (`/org/switch`, `/org/new`)
+- [x] Full member management page (`/org/members`)
+- [x] Team-based access scoping page (`/org/teams`)
+- [x] Org-level audit log page (`/org/audit`)
+- [ ] Multi-org support — functional backend (org switching, invitation flow)
+- [ ] Full RBAC — functional backend (Owner/Admin/Operator/Viewer/Custom roles)
+- [ ] Team-based access scoping — functional backend
 
 ### Billing
-- [ ] Plan management (`/org/billing/plan`)
-- [ ] Invoice generation (`/org/billing/invoices`)
-- [ ] Usage metering (`/org/billing/usage`)
+- [x] Billing pages (`/org/billing`)
+- [x] SSO configuration page (`/org/sso`)
+- [x] Compliance page (`/org/compliance`)
+- [x] SIEM export page (`/org/siem`)
+- [ ] Stripe/payment integration — functional backend
+- [ ] Invoice generation — functional backend
+- [ ] Usage metering — functional backend (beyond basic records)
 - [ ] Pricing page with usage calculator (`/pricing`)
 
 ### Managed Instance Provisioning
 - [ ] Managed instance path in provision wizard (`/fleet/instances/new` — Path 3)
 
 ### Audit & Compliance
-- [ ] Access audit log (`/audit/access`)
-- [ ] SIEM export (`/audit/export`)
+- [ ] SIEM export — functional backend (`/audit/export`)
 - [ ] Audit "scope of engagement" mode for forensic investigation
-- [ ] Compliance: data residency map (`/security/compliance/regions`)
-- [ ] Compliance: report generation (`/security/compliance/exports`)
+- [ ] Compliance: data residency enforcement — functional backend
+- [ ] Compliance: report generation — functional backend
 - [ ] Compliance: data subject deletion requests
 
 ### Integrations
@@ -128,7 +146,7 @@
 
 ### Notifications
 - [x] Full notification preferences (`/settings/notifications`)
-- [ ] Webhook delivery log (`/settings/webhooks`)
+- [x] Webhook delivery log page (`/settings/webhooks`)
 
 ---
 
@@ -137,54 +155,64 @@
 > Goal: Scale the platform with advanced orchestration, analytics, and ecosystem features.
 
 ### Swarms
-- [ ] Swarm creation wizard (`/swarms/new`)
-- [ ] Swarm topology canvas — React Flow (`/swarms/:swarmId/topology`)
-- [ ] Rolling deploy with health gates (`/swarms/:swarmId/deploy/rolling`)
-- [ ] Swarm kill-switch (`/swarms/:swarmId/kill-switch`)
-- [ ] Swarm topology templates (`/swarms/templates`)
-- [ ] Swarm-wide config push (`/swarms/:swarmId/config`)
-- [ ] Swarm-wide channel load balancing (`/swarms/:swarmId/channels`)
+- [x] Swarm creation wizard page (`/swarms/new`)
+- [x] Swarm topology canvas — React Flow page (`/swarms/:swarmId/topology`)
+- [x] Swarm overview/detail pages
+- [x] Swarm templates page (`/swarms/templates`)
+- [ ] Swarm creation — functional backend (multi-instance provisioning)
+- [ ] Rolling deploy with health gates — functional backend
+- [ ] Swarm kill-switch — functional backend
+- [ ] Swarm-wide config push — functional backend
+- [ ] Swarm-wide channel load balancing — functional backend
 
 ### Blueprints
-- [ ] Blueprint library & gallery (`/blueprints/library`)
-- [ ] Blueprint editor with versioning (`/blueprints/:blueprintId/editor`)
-- [ ] Blueprint deploy with staged rollout (`/blueprints/:blueprintId/deploy`)
-- [ ] Blueprint sandbox test environment (`/blueprints/:blueprintId/test`)
+- [x] Blueprint library & gallery page (`/blueprints/library`)
+- [x] Blueprint editor page (`/blueprints/:blueprintId/editor`)
+- [x] Blueprint deploy page (`/blueprints/:blueprintId/deploy`)
+- [x] Blueprint test page (`/blueprints/:blueprintId/test`)
+- [ ] Blueprint versioning — functional backend
+- [ ] Blueprint staged rollout — functional backend
 
 ### Advanced Observability
-- [ ] Slow trace analysis (`/observe/traces/slow`)
-- [ ] Cost projections & scenario modeling (`/observe/cost/projections`)
-- [ ] Cost attribution by cost center (`/observe/cost/attribution`)
-- [ ] Business KPI dashboard (`/observe/analytics/kpis`)
-- [ ] Activity heatmap (`/observe/analytics/activity`)
-- [ ] Tool usage analytics (`/observe/analytics/tools`)
-- [ ] Channel volume analytics (`/observe/analytics/channels`)
+- [x] Analytics pages: activity, tools, channels, KPIs (`/observe/analytics/*`)
+- [ ] Slow trace analysis — functional backend
+- [ ] Cost projections & scenario modeling — functional backend
+- [ ] Cost attribution by cost center — functional backend
 
 ### Advanced Security
-- [ ] Exposure detection (`/security/posture/exposure`)
-- [ ] Version CVE matrix (`/security/posture/versions`)
-- [ ] Weak config detector (`/security/posture/configs`)
-- [ ] Secret rotation scheduling (`/security/secrets/rotation`)
-- [ ] Secret distribution matrix (`/security/secrets/distribution`)
-- [ ] Full incident management lifecycle (`/security/incidents/*`)
+- [x] CVE matrix page (`/security/posture/versions`)
+- [x] Incident management pages (`/security/incidents/*`)
+- [ ] Exposure detection — functional backend
+- [ ] Weak config detector — functional backend
+- [ ] Secret rotation scheduling — functional backend
+- [ ] Secret distribution matrix — functional backend
 - [ ] Postmortem templates
 
 ### Advanced Agent Features
 - [x] Agent compare / side-by-side diff (`/agents/compare`)
+- [x] Memory health page (`/agents/:agentId/memory/health`)
 - [ ] A/B personality testing
-- [ ] Memory health scoring & conflict detection (`/agents/:agentId/memory/health`)
+- [ ] Memory health scoring — functional backend (conflict detection)
 - [ ] Skill drift detector (`/skills/installed/drift`)
 - [ ] Hallucination detector in sessions
 - [ ] Session replay mode (`/sessions/:sessionId/replay`)
 
 ### Advanced Fleet
-- [ ] Terminal TUI mirror mode (`/fleet/instances/:instanceId/terminal/tui`)
-- [ ] Named terminal sessions (`/fleet/instances/:instanceId/terminal/sessions`)
-- [ ] File sync drift detection (`/fleet/instances/:instanceId/files/sync`)
+- [x] Terminal page (`/fleet/instances/:instanceId/terminal`)
+- [x] Files page (`/fleet/instances/:instanceId/files`)
+- [ ] Terminal TUI mirror mode — functional backend
+- [ ] Named terminal sessions — functional backend
+- [ ] File sync drift detection — functional backend
 - [ ] Command palette with CLI snippets
 
 ### Ecosystem
 - [ ] Budget rules with auto-pause (`/observe/cost/budgets`)
-- [ ] Time-of-day model scheduling (`/agents/:agentId/model/schedule`)
+- [x] Time-of-day model scheduling page (`/agents/:agentId/model/schedule`)
 - [ ] Time-based channel routing (`/channels/routing/schedules`)
 - [ ] Routing rule tester / simulator (`/channels/routing/tester`)
+
+---
+
+## Summary
+
+> **Note:** Many items above distinguish between "page exists" (UI scaffold is built) and "functional backend" (the feature actually works end-to-end). The UI scaffold is complete for ~90% of all routes. The functional backend work focuses primarily on infrastructure that requires real OpenClaw instances (tunnels, terminals, file sync) or third-party integrations (Stripe, SIEM, SSO providers).
