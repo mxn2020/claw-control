@@ -145,13 +145,22 @@ export const me = query({
             .withIndex("by_user", (q) => q.eq("userId", user._id.toString()))
             .collect();
 
-        const orgId = memberships[0]?.orgId ?? null;
+        const orgs = await Promise.all(
+            memberships.map(async (m) => {
+                const org = await ctx.db.get(m.orgId);
+                return org ? { id: org._id, name: org.name, slug: org.slug, role: m.role } : null;
+            })
+        );
+        const validOrgs = orgs.filter((o): o is NonNullable<typeof o> => o !== null);
+
+        const orgId = validOrgs[0]?.id ?? null;
 
         return {
             id: user._id,
             email: user.email,
             name: user.name,
             orgId,
+            organizations: validOrgs,
             createdAt: user.createdAt,
         };
     },

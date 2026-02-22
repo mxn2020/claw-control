@@ -30,6 +30,7 @@ import {
   OctagonX,
   Play,
   AlertTriangle,
+  Building2,
 } from 'lucide-react'
 
 interface NavItem {
@@ -139,6 +140,21 @@ const navGroups: NavItem[] = [
     ],
   },
   {
+    label: 'Organization',
+    icon: <Building2 className="w-4 h-4" />,
+    to: '/org',
+    children: [
+      { label: 'General', to: '/org' },
+      { label: 'Members', to: '/org/members' },
+      { label: 'Teams', to: '/org/teams' },
+      { label: 'Audit Log', to: '/org/audit' },
+      { label: 'Billing', to: '/org/billing' },
+      { label: 'SSO & Identity', to: '/org/sso' },
+      { label: 'Compliance', to: '/org/compliance' },
+      { label: 'SIEM Export', to: '/org/siem' },
+    ],
+  },
+  {
     label: 'Settings',
     icon: <Settings className="w-4 h-4" />,
     to: '/settings',
@@ -211,7 +227,7 @@ function NavGroup({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [collapsed, setCollapsed] = useState(false)
-  const { user, logout } = useAuth()
+  const { user, logout, setOrg } = useAuth()
   const { toast } = useToast()
 
   // Kill switch state
@@ -259,11 +275,31 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         className={`flex flex-col bg-slate-900 border-r border-slate-800 transition-all duration-200 ${collapsed ? 'w-14' : 'w-56'
           } flex-shrink-0`}
       >
-        {/* Logo */}
-        <div className="flex items-center gap-2.5 px-3 py-4 border-b border-slate-800">
-          <span className="text-xl flex-shrink-0">🦞</span>
-          {!collapsed && (
-            <span className="text-sm font-bold text-white tracking-wide">ClawControl</span>
+        {/* Org Switcher Logo Area */}
+        <div className="px-3 py-4 border-b border-slate-800">
+          <div className="flex items-center gap-2.5">
+            <span className="text-xl flex-shrink-0">🦞</span>
+            {!collapsed && (
+              <span className="text-sm font-bold text-white tracking-wide">ClawControl</span>
+            )}
+          </div>
+          {!collapsed && user && user.organizations && user.organizations.length > 0 && (
+            <div className="mt-3">
+              <select
+                className="w-full bg-slate-950 border border-slate-700 text-slate-300 text-xs rounded p-1.5 appearance-none cursor-pointer hover:border-slate-500 transition-colors outline-none focus:ring-1 focus:ring-cyan-500"
+                value={user.orgId || ''}
+                onChange={(e) => {
+                  setOrg(e.target.value);
+                  window.location.reload(); // Quick refresh to clear queries bounds to old org
+                }}
+              >
+                {user.organizations.map((org) => (
+                  <option key={org.id} value={org.id}>
+                    {org.name}
+                  </option>
+                ))}
+              </select>
+            </div>
           )}
         </div>
 
@@ -328,8 +364,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               onClick={() => killSwitchActive ? handleKillSwitch() : setShowKillConfirm(true)}
               disabled={isProcessing}
               className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${killSwitchActive
-                  ? 'bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/30 border border-emerald-500/30'
-                  : 'bg-red-600/20 text-red-400 hover:bg-red-600/30 border border-red-500/30'
+                ? 'bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/30 border border-emerald-500/30'
+                : 'bg-red-600/20 text-red-400 hover:bg-red-600/30 border border-red-500/30'
                 } ${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               {killSwitchActive ? (

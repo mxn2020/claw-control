@@ -44,6 +44,22 @@ export default defineSchema({
     joinedAt: v.number(),
   }).index("by_org", ["orgId"]).index("by_user", ["userId"]),
 
+  // Teams
+  teams: defineTable({
+    orgId: v.id("organizations"),
+    name: v.string(),
+    description: v.optional(v.string()),
+    createdAt: v.number(),
+  }).index("by_org", ["orgId"]),
+
+  // Team Members
+  teamMembers: defineTable({
+    orgId: v.id("organizations"),
+    teamId: v.id("teams"),
+    userId: v.string(),
+    joinedAt: v.number(),
+  }).index("by_org", ["orgId"]).index("by_team", ["teamId"]).index("by_user", ["userId"]),
+
   // Fleet Instances
   instances: defineTable({
     orgId: v.id("organizations"),

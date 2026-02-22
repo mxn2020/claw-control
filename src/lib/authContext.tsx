@@ -19,6 +19,7 @@ export interface AuthUser {
     email: string;
     name: string;
     orgId: string | null;
+    organizations?: { id: string; name: string; slug: string; role: string }[];
     createdAt: number;
 }
 
@@ -29,9 +30,11 @@ interface AuthContextValue {
     login: (email: string, password: string) => Promise<void>;
     register: (name: string, email: string, password: string) => Promise<void>;
     logout: () => Promise<void>;
+    setOrg: (orgId: string) => void;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
+const ACTIVE_ORG_KEY = "cc_active_org";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [token, setToken] = useState<string | null>(() =>
@@ -48,7 +51,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // meResult is undefined while query is loading, null when no session
     const isLoading = token !== null && meResult === undefined;
-    const user = (meResult as AuthUser | null) ?? null;
+
+    // Manage active organization
+    const [activeOrgId, setActiveOrgId] = useState<string | null>(() =>
+        typeof window !== "undefined" ? localStorage.getItem(ACTIVE_ORG_KEY) : null
+    );
+
+    let user = (meResult as AuthUser | null) ?? null;
+    if (user && user.organizations && user.organizations.length > 0) {
+        // If activeOrgId isn't set, or isn't in the user's orgs, use the first one
+        const isValidOrg = user.organizations.some(o => o.id === activeOrgId);
+        if (!activeOrgId || !isValidOrg) {
+            const defaultOrg = user.organizations[0].id;
+            user = { ...user, orgId: defaultOrg };
+            if (activeOrgId !== defaultOrg && typeof window !== "undefined") {
+                localStorage.setItem(ACTIVE_ORG_KEY, defaultOrg);
+                // We don't call setActiveOrgId here during render to avoid warning,
+                // but returning user with orgId is fine.
+            }
+        } else {
+            user = { ...user, orgId: activeOrgId };
+        }
+    }
+
+    const setOrg = useCallback((orgId: string) => {
+        localStorage.setItem(ACTIVE_ORG_KEY, orgId);
+        setActiveOrgId(orgId);
+    }, []);
 
     const login = useCallback(
         async (email: string, password: string) => {
@@ -87,6 +116,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         login,
         register,
         logout,
+        setOrg,
     };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -99,6 +129,7 @@ export function MockAuthProvider({ children }: { children: ReactNode }) {
         email: "demo@clawcontrol.dev",
         name: "Demo User",
         orgId: "org_demo",
+        organizations: [{ id: "org_demo", name: "Demo Org", slug: "demo", role: "owner" }],
         createdAt: Date.now() - 90 * 86_400_000,
     };
 
@@ -109,6 +140,7 @@ export function MockAuthProvider({ children }: { children: ReactNode }) {
         login: async () => { },
         register: async () => { },
         logout: async () => { },
+        setOrg: (_orgId: string) => { },
     };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -76,3 +76,27 @@ export const aggregate = query({
     return { totalTokens, totalCost };
   },
 });
+
+export const getOrgStats = query({
+  args: {
+    orgId: v.id("organizations"),
+    month: v.optional(v.string()) // e.g., "2024-05" 
+  },
+  handler: async (ctx, args) => {
+    const records = await ctx.db
+      .query("usageRecords")
+      .withIndex("by_org", (q) => q.eq("orgId", args.orgId))
+      .collect();
+
+    let totalTokens = 0;
+    let totalCost = 0;
+    for (const record of records) {
+      if (!args.month || record.date.startsWith(args.month)) {
+        totalTokens += record.tokensUsed;
+        totalCost += record.cost;
+      }
+    }
+
+    return { totalTokens, totalCost };
+  },
+});
