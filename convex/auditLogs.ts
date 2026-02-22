@@ -9,17 +9,21 @@ export const list = query({
     },
     handler: async (ctx, args) => {
         let q = ctx.db.query("auditLogs");
+
+        let results;
         if (args.orgId) {
-            const results = await q
+            results = await q
                 .withIndex("by_org", (q2) => q2.eq("orgId", args.orgId!))
                 .order("desc")
                 .take(args.limit ?? 100);
-            if (args.resourceType) {
-                return results.filter((r) => r.resourceType === args.resourceType);
-            }
-            return results;
+        } else {
+            results = await q.order("desc").take(args.limit ?? 100);
         }
-        return await q.order("desc").take(args.limit ?? 100);
+
+        if (args.resourceType) {
+            return results.filter((r) => r.resourceType === args.resourceType);
+        }
+        return results;
     },
 });
 

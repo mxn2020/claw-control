@@ -1,10 +1,10 @@
 import { useState } from 'react'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '#/components/ui/card'
 import { Badge } from '#/components/ui/badge'
 import { Button } from '#/components/ui/button'
 import { Input } from '#/components/ui/input'
-import { Search, Download, Star } from 'lucide-react'
+import { Search, Download, Star, Shield } from 'lucide-react'
 import { useQuery } from 'convex/react'
 import { api } from '../../../../convex/_generated/api'
 
@@ -15,6 +15,7 @@ export const Route = createFileRoute('/_dashboard/skills/marketplace')({
 const categories = ['All', 'Data', 'Code', 'Communication', 'Security', 'Analytics']
 
 function SkillsMarketplace() {
+  const navigate = useNavigate()
   const [search, setSearch] = useState('')
   const [activeCategory, setActiveCategory] = useState('All')
 
@@ -53,8 +54,8 @@ function SkillsMarketplace() {
             type="button"
             onClick={() => setActiveCategory(cat)}
             className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${cat === activeCategory
-                ? 'bg-cyan-600 text-white'
-                : 'border border-slate-600 text-slate-400 hover:text-white hover:bg-slate-700'
+              ? 'bg-cyan-600 text-white'
+              : 'border border-slate-600 text-slate-400 hover:text-white hover:bg-slate-700'
               }`}
           >
             {cat}
@@ -84,10 +85,16 @@ function SkillsMarketplace() {
                     <span>{skill.author ?? 'Community'}</span>
                     {skill.category && <Badge className="bg-slate-700 text-slate-300 border-slate-600 text-xs">{skill.category}</Badge>}
                   </div>
-                  <Button variant="outline" size="sm">
-                    <Download className="w-3.5 h-3.5 mr-1" />
-                    Install
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <Button variant="outline" size="sm" onClick={() => navigate({ to: `/skills/marketplace/${skill._id}/scan` })}>
+                      <Shield className="w-3.5 h-3.5 mr-1" />
+                      Scan
+                    </Button>
+                    <Button variant="default" size="sm" onClick={() => navigate({ to: `/skills/marketplace/${skill._id}/deploy` })}>
+                      <Download className="w-3.5 h-3.5 mr-1" />
+                      Install
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>

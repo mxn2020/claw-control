@@ -127,6 +127,7 @@ export default defineSchema({
       result: v.optional(v.string()),
     }))),
     tokens: v.optional(v.number()),
+    timingMs: v.optional(v.number()),
     createdAt: v.number(),
   }).index("by_session", ["sessionId"]),
 

@@ -147,6 +147,8 @@ import { Route as DashboardAgentsAgentIdObserveIndexRouteImport } from './routes
 import { Route as DashboardAgentsAgentIdModelIndexRouteImport } from './routes/_dashboard/agents/$agentId/model/index'
 import { Route as DashboardAgentsAgentIdMemoryIndexRouteImport } from './routes/_dashboard/agents/$agentId/memory/index'
 import { Route as DashboardAgentsAgentIdChannelsIndexRouteImport } from './routes/_dashboard/agents/$agentId/channels/index'
+import { Route as DashboardSkillsMarketplaceSkillIdScanRouteImport } from './routes/_dashboard/skills/marketplace_/$skillId/scan'
+import { Route as DashboardSkillsMarketplaceSkillIdDeployRouteImport } from './routes/_dashboard/skills/marketplace_/$skillId/deploy'
 import { Route as DashboardFleetInstancesInstanceIdTerminalRouteImport } from './routes/_dashboard/fleet/instances/$instanceId/terminal'
 import { Route as DashboardFleetInstancesInstanceIdSkillsRouteImport } from './routes/_dashboard/fleet/instances/$instanceId/skills'
 import { Route as DashboardFleetInstancesInstanceIdSessionsRouteImport } from './routes/_dashboard/fleet/instances/$instanceId/sessions'
@@ -957,6 +959,18 @@ const DashboardAgentsAgentIdChannelsIndexRoute =
     path: '/agents/$agentId/channels/',
     getParentRoute: () => DashboardRoute,
   } as any)
+const DashboardSkillsMarketplaceSkillIdScanRoute =
+  DashboardSkillsMarketplaceSkillIdScanRouteImport.update({
+    id: '/skills/marketplace_/$skillId/scan',
+    path: '/skills/marketplace/$skillId/scan',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardSkillsMarketplaceSkillIdDeployRoute =
+  DashboardSkillsMarketplaceSkillIdDeployRouteImport.update({
+    id: '/skills/marketplace_/$skillId/deploy',
+    path: '/skills/marketplace/$skillId/deploy',
+    getParentRoute: () => DashboardRoute,
+  } as any)
 const DashboardFleetInstancesInstanceIdTerminalRoute =
   DashboardFleetInstancesInstanceIdTerminalRouteImport.update({
     id: '/fleet/instances/$instanceId/terminal',
@@ -1450,6 +1464,8 @@ export interface FileRoutesByFullPath {
   '/fleet/instances/$instanceId/sessions': typeof DashboardFleetInstancesInstanceIdSessionsRoute
   '/fleet/instances/$instanceId/skills': typeof DashboardFleetInstancesInstanceIdSkillsRoute
   '/fleet/instances/$instanceId/terminal': typeof DashboardFleetInstancesInstanceIdTerminalRoute
+  '/skills/marketplace/$skillId/deploy': typeof DashboardSkillsMarketplaceSkillIdDeployRoute
+  '/skills/marketplace/$skillId/scan': typeof DashboardSkillsMarketplaceSkillIdScanRoute
   '/agents/$agentId/channels/': typeof DashboardAgentsAgentIdChannelsIndexRoute
   '/agents/$agentId/memory/': typeof DashboardAgentsAgentIdMemoryIndexRoute
   '/agents/$agentId/model/': typeof DashboardAgentsAgentIdModelIndexRoute
@@ -1641,6 +1657,8 @@ export interface FileRoutesByTo {
   '/fleet/instances/$instanceId/sessions': typeof DashboardFleetInstancesInstanceIdSessionsRoute
   '/fleet/instances/$instanceId/skills': typeof DashboardFleetInstancesInstanceIdSkillsRoute
   '/fleet/instances/$instanceId/terminal': typeof DashboardFleetInstancesInstanceIdTerminalRoute
+  '/skills/marketplace/$skillId/deploy': typeof DashboardSkillsMarketplaceSkillIdDeployRoute
+  '/skills/marketplace/$skillId/scan': typeof DashboardSkillsMarketplaceSkillIdScanRoute
   '/agents/$agentId/channels': typeof DashboardAgentsAgentIdChannelsIndexRoute
   '/agents/$agentId/memory': typeof DashboardAgentsAgentIdMemoryIndexRoute
   '/agents/$agentId/model': typeof DashboardAgentsAgentIdModelIndexRoute
@@ -1837,6 +1855,8 @@ export interface FileRoutesById {
   '/_dashboard/fleet/instances/$instanceId/sessions': typeof DashboardFleetInstancesInstanceIdSessionsRoute
   '/_dashboard/fleet/instances/$instanceId/skills': typeof DashboardFleetInstancesInstanceIdSkillsRoute
   '/_dashboard/fleet/instances/$instanceId/terminal': typeof DashboardFleetInstancesInstanceIdTerminalRoute
+  '/_dashboard/skills/marketplace_/$skillId/deploy': typeof DashboardSkillsMarketplaceSkillIdDeployRoute
+  '/_dashboard/skills/marketplace_/$skillId/scan': typeof DashboardSkillsMarketplaceSkillIdScanRoute
   '/_dashboard/agents/$agentId/channels/': typeof DashboardAgentsAgentIdChannelsIndexRoute
   '/_dashboard/agents/$agentId/memory/': typeof DashboardAgentsAgentIdMemoryIndexRoute
   '/_dashboard/agents/$agentId/model/': typeof DashboardAgentsAgentIdModelIndexRoute
@@ -2031,6 +2051,8 @@ export interface FileRouteTypes {
     | '/fleet/instances/$instanceId/sessions'
     | '/fleet/instances/$instanceId/skills'
     | '/fleet/instances/$instanceId/terminal'
+    | '/skills/marketplace/$skillId/deploy'
+    | '/skills/marketplace/$skillId/scan'
     | '/agents/$agentId/channels/'
     | '/agents/$agentId/memory/'
     | '/agents/$agentId/model/'
@@ -2222,6 +2244,8 @@ export interface FileRouteTypes {
     | '/fleet/instances/$instanceId/sessions'
     | '/fleet/instances/$instanceId/skills'
     | '/fleet/instances/$instanceId/terminal'
+    | '/skills/marketplace/$skillId/deploy'
+    | '/skills/marketplace/$skillId/scan'
     | '/agents/$agentId/channels'
     | '/agents/$agentId/memory'
     | '/agents/$agentId/model'
@@ -2417,6 +2441,8 @@ export interface FileRouteTypes {
     | '/_dashboard/fleet/instances/$instanceId/sessions'
     | '/_dashboard/fleet/instances/$instanceId/skills'
     | '/_dashboard/fleet/instances/$instanceId/terminal'
+    | '/_dashboard/skills/marketplace_/$skillId/deploy'
+    | '/_dashboard/skills/marketplace_/$skillId/scan'
     | '/_dashboard/agents/$agentId/channels/'
     | '/_dashboard/agents/$agentId/memory/'
     | '/_dashboard/agents/$agentId/model/'
@@ -3423,6 +3449,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAgentsAgentIdChannelsIndexRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/_dashboard/skills/marketplace_/$skillId/scan': {
+      id: '/_dashboard/skills/marketplace_/$skillId/scan'
+      path: '/skills/marketplace/$skillId/scan'
+      fullPath: '/skills/marketplace/$skillId/scan'
+      preLoaderRoute: typeof DashboardSkillsMarketplaceSkillIdScanRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/skills/marketplace_/$skillId/deploy': {
+      id: '/_dashboard/skills/marketplace_/$skillId/deploy'
+      path: '/skills/marketplace/$skillId/deploy'
+      fullPath: '/skills/marketplace/$skillId/deploy'
+      preLoaderRoute: typeof DashboardSkillsMarketplaceSkillIdDeployRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/_dashboard/fleet/instances/$instanceId/terminal': {
       id: '/_dashboard/fleet/instances/$instanceId/terminal'
       path: '/fleet/instances/$instanceId/terminal'
@@ -4071,6 +4111,8 @@ interface DashboardRouteChildren {
   DashboardFleetInstancesInstanceIdSessionsRoute: typeof DashboardFleetInstancesInstanceIdSessionsRoute
   DashboardFleetInstancesInstanceIdSkillsRoute: typeof DashboardFleetInstancesInstanceIdSkillsRoute
   DashboardFleetInstancesInstanceIdTerminalRoute: typeof DashboardFleetInstancesInstanceIdTerminalRoute
+  DashboardSkillsMarketplaceSkillIdDeployRoute: typeof DashboardSkillsMarketplaceSkillIdDeployRoute
+  DashboardSkillsMarketplaceSkillIdScanRoute: typeof DashboardSkillsMarketplaceSkillIdScanRoute
   DashboardAgentsAgentIdChannelsIndexRoute: typeof DashboardAgentsAgentIdChannelsIndexRoute
   DashboardAgentsAgentIdMemoryIndexRoute: typeof DashboardAgentsAgentIdMemoryIndexRoute
   DashboardAgentsAgentIdModelIndexRoute: typeof DashboardAgentsAgentIdModelIndexRoute
@@ -4259,6 +4301,10 @@ const DashboardRouteChildren: DashboardRouteChildren = {
     DashboardFleetInstancesInstanceIdSkillsRoute,
   DashboardFleetInstancesInstanceIdTerminalRoute:
     DashboardFleetInstancesInstanceIdTerminalRoute,
+  DashboardSkillsMarketplaceSkillIdDeployRoute:
+    DashboardSkillsMarketplaceSkillIdDeployRoute,
+  DashboardSkillsMarketplaceSkillIdScanRoute:
+    DashboardSkillsMarketplaceSkillIdScanRoute,
   DashboardAgentsAgentIdChannelsIndexRoute:
     DashboardAgentsAgentIdChannelsIndexRoute,
   DashboardAgentsAgentIdMemoryIndexRoute:
