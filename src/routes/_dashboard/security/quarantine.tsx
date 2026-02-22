@@ -8,8 +8,9 @@ import {
   Shield,
   Clock,
 } from 'lucide-react'
-import { useQuery } from 'convex/react'
+import { useQuery, useMutation } from 'convex/react'
 import { api } from '../../../../convex/_generated/api'
+import { Button } from '#/components/ui/button'
 
 export const Route = createFileRoute('/_dashboard/security/quarantine')({
   component: SecurityQuarantine,
@@ -18,6 +19,8 @@ export const Route = createFileRoute('/_dashboard/security/quarantine')({
 function SecurityQuarantine() {
   const posture = useQuery(api.platform.getSecurityPosture, {})
   const auditLogs = useQuery(api.platform.listAuditLogs, {})
+  const unquarantineInstance = useMutation(api.instances.unquarantine)
+  const unquarantineAgent = useMutation(api.agents.unquarantine)
 
   if (!posture) {
     return (
@@ -116,15 +119,23 @@ function SecurityQuarantine() {
                   className="flex items-center gap-3 py-2 border-b border-slate-700/50 last:border-0"
                 >
                   <Badge variant="danger">quarantined</Badge>
-                  <span className="text-sm font-mono text-cyan-400 shrink-0">
+                  <span className="text-sm font-mono text-cyan-400 shrink-0 min-w-[120px]">
                     {inst.name}
                   </span>
-                  <span className="text-sm text-slate-300 flex-1">
+                  <span className="text-sm text-slate-300 flex-1 truncate">
                     {inst.provider ?? 'unknown'} · {inst.region ?? 'unknown'}
                   </span>
-                  <span className="text-xs text-slate-500 shrink-0">
+                  <span className="text-xs text-slate-500 shrink-0 w-24 text-right">
                     {new Date(inst.createdAt).toLocaleDateString()}
                   </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="shrink-0 h-7 text-xs border-slate-600 hover:bg-slate-800"
+                    onClick={() => unquarantineInstance({ id: inst._id as any, reason: "Manual release by admin" })}
+                  >
+                    Release
+                  </Button>
                 </div>
               ))}
             </div>
@@ -151,15 +162,23 @@ function SecurityQuarantine() {
                   className="flex items-center gap-3 py-2 border-b border-slate-700/50 last:border-0"
                 >
                   <Badge variant="warning">quarantined</Badge>
-                  <span className="text-sm font-mono text-cyan-400 shrink-0">
+                  <span className="text-sm font-mono text-cyan-400 shrink-0 min-w-[120px]">
                     {agent.name}
                   </span>
-                  <span className="text-sm text-slate-300 flex-1">
+                  <span className="text-sm text-slate-300 flex-1 truncate">
                     Instance: {agent.instanceId}
                   </span>
-                  <span className="text-xs text-slate-500 shrink-0">
+                  <span className="text-xs text-slate-500 shrink-0 w-24 text-right">
                     {new Date(agent.createdAt).toLocaleDateString()}
                   </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="shrink-0 h-7 text-xs border-slate-600 hover:bg-slate-800"
+                    onClick={() => unquarantineAgent({ id: agent._id as any, reason: "Manual release by admin" })}
+                  >
+                    Release
+                  </Button>
                 </div>
               ))}
             </div>

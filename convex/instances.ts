@@ -93,6 +93,50 @@ export const remove = mutation({
   },
 });
 
+export const quarantine = mutation({
+  args: {
+    id: v.id("instances"),
+    reason: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const instance = await ctx.db.get(args.id);
+    if (!instance) throw new Error("Instance not found");
+
+    await ctx.db.patch(args.id, { status: "quarantined" });
+
+    await ctx.db.insert("auditLogs", {
+      orgId: instance.orgId,
+      action: "quarantine_instance",
+      resourceType: "instance",
+      resourceId: instance._id,
+      details: args.reason,
+      createdAt: Date.now(),
+    });
+  },
+});
+
+export const unquarantine = mutation({
+  args: {
+    id: v.id("instances"),
+    reason: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const instance = await ctx.db.get(args.id);
+    if (!instance) throw new Error("Instance not found");
+
+    await ctx.db.patch(args.id, { status: "offline" }); // Unquarantine usually reverts to offline state for safe restart
+
+    await ctx.db.insert("auditLogs", {
+      orgId: instance.orgId,
+      action: "unquarantine_instance",
+      resourceType: "instance",
+      resourceId: instance._id,
+      details: args.reason,
+      createdAt: Date.now(),
+    });
+  },
+});
+
 export const pauseAll = mutation({
   args: { orgId: v.id("organizations") },
   handler: async (ctx, args) => {

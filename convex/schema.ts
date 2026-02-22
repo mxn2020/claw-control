@@ -195,6 +195,18 @@ export default defineSchema({
     createdAt: v.number(),
   }).index("by_org", ["orgId"]),
 
+  // Secrets Vault
+  secrets: defineTable({
+    orgId: v.id("organizations"),
+    name: v.string(),
+    value: v.string(),
+    description: v.optional(v.string()),
+    type: v.union(v.literal("api_key"), v.literal("token"), v.literal("password"), v.literal("certificate")),
+    instanceIds: v.optional(v.array(v.id("instances"))),
+    status: v.union(v.literal("active"), v.literal("stale"), v.literal("expired")),
+    createdAt: v.number(),
+  }).index("by_org", ["orgId"]),
+
   // Audit Log
   auditLogs: defineTable({
     orgId: v.id("organizations"),

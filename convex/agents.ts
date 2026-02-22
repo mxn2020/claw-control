@@ -106,6 +106,50 @@ export const remove = mutation({
   },
 });
 
+export const quarantine = mutation({
+  args: {
+    id: v.id("agents"),
+    reason: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const agent = await ctx.db.get(args.id);
+    if (!agent) throw new Error("Agent not found");
+
+    await ctx.db.patch(args.id, { status: "quarantined" });
+
+    await ctx.db.insert("auditLogs", {
+      orgId: agent.orgId,
+      action: "quarantine_agent",
+      resourceType: "agent",
+      resourceId: agent._id,
+      details: args.reason,
+      createdAt: Date.now(),
+    });
+  }
+});
+
+export const unquarantine = mutation({
+  args: {
+    id: v.id("agents"),
+    reason: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const agent = await ctx.db.get(args.id);
+    if (!agent) throw new Error("Agent not found");
+
+    await ctx.db.patch(args.id, { status: "paused" }); // Usually unquarantine resumes to paused or idle
+
+    await ctx.db.insert("auditLogs", {
+      orgId: agent.orgId,
+      action: "unquarantine_agent",
+      resourceType: "agent",
+      resourceId: agent._id,
+      details: args.reason,
+      createdAt: Date.now(),
+    });
+  }
+});
+
 export const pauseAll = mutation({
   args: { orgId: v.id("organizations") },
   handler: async (ctx, args) => {

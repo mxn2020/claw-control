@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { Badge } from '#/components/ui/badge'
 import { Button } from '#/components/ui/button'
-import { ArrowLeft, Bot, MessageSquare, Send, Clock } from 'lucide-react'
+import { ArrowLeft, Bot, MessageSquare, Send, Clock, ShieldAlert } from 'lucide-react'
 import { useState } from 'react'
 import { useQuery, useMutation } from 'convex/react'
 import { api } from '../../../../convex/_generated/api'
@@ -24,6 +24,7 @@ function SessionDetailPage() {
     const messages = useQuery(api.sessions.getMessages, { sessionId: sessionId as Id<"sessions"> })
     const addMessage = useMutation(api.sessions.addMessage)
     const [newMsg, setNewMsg] = useState('')
+    const [godMode, setGodMode] = useState(false)
 
     if (session === undefined) {
         return (
@@ -49,7 +50,7 @@ function SessionDetailPage() {
         if (!newMsg.trim()) return
         await addMessage({
             sessionId: session._id,
-            role: 'user',
+            role: godMode ? 'system' : 'user',
             content: newMsg.trim(),
         })
         setNewMsg('')
@@ -107,15 +108,27 @@ function SessionDetailPage() {
             {/* Input */}
             {session.status === 'active' && (
                 <div className="flex-shrink-0 flex gap-2">
+                    <Button
+                        type="button"
+                        variant="outline"
+                        title="God Mode (Inject system instruction)"
+                        onClick={() => setGodMode(!godMode)}
+                        className={`px-3 transition-colors ${godMode ? 'bg-amber-500/10 border-amber-500/50 text-amber-500' : 'text-slate-400'}`}
+                    >
+                        <ShieldAlert className="w-4 h-4" />
+                    </Button>
                     <input
                         type="text"
                         value={newMsg}
                         onChange={(e) => setNewMsg(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                        placeholder="Send a message…"
-                        className="flex-1 bg-slate-800 border border-slate-600 rounded-lg px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                        placeholder={godMode ? "Inject system overriding instruction..." : "Send a message…"}
+                        className={`flex-1 border rounded-lg px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 transition-colors ${godMode
+                                ? 'bg-amber-950/20 border-amber-500/50 focus:ring-amber-500'
+                                : 'bg-slate-800 border-slate-600 focus:ring-cyan-500'
+                            }`}
                     />
-                    <Button type="button" onClick={handleSend} disabled={!newMsg.trim()}>
+                    <Button type="button" onClick={handleSend} disabled={!newMsg.trim()} className={godMode ? 'bg-amber-600 hover:bg-amber-700' : ''}>
                         <Send className="w-4 h-4" />
                     </Button>
                 </div>
