@@ -20,7 +20,7 @@ function OrgBillingPage() {
 
     const dateStr = new Date().toISOString().substring(0, 7) // "YYYY-MM"
     const usageStats = useQuery(api.usage.getOrgStats, orgId ? { orgId, month: dateStr } : "skip")
-    const usageRecords = useQuery(api.usage.list, orgId ? { orgId } : "skip")
+    // const usageRecords = useQuery(api.usage.list, orgId ? { orgId } : "skip")
     const org = useQuery(api.organizations.get, orgId ? { id: orgId } : "skip")
     const invoices = useQuery(api.invoices.list, orgId ? { orgId } : "skip")
 

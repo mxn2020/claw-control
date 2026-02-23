@@ -5,14 +5,13 @@ import { Network, Bot, Activity, BrainCircuit } from 'lucide-react'
 import { useQuery } from 'convex/react'
 import { api } from '../../../../../convex/_generated/api'
 import { useAuth } from '#/lib/authContext'
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import {
   ReactFlow,
   Controls,
   Background,
   useNodesState,
   useEdgesState,
-  MarkerType,
   Handle,
   Position
 } from '@xyflow/react'
@@ -57,7 +56,7 @@ function SwarmTopology() {
   const [edges, setEdges, onEdgesChange] = useEdgesState<any>([])
 
   const memberAgents = useMemo(() => {
-    return (allAgents ?? []).filter((agent) => swarm?.agentIds?.includes(agent._id))
+    return (allAgents ?? []).filter((agent: any) => swarm?.agentIds?.includes(agent._id))
   }, [allAgents, swarm])
 
   // Build topology
@@ -108,7 +107,7 @@ function SwarmTopology() {
       // Layout real agents
       const startX = 50;
       const xSpacing = 280;
-      memberAgents.forEach((agent, index) => {
+      memberAgents.forEach((agent: any, index: any) => {
         const nodeId = `agent-${agent._id}`
         newNodes.push({
           id: nodeId,
@@ -190,7 +189,7 @@ function SwarmTopology() {
           <CardContent className="p-0 flex-1 overflow-auto">
             {memberAgents.length > 0 ? (
               <div className="divide-y divide-slate-800/50">
-                {memberAgents.map((agent) => (
+                {memberAgents.map((agent: any) => (
                   <div key={agent._id} className="p-4 hover:bg-slate-800/50 transition-colors">
                     <div className="flex items-center justify-between mb-1">
                       <div className="font-medium text-sm text-white">{agent.name}</div>

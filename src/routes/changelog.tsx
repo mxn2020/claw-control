@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { FileCode2, PackageOpen, Rocket } from 'lucide-react'
+import { PackageOpen, Rocket } from 'lucide-react'
 
 export const Route = createFileRoute('/changelog')({ component: ChangelogPage })
 

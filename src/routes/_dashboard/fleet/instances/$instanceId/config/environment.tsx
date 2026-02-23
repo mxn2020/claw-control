@@ -5,7 +5,7 @@ import { useQuery } from 'convex/react'
 import { api } from '../../../../../../../convex/_generated/api'
 import { useAuth } from '#/lib/authContext'
 import type { Id } from '../../../../../../../convex/_generated/dataModel'
-import { KeyRound, Plus, Eye, EyeOff } from 'lucide-react'
+import { KeyRound, Eye, EyeOff } from 'lucide-react'
 import { useState } from 'react'
 
 export const Route = createFileRoute('/_dashboard/fleet/instances/$instanceId/config/environment')({ component: InstanceConfigEnv })

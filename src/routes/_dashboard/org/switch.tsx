@@ -14,7 +14,7 @@ function OrgSwitchPage() {
 
     const handleSwitch = (id: string) => {
         setOrg(id)
-        navigate({ to: '/_dashboard' })
+        navigate({ to: '/_dashboard' as any })
     }
 
     return (
@@ -71,7 +71,7 @@ function OrgSwitchPage() {
             </Card>
 
             <button
-                onClick={() => navigate({ to: '/_dashboard/org/new' })}
+                onClick={() => navigate({ to: '/_dashboard/org/new' as any })}
                 className="w-full flex items-center justify-center gap-2 p-6 rounded-xl border-2 border-dashed border-slate-700 hover:border-cyan-500/50 hover:bg-slate-800/30 transition-all text-slate-400 hover:text-cyan-400 font-medium"
             >
                 <Plus className="w-5 h-5" />

@@ -1,6 +1,5 @@
 import { mutation, query, type QueryCtx, type MutationCtx } from "./_generated/server";
-import { v, type ConvexError } from "convex/values";
-import { type DataModel } from "./_generated/dataModel";
+import { v } from "convex/values";
 
 type Role = "owner" | "admin" | "operator" | "viewer";
 
@@ -66,10 +65,10 @@ export async function getTeamIdsForUser(ctx: QueryCtx | MutationCtx, orgId: stri
 }
 
 // Wrapper for queries that require authentication and optional RBAC
-export function protectedQuery<ArgsValidator extends Record<string, any>, ReturnType>(
+export function protectedQuery<ArgsValidator extends Record<string, any>, R>(
     args: ArgsValidator,
     requiredRole: Role | null,
-    handler: (ctx: QueryCtx, args: any, auth: { user: import("./_generated/dataModel").Doc<"users">, session: import("./_generated/dataModel").Doc<"userSessions">, member?: import("./_generated/dataModel").Doc<"orgMembers">, orgId?: string }) => Promise<ReturnType>
+    handler: (ctx: QueryCtx, args: any, auth: { user: import("./_generated/dataModel").Doc<"users">, session: import("./_generated/dataModel").Doc<"userSessions">, member?: import("./_generated/dataModel").Doc<"orgMembers">, orgId?: string }) => Promise<R>
 ) {
     return query({
         args: {
@@ -86,16 +85,16 @@ export function protectedQuery<ArgsValidator extends Record<string, any>, Return
                 }
             }
 
-            return handler(ctx, args, auth);
+            return handler(ctx, args, auth) as any;
         },
     });
 }
 
 // Wrapper for mutations that require authentication and optional RBAC
-export function protectedMutation<ArgsValidator extends Record<string, any>, ReturnType>(
+export function protectedMutation<ArgsValidator extends Record<string, any>, R>(
     args: ArgsValidator,
     requiredRole: Role | null,
-    handler: (ctx: MutationCtx, args: any, auth: { user: import("./_generated/dataModel").Doc<"users">, session: import("./_generated/dataModel").Doc<"userSessions">, member?: import("./_generated/dataModel").Doc<"orgMembers">, orgId?: string }) => Promise<ReturnType>
+    handler: (ctx: MutationCtx, args: any, auth: { user: import("./_generated/dataModel").Doc<"users">, session: import("./_generated/dataModel").Doc<"userSessions">, member?: import("./_generated/dataModel").Doc<"orgMembers">, orgId?: string }) => Promise<R>
 ) {
     return mutation({
         args: {
@@ -112,7 +111,8 @@ export function protectedMutation<ArgsValidator extends Record<string, any>, Ret
                 }
             }
 
-            return handler(ctx, args, auth);
+            return handler(ctx, args, auth) as any;
         },
     });
 }
+

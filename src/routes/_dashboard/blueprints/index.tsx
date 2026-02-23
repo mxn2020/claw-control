@@ -36,7 +36,7 @@ function BlueprintsPage() {
             No blueprints yet. Create your first blueprint to define reusable agent templates.
           </div>
         ) : (
-          blueprints.map((bp) => (
+          blueprints.map((bp: any) => (
             <Card key={bp._id} className="flex flex-col hover:border-cyan-500/50 transition-all duration-200">
               <CardHeader className="pb-2">
                 <div className="flex items-start gap-2">

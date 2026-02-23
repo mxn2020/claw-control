@@ -69,7 +69,7 @@ function SessionReplay() {
             <CardContent className="p-0">
               <div className="divide-y divide-slate-700/50">
                 {msgList.length === 0 && <p className="text-sm text-slate-500 text-center py-6">No messages to replay.</p>}
-                {msgList.map((msg, idx) => (
+                {msgList.map((msg: any, idx: any) => (
                   <button key={msg._id} type="button" onClick={() => setCurrentStep(idx + 1)}
                     className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors ${idx + 1 === currentStep ? 'bg-cyan-600/10 border-l-2 border-cyan-400' : 'hover:bg-slate-800/50 border-l-2 border-transparent'}`}>
                     <ChevronRight className={`w-3 h-3 shrink-0 ${idx + 1 === currentStep ? 'text-cyan-400' : 'text-slate-600'}`} />

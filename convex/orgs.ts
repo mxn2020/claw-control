@@ -15,7 +15,7 @@ export const getMembers = protectedQuery(
     {},
     // Any member can read members list
     "viewer",
-    async (ctx, args, auth) => {
+    async (ctx, args, _auth) => {
         const members = await ctx.db
             .query("orgMembers")
             .withIndex("by_org", (q) => q.eq("orgId", args.orgId as import("./_generated/dataModel").Id<"organizations">))

@@ -104,7 +104,7 @@ function BlueprintDeploy() {
             <p className="text-sm text-slate-500">No instances available</p>
           ) : (
             <div className="space-y-2">
-              {instances!.map((inst) => (
+              {instances!.map((inst: any) => (
                 <div
                   key={inst._id}
                   onClick={() => toggleInstance(inst._id)}

@@ -62,7 +62,7 @@ export const create = protectedMutation(
     teamId: v.optional(v.id("teams"))
   },
   "admin",
-  async (ctx, args, auth) => {
+  async (ctx, args, _auth) => {
     const agentId = await ctx.db.insert("agents", {
       orgId: args.orgId,
       instanceId: args.instanceId,

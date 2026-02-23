@@ -8,14 +8,14 @@ export const Route = createFileRoute('/_dashboard/agents/$agentId/sessions/inbox
 
 function AgentSessionsInbox() {
   const sessions = useQuery(api.sessions.list, {})
-  const active = (sessions ?? []).filter(s => s.status === 'active')
+  const active = (sessions ?? []).filter((s: any) => s.status === 'active')
   return (
     <div className="space-y-6">
       <div><h1 className="text-2xl font-bold text-white">Session Inbox</h1><p className="text-sm text-slate-400 mt-1">{active.length} active sessions</p></div>
       <Card><CardHeader><CardTitle>Active Sessions</CardTitle></CardHeader><CardContent>
         <div className="space-y-2">
           {active.length === 0 && <p className="text-sm text-slate-500 text-center py-6">No active sessions.</p>}
-          {active.map(s => (
+          {active.map((s: any) => (
             <div key={s._id} className="flex items-center justify-between rounded-lg border border-slate-700/50 bg-slate-900/50 p-4">
               <div><span className="text-sm font-medium text-white">{s.title ?? s._id}</span><p className="text-xs text-slate-400 mt-0.5">{new Date(s.startedAt).toLocaleString()} · {s.messageCount ?? 0} messages</p></div>
               <Badge variant="success">active</Badge>

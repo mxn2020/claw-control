@@ -1,12 +1,11 @@
 import { useState, useRef, useEffect } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
-import { Card } from '#/components/ui/card'
 import { Button } from '#/components/ui/button'
 import { Badge } from '#/components/ui/badge'
 import { Send, Bot, User as UserIcon, ArrowLeft } from 'lucide-react'
 import { useQuery, useMutation } from 'convex/react'
 import { api } from '../../../../convex/_generated/api'
-import { useAuth } from '#/lib/authContext'
+
 import { Link } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/_app/chat/$agentId')({
@@ -15,7 +14,6 @@ export const Route = createFileRoute('/_app/chat/$agentId')({
 
 function AgentChat() {
   const { agentId } = Route.useParams()
-  const { user } = useAuth()
   const [input, setInput] = useState('')
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
@@ -24,7 +22,7 @@ function AgentChat() {
 
   // Find active sessions for this agent and get messages from the first one
   const sessions = useQuery(api.sessions.list, agent ? { agentId: agent._id } : 'skip')
-  const activeSession = sessions?.find((s) => s.status === 'active')
+  const activeSession = sessions?.find((s: any) => s.status === 'active')
 
   const messages = useQuery(
     api.sessions.getMessages,
@@ -107,7 +105,7 @@ function AgentChat() {
           </div>
         )}
 
-        {messageList.map((msg) => (
+        {messageList.map((msg: any) => (
           <div key={msg._id} className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             {msg.role !== 'user' && (
               <div className="w-8 h-8 bg-cyan-600 rounded-full flex items-center justify-center flex-shrink-0">
@@ -115,8 +113,8 @@ function AgentChat() {
               </div>
             )}
             <div className={`max-w-[70%] rounded-xl px-4 py-2.5 ${msg.role === 'user'
-                ? 'bg-cyan-600 text-white'
-                : 'bg-slate-800 border border-slate-700 text-slate-300'
+              ? 'bg-cyan-600 text-white'
+              : 'bg-slate-800 border border-slate-700 text-slate-300'
               }`}>
               <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
               <p className="text-xs opacity-60 mt-1">

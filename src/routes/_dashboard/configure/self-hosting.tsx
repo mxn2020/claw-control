@@ -20,7 +20,7 @@ function SelfHostingPage() {
     )
   }
 
-  const onlineCount = instances.filter((i) => i.status === 'online').length
+  const onlineCount = instances.filter((i: any) => i.status === 'online').length
 
   return (
     <div className="space-y-6">
@@ -57,7 +57,7 @@ function SelfHostingPage() {
             <div>
               <p className="text-xs text-slate-500">Providers</p>
               <p className="text-sm text-white font-medium">
-                {[...new Set(instances.map((i) => i.provider).filter(Boolean))].length}
+                {[...new Set(instances.map((i: any) => i.provider).filter(Boolean))].length}
               </p>
             </div>
           </div>
@@ -100,7 +100,7 @@ function SelfHostingPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {instances.map((inst) => (
+                  {instances.map((inst: any) => (
                     <tr
                       key={inst._id}
                       className="border-b border-slate-700/50 last:border-0"

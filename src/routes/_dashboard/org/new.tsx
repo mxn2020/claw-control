@@ -16,7 +16,7 @@ function NewOrgPage() {
     const [name, setName] = useState('')
     const [slug, setSlug] = useState('')
     const [error, setError] = useState('')
-    const [isSubmitting, setIsSubmitting] = useState(false)
+    const [, setIsSubmitting] = useState(false)
 
     // Auto-generate slug from name
     const handleNameChange = (val: string) => {
@@ -34,7 +34,7 @@ function NewOrgPage() {
         try {
             const result = await createOrg({ token: token ?? undefined, name, slug })
             setOrg(result.orgId)
-            navigate({ to: '/_dashboard' })
+            navigate({ to: '/_dashboard' as any })
         } catch (err: any) {
             setError(err.message)
         } finally {
@@ -95,7 +95,7 @@ function NewOrgPage() {
                         <div className="pt-4 flex justify-end gap-3">
                             <button
                                 type="button"
-                                onClick={() => navigate({ to: '/_dashboard/org/switch' })}
+                                onClick={() => navigate({ to: '/_dashboard/org/switch' as any })}
                                 className="px-6 py-2.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors font-medium"
                             >
                                 Cancel

@@ -35,7 +35,7 @@ function InstanceObserve() {
 
   const totalTokens = usageRecords.reduce((s, r) => s + r.tokensUsed, 0)
   const totalCost = usageRecords.reduce((s, r) => s + r.cost, 0)
-  const activeSessions = (sessions ?? []).filter(s => s.status === 'active').length
+  const activeSessions = (sessions ?? []).filter((s: any) => s.status === 'active').length
 
   return (
     <div className="space-y-6">

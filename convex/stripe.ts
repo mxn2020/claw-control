@@ -12,7 +12,7 @@ export const createCheckoutSession = protectedMutation(
     },
     // Only owners can modify billing
     "owner",
-    async (ctx, args, auth) => {
+    async (ctx, args, _auth) => {
         const org = await ctx.db.get(args.orgId as import("./_generated/dataModel").Id<"organizations">);
         if (!org) throw new Error("Organization not found");
 
@@ -29,7 +29,7 @@ export const createPortalSession = protectedMutation(
         orgId: v.id("organizations"),
     },
     "owner",
-    async (ctx, args, auth) => {
+    async (ctx, args, _auth) => {
         const org = await ctx.db.get(args.orgId as import("./_generated/dataModel").Id<"organizations">);
         if (!org || !org.stripeCustomerId) {
             throw new Error("No active billing profile found for this organization");
@@ -48,7 +48,7 @@ export const getSubscription = protectedQuery(
         orgId: v.id("organizations"),
     },
     "viewer",
-    async (ctx, args, auth) => {
+    async (ctx, args, _auth) => {
         const org = await ctx.db.get(args.orgId as import("./_generated/dataModel").Id<"organizations">);
         if (!org) throw new Error("Organization not found");
 

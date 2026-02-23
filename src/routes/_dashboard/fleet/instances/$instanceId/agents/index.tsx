@@ -48,7 +48,7 @@ function InstanceAgents() {
             {agentList.length === 0 && (
               <p className="text-sm text-slate-500 text-center py-6">No agents deployed yet.</p>
             )}
-            {agentList.map((agent) => (
+            {agentList.map((agent: any) => (
               <Link
                 key={agent._id}
                 to="/agents/$agentId"

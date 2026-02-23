@@ -144,7 +144,7 @@ function NewAgent() {
                 defaultValue=""
               >
                 <option value="">None</option>
-                {blueprintList.map((bp) => (
+                {blueprintList.map((bp: any) => (
                   <option key={bp._id} value={bp._id}>{bp.name}</option>
                 ))}
               </select>

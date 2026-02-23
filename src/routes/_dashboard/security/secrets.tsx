@@ -201,7 +201,7 @@ function SecuritySecrets() {
             <div className="py-12 text-center text-slate-500">
               <KeyRound className="w-12 h-12 mx-auto mb-3 opacity-20" />
               <p>No secrets configured in the vault.</p>
-              <Button variant="link" onClick={() => setIsAdding(true)} className="text-cyan-400 mt-2">
+              <Button variant={"link" as any} onClick={() => setIsAdding(true)} className="text-cyan-400 mt-2">
                 Add your first secret
               </Button>
             </div>

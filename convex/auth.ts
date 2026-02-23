@@ -68,7 +68,7 @@ export const register = mutation({
 
         // Create session
         const token = generateToken();
-        const sessionId = await ctx.db.insert("userSessions", {
+        await ctx.db.insert("userSessions", {
             userId,
             token,
             expiresAt: Date.now() + SESSION_TTL_MS,

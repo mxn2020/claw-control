@@ -70,8 +70,8 @@ function SecurityPosture() {
 
   // Derive weak configs from agents with quarantined/error status
   const weakConfigs = agentList
-    .filter((a) => a.status === 'quarantined' || a.status === 'error')
-    .map((a) => ({
+    .filter((a: any) => a.status === 'quarantined' || a.status === 'error')
+    .map((a: any) => ({
       rule: a.status === 'quarantined' ? 'Agent quarantined for safety violation' : 'Agent in error state',
       severity: a.status === 'quarantined' ? 'high' : 'medium',
       agent: a.name,
@@ -204,7 +204,7 @@ function SecurityPosture() {
             </p>
           ) : (
             <div className="space-y-3">
-              {weakConfigs.map((cfg, i) => (
+              {weakConfigs.map((cfg: any, i: any) => (
                 <div
                   key={i}
                   className="flex items-start gap-3 py-2 border-b border-slate-700/50 last:border-0"

@@ -52,7 +52,7 @@ function SessionTrace() {
               <div className="absolute left-6 top-4 bottom-4 w-px bg-slate-700 z-0"></div>
             )}
 
-            {msgList.map((msg, idx) => {
+            {msgList.map((msg: any, _idx: any) => {
               const isTool = msg.role === 'tool' || msg.toolCalls?.length;
               const isAssistant = msg.role === 'assistant';
               const isUser = msg.role === 'user';
@@ -114,7 +114,7 @@ function SessionTrace() {
                     {msg.toolCalls && msg.toolCalls.length > 0 && (
                       <div className="space-y-2 mt-3 bg-slate-950/50 rounded-lg p-3 border border-slate-800">
                         <p className="text-xs text-slate-500 mb-1 uppercase tracking-wider font-semibold">Tool Invocations</p>
-                        {msg.toolCalls.map((tc, tIdx) => (
+                        {msg.toolCalls.map((tc: any, tIdx: any) => (
                           <div key={tIdx} className="text-xs">
                             <span className="font-mono text-amber-400">{tc.name}</span>
                             <span className="text-slate-400 ml-2">

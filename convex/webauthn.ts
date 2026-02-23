@@ -5,7 +5,7 @@ import { mutation } from "./_generated/server";
 export const getCredentials = protectedQuery(
     {},
     null,
-    async (ctx, args, auth) => {
+    async (ctx, _args, auth) => {
         return await ctx.db
             .query("webAuthnCredentials")
             .withIndex("by_user", (q) => q.eq("userId", auth.user._id))

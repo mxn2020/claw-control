@@ -14,7 +14,7 @@ function AgentCatalog() {
       <div><h1 className="text-2xl font-bold text-white">Agent Catalog</h1><p className="text-sm text-slate-400 mt-1">{bpList.length} agent blueprints available</p></div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {bpList.length === 0 && <p className="text-sm text-slate-500 text-center py-6 col-span-full">No blueprints found.</p>}
-        {bpList.map(bp => (
+        {bpList.map((bp: any) => (
           <Card key={bp._id} className="hover:border-cyan-500/50 transition-colors">
             <CardHeader><CardTitle>{bp.name}</CardTitle></CardHeader>
             <CardContent>

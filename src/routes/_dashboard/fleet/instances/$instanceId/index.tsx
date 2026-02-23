@@ -187,7 +187,7 @@ function InstanceDetail() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-white mb-2">{instance.agentCount}</div>
-              <p className="text-xs text-slate-400">{agentList.filter(a => a.status === 'active').length} active</p>
+              <p className="text-xs text-slate-400">{agentList.filter((a: any) => a.status === 'active').length} active</p>
             </CardContent>
           </Card>
         </div>
@@ -206,7 +206,7 @@ function InstanceDetail() {
                 {agentList.length === 0 && (
                   <p className="text-sm text-slate-500 text-center py-4">No agents on this instance.</p>
                 )}
-                {agentList.map((agent) => (
+                {agentList.map((agent: any) => (
                   <div
                     key={agent._id}
                     className="flex items-center justify-between rounded-lg border border-slate-700/50 bg-slate-900/50 p-3"

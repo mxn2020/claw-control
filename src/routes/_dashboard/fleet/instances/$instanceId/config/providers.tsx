@@ -5,7 +5,7 @@ import { Button } from '#/components/ui/button'
 import { useQuery, useMutation } from 'convex/react'
 import { api } from '../../../../../../../convex/_generated/api'
 import type { Id } from '../../../../../../../convex/_generated/dataModel'
-import { Cpu, Save, CheckCircle, Plus, X } from 'lucide-react'
+import { Cpu, Save, CheckCircle, Plus } from 'lucide-react'
 import { useState, useEffect } from 'react'
 
 export const Route = createFileRoute('/_dashboard/fleet/instances/$instanceId/config/providers')({ component: InstanceConfigProviders })

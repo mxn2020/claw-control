@@ -78,7 +78,7 @@ function OrgTeamsPage() {
             )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {teams?.map(team => (
+                {teams?.map((team: any) => (
                     <div key={team._id} className="flex flex-col">
                         <Card className="flex flex-col flex-1">
                             <CardHeader className="flex flex-row items-start justify-between pb-2 space-y-0 relative">
@@ -108,7 +108,7 @@ function OrgTeamsPage() {
                         </Card>
 
                         {expandedTeam === team._id && (
-                            <TeamMembersPanel teamId={team._id} orgId={orgId} token={token} />
+                            <TeamMembersPanel teamId={team._id} orgId={orgId} token={token ?? undefined} />
                         )}
                     </div>
                 ))}
@@ -134,7 +134,7 @@ function TeamMembersPanel({ teamId, orgId, token }: { teamId: Id<"teams">; orgId
     const [error, setError] = useState<string | null>(null)
 
     // Filter out members already in the team
-    const memberUserIds = new Set(members?.map(m => m.userId) ?? [])
+    const memberUserIds = new Set(members?.map((m: any) => m.userId) ?? [])
     const availableMembers = orgMembers?.filter(m => !memberUserIds.has(m.userId)) ?? []
 
     async function handleAdd() {
@@ -197,7 +197,7 @@ function TeamMembersPanel({ teamId, orgId, token }: { teamId: Id<"teams">; orgId
                     {members?.length === 0 && (
                         <p className="text-xs text-slate-500 py-2 text-center">No members yet</p>
                     )}
-                    {members?.map(m => (
+                    {members?.map((m: any) => (
                         <div key={m.id} className="flex items-center justify-between py-2 px-3 rounded bg-slate-900/50 border border-slate-800/50 group">
                             <div className="flex items-center gap-3">
                                 <div className="w-7 h-7 rounded-full bg-slate-700 flex items-center justify-center text-xs text-white font-medium">

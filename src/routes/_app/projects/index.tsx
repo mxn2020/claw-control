@@ -24,7 +24,7 @@ function Projects() {
   const agentMap = new Map(allAgents.map((a) => [a._id, a]))
 
   const projects = agentIds.map((agentId) => {
-    const agent = agentMap.get(agentId)
+    const agent = agentMap.get(agentId as any)
     const tasks = allTasks.filter((t) => t.agentId === agentId)
     const done = tasks.filter((t) => t.status === 'done').length
     const total = tasks.length
@@ -125,12 +125,12 @@ function Projects() {
                       <div key={task._id} className="flex items-center gap-2 text-xs">
                         <div
                           className={`h-3 w-3 rounded-full flex-shrink-0 ${task.status === 'done'
-                              ? 'bg-cyan-500'
-                              : task.status === 'running'
-                                ? 'bg-emerald-500'
-                                : task.status === 'failed'
-                                  ? 'bg-red-500'
-                                  : 'bg-slate-600'
+                            ? 'bg-cyan-500'
+                            : task.status === 'running'
+                              ? 'bg-emerald-500'
+                              : task.status === 'failed'
+                                ? 'bg-red-500'
+                                : 'bg-slate-600'
                             }`}
                         />
                         <span

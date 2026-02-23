@@ -12,7 +12,7 @@ function AnalyticsOverview() {
   const stats = useQuery(api.platform.getStats, {})
   const sessions = useQuery(api.sessions.list, {})
 
-  const totalMessages = sessions?.reduce((sum, s) => sum + s.messageCount, 0) ?? 0
+  const totalMessages = sessions?.reduce((sum: any, s: any) => sum + s.messageCount, 0) ?? 0
 
   const kpis = [
     { label: 'Total Sessions', value: stats?.totalSessions ?? 0, delta: null },
@@ -46,7 +46,7 @@ function AnalyticsOverview() {
         <CardContent>
           {sessions && sessions.length > 0 ? (
             <div className="space-y-2">
-              {sessions.slice(0, 10).map((s) => (
+              {sessions.slice(0, 10).map((s: any) => (
                 <div key={s._id} className="flex items-center justify-between py-2 px-3 rounded-lg bg-slate-800/50">
                   <div>
                     <p className="text-sm text-white">{s.title || `Session ${s._id.slice(-6)}`}</p>

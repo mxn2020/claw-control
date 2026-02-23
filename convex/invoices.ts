@@ -7,7 +7,7 @@ export const list = protectedQuery(
     },
     // Viewers can see invoices
     "viewer",
-    async (ctx, args, auth) => {
+    async (ctx, args, _auth) => {
         // We only allow fetching invoices for the user's active org context
         const invoices = await ctx.db
             .query("invoices")

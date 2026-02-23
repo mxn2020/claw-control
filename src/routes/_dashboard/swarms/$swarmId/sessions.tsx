@@ -29,7 +29,7 @@ function SwarmSessions() {
             {sessionList.length === 0 && (
               <p className="text-sm text-slate-500 text-center py-6">No sessions found.</p>
             )}
-            {sessionList.map((ses) => (
+            {sessionList.map((ses: any) => (
               <div
                 key={ses._id}
                 className="flex items-center justify-between rounded-lg border border-slate-700/50 bg-slate-900/50 p-4"

@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card'
+import { Card, CardContent } from '#/components/ui/card'
 import { Button } from '#/components/ui/button'
 import { Terminal, ShieldCheck, AlertCircle } from 'lucide-react'
 import { useMutation } from 'convex/react'

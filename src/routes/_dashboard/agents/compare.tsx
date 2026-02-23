@@ -27,8 +27,8 @@ function AgentCompare() {
 
   const agentList = agents ?? []
 
-  const agentA = useMemo(() => agentList.find(a => a._id === selectedA), [agentList, selectedA])
-  const agentB = useMemo(() => agentList.find(a => a._id === selectedB), [agentList, selectedB])
+  const agentA = useMemo(() => agentList.find((a: any) => a._id === selectedA), [agentList, selectedA])
+  const agentB = useMemo(() => agentList.find((a: any) => a._id === selectedB), [agentList, selectedB])
 
   const pair = [agentA, agentB].filter(Boolean)
 
@@ -99,7 +99,7 @@ function AgentCompare() {
                   onChange={(e) => slot.setSelected(e.target.value)}
                 >
                   <option value="">Select Agent...</option>
-                  {agentList.map(a => (
+                  {agentList.map((a: any) => (
                     <option key={a._id} value={a._id} disabled={a._id === selectedA || a._id === selectedB}>
                       {a.name}
                     </option>

@@ -1,4 +1,3 @@
-import { Badge } from '#/components/ui/badge'
 import { FlaskConical } from 'lucide-react'
 
 /**

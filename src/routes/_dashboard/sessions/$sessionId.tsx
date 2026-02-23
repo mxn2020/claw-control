@@ -84,7 +84,7 @@ function SessionDetailPage() {
                         <p>No messages in this session yet.</p>
                     </div>
                 ) : (
-                    msgList.map((msg) => (
+                    msgList.map((msg: any) => (
                         <div key={msg._id} className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : ''}`}>
                             {msg.role === 'assistant' && (
                                 <div className="w-7 h-7 rounded-full bg-cyan-600/20 flex items-center justify-center flex-shrink-0 mt-1">

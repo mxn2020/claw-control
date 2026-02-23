@@ -1,9 +1,7 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { Card, CardContent } from '#/components/ui/card'
-import { Badge } from '#/components/ui/badge'
-import { Button } from '#/components/ui/button'
 import { Input } from '#/components/ui/input'
-import { Bot, Plus, Search } from 'lucide-react'
+import { Bot, Search } from 'lucide-react'
 import { useAgents, useSessions } from '#/lib/dataHooks'
 
 export const Route = createFileRoute('/_app/chat/')({

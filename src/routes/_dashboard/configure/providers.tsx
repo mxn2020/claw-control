@@ -45,7 +45,7 @@ function ConfigureProviders() {
 
   const usageRecords = usage ?? []
   const totalCost = usageRecords.reduce((sum, u) => sum + (u.cost ?? 0), 0)
-  const totalTokens = usageRecords.reduce((sum, u) => sum + (u.tokenCount ?? 0), 0)
+  const totalTokens = usageRecords.reduce((sum, u) => sum + ((u as any).tokenCount ?? 0), 0)
 
   return (
     <div className="space-y-6">

@@ -9,7 +9,6 @@ import { Radio, Link2, Plus, Wifi, WifiOff } from 'lucide-react'
 export const Route = createFileRoute('/_dashboard/agents/$agentId/channels/bindings')({ component: AgentChannelsBindings })
 
 function AgentChannelsBindings() {
-  const { agentId } = Route.useParams()
   const channels = useQuery(api.platform.listChannels, {})
   const list = channels ?? []
 

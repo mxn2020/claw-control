@@ -306,7 +306,7 @@ function NewInstancePage() {
                 onChange={(e) => setTeamId(e.target.value)}
               >
                 <option value="none">No Team (Global)</option>
-                {orgTeams?.map((t) => <option key={t._id} value={t._id}>{t.name}</option>)}
+                {orgTeams?.map((t: any) => <option key={t._id} value={t._id}>{t.name}</option>)}
               </select>
               <p className="text-xs text-slate-500 pt-1">Only admins and users within this team will be able to access the instance.</p>
             </div>

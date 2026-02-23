@@ -41,7 +41,7 @@ function SessionDetail() {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         <div className="lg:col-span-3 space-y-4">
           {msgList.length === 0 && <p className="text-sm text-slate-500 text-center py-12">No messages in this session.</p>}
-          {msgList.map((msg) => (
+          {msgList.map((msg: any) => (
             <div key={msg._id} className={`flex gap-3 ${msg.role === 'assistant' ? '' : 'flex-row-reverse'}`}>
               <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${msg.role === 'assistant' ? 'bg-cyan-600/20' : 'bg-slate-700'}`}>
                 {msg.role === 'assistant' ? <Bot className="w-4 h-4 text-cyan-400" /> : <User className="w-4 h-4 text-slate-300" />}

@@ -14,7 +14,7 @@ function InstancePersonalityBlueprints() {
       <Card><CardHeader><CardTitle>Blueprints</CardTitle></CardHeader><CardContent>
         <div className="space-y-2">
           {list.length === 0 && <p className="text-sm text-slate-500 text-center py-6">No blueprints found.</p>}
-          {list.map(bp => (
+          {list.map((bp: any) => (
             <div key={bp._id} className="flex items-center justify-between rounded-lg border border-slate-700/50 bg-slate-900/50 p-4">
               <div><span className="text-sm font-medium text-white">{bp.name}</span><p className="text-xs text-slate-400">{bp.description ?? 'No description'}</p></div>
               <Badge variant="info">{bp.deployCount} deploys</Badge>

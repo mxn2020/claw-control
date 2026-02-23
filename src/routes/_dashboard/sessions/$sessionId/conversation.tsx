@@ -55,7 +55,7 @@ function SessionConversation() {
               <p>No messages yet.</p>
             </div>
           )}
-          {msgList.map((msg) => {
+          {msgList.map((msg: any) => {
             const config = roleConfig[msg.role as keyof typeof roleConfig] ?? roleConfig.system
             const Icon = config.icon
             return (
@@ -68,10 +68,10 @@ function SessionConversation() {
                 >
                   <Icon
                     className={`w-4 h-4 ${msg.role === 'assistant'
-                        ? 'text-cyan-400'
-                        : msg.role === 'system' || msg.role === 'tool'
-                          ? 'text-amber-400'
-                          : 'text-slate-300'
+                      ? 'text-cyan-400'
+                      : msg.role === 'system' || msg.role === 'tool'
+                        ? 'text-amber-400'
+                        : 'text-slate-300'
                       }`}
                   />
                 </div>
@@ -105,9 +105,9 @@ function SessionConversation() {
               <div>
                 <span className="text-xs text-slate-400">Participants</span>
                 <div className="flex gap-1 mt-1 flex-wrap">
-                  {[...new Set(msgList.map(m => m.role))].map(role => (
-                    <Badge key={role} variant={role === 'assistant' ? 'info' : role === 'system' ? 'warning' : 'default'}>
-                      {role}
+                  {[...new Set(msgList.map((m: any) => m.role))].map((role: any) => (
+                    <Badge key={role as string} variant={role === 'assistant' ? 'info' : role === 'system' ? 'warning' : 'default'}>
+                      {role as string}
                     </Badge>
                   ))}
                   {msgList.length === 0 && <span className="text-xs text-slate-500">—</span>}
@@ -124,7 +124,7 @@ function SessionConversation() {
               <div>
                 <span className="text-xs text-slate-400">Total Tokens</span>
                 <p className="text-sm text-white">
-                  {msgList.reduce((s, m) => s + (m.tokens ?? 0), 0).toLocaleString()}
+                  {msgList.reduce((s: any, m: any) => s + (m.tokens ?? 0), 0).toLocaleString()}
                 </p>
               </div>
             </CardContent>

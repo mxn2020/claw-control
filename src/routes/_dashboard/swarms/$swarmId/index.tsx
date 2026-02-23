@@ -16,10 +16,10 @@ function SwarmDetail() {
   const allAgents = useQuery(api.agents.list, {})
 
   // Filter instances and agents that belong to this swarm
-  const memberInstances = (allInstances ?? []).filter((inst) =>
+  const memberInstances = (allInstances ?? []).filter((inst: any) =>
     swarm?.instanceIds?.includes(inst._id)
   )
-  const memberAgents = (allAgents ?? []).filter((agent) =>
+  const memberAgents = (allAgents ?? []).filter((agent: any) =>
     swarm?.agentIds?.includes(agent._id)
   )
 
@@ -55,14 +55,14 @@ function SwarmDetail() {
         {['Overview', 'Topology', 'Deploy'].map((tab, i) => (
           <Link
             key={tab}
-            to={
+            to={(
               i === 0 ? `/swarms/${swarmId}` :
                 i === 1 ? `/swarms/${swarmId}/topology` :
                   `/swarms/${swarmId}/deploy`
-            }
+            ) as any}
             className={`px-4 py-2 text-sm rounded-t-lg transition-colors ${i === 0
-                ? 'bg-slate-800 text-white border-b-2 border-cyan-500'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
+              ? 'bg-slate-800 text-white border-b-2 border-cyan-500'
+              : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
               }`}
           >
             {tab}
@@ -82,7 +82,7 @@ function SwarmDetail() {
           <CardContent>
             {memberInstances.length > 0 ? (
               <div className="space-y-3">
-                {memberInstances.map((inst) => (
+                {memberInstances.map((inst: any) => (
                   <div key={inst._id} className="flex items-center justify-between py-2 border-b border-slate-700/50 last:border-0">
                     <span className="text-sm text-white">{inst.name}</span>
                     <Badge variant={inst.status === 'online' ? 'success' : 'danger'}>{inst.status}</Badge>
@@ -106,7 +106,7 @@ function SwarmDetail() {
           <CardContent>
             {memberAgents.length > 0 ? (
               <div className="space-y-3">
-                {memberAgents.map((agent) => (
+                {memberAgents.map((agent: any) => (
                   <div key={agent._id} className="flex items-center justify-between py-2 border-b border-slate-700/50 last:border-0">
                     <div>
                       <span className="text-sm text-white">{agent.name}</span>

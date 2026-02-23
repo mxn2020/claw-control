@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { CheckCircle2, AlertCircle, Clock, Server, Globe } from 'lucide-react'
+import { CheckCircle2, AlertCircle, Server } from 'lucide-react'
 
 export const Route = createFileRoute('/status')({ component: StatusPage })
 

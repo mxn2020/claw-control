@@ -19,7 +19,7 @@ function AgentSessionDetail() {
       <Card><CardHeader><CardTitle>Messages</CardTitle></CardHeader><CardContent>
         <div className="space-y-3">
           {msgList.length === 0 && <p className="text-sm text-slate-500 text-center py-6">No messages.</p>}
-          {msgList.map(msg => (
+          {msgList.map((msg: any) => (
             <div key={msg._id} className={`rounded-lg p-3 ${msg.role === 'user' ? 'bg-slate-800 ml-8' : 'bg-cyan-950/30 mr-8'}`}>
               <div className="flex items-center gap-2 mb-1"><Badge variant="outline">{msg.role}</Badge><span className="text-xs text-slate-500">{new Date(msg.createdAt).toLocaleTimeString()}</span></div>
               <p className="text-sm text-slate-300">{msg.content}</p>

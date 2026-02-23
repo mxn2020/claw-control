@@ -39,7 +39,7 @@ function CVEMatrix() {
     const allInstances = instances ?? []
 
     // Deterministic exposure mapping
-    const activeExposures = allInstances.flatMap((inst, idx) => {
+    const activeExposures = allInstances.flatMap((inst: any, idx: any) => {
         // Arbitrarily assign CVEs based on index for demo
         if (idx % 3 === 0) return [] // Safe instance
         return idx % 2 === 0
@@ -86,7 +86,7 @@ function CVEMatrix() {
                             <ShieldAlert className="w-5 h-5 text-red-400" />
                             <div>
                                 <div className="text-sm font-semibold text-white">Critical Exposures</div>
-                                <div className="text-xs text-slate-400">{activeExposures.filter(e => e.cve.severity === 'critical' && !e.remediated).length} detected across fleet</div>
+                                <div className="text-xs text-slate-400">{activeExposures.filter((e: any) => e.cve.severity === 'critical' && !e.remediated).length} detected across fleet</div>
                             </div>
                         </div>
                     </CardContent>
@@ -150,7 +150,7 @@ function CVEMatrix() {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {activeExposures.map((exp, i) => (
+                                        {activeExposures.map((exp: any, i: any) => (
                                             <tr key={i} className="border-b border-slate-700/50 last:border-0 hover:bg-slate-800/50">
                                                 <td className="px-4 py-3 text-slate-300 font-medium">{exp.instance}</td>
                                                 <td className="px-4 py-3">

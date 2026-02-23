@@ -61,7 +61,7 @@ function BlueprintDetail() {
       label: 'Variables',
       icon: <Variable className="w-4 h-4 text-emerald-400" />,
       content:
-        blueprint.variables?.map((v) => `${v.key}=${v.defaultValue ?? '""'}`).join(', ') ??
+        blueprint.variables?.map((v: any) => `${v.key}=${v.defaultValue ?? '""'}`).join(', ') ??
         'No variables defined',
       hasContent: (blueprint.variables?.length ?? 0) > 0,
     },

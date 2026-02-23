@@ -26,7 +26,7 @@ function AgentModelProvider() {
   }
 
   // Derive available providers from instance config
-  const instance = instances?.find((i) => i._id === agent.instanceId)
+  const instance = instances?.find((i: any) => i._id === agent.instanceId)
   const configuredProviders = instance?.config?.providers ?? []
 
   return (
@@ -71,7 +71,7 @@ function AgentModelProvider() {
           <h2 className="text-sm font-medium text-slate-400">
             Available Providers (from instance config)
           </h2>
-          {configuredProviders.map((provider) => (
+          {configuredProviders.map((provider: any) => (
             <Card key={provider}>
               <CardHeader>
                 <div className="flex items-center justify-between">

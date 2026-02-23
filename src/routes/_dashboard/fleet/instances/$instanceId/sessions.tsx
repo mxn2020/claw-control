@@ -71,7 +71,7 @@ function InstanceSessions() {
             {sessionList.length === 0 && (
               <p className="text-sm text-slate-500 text-center py-6">No sessions found for this instance.</p>
             )}
-            {sessionList.map((session) => (
+            {sessionList.map((session: any) => (
               <Link
                 key={session._id}
                 to="/sessions/$sessionId"

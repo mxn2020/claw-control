@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { Card, CardHeader, CardTitle, CardContent } from '#/components/ui/card'
 import { Badge } from '#/components/ui/badge'
 import { Button } from '#/components/ui/button'
-import { Puzzle, Download, Trash2, ExternalLink, Shield } from 'lucide-react'
+import { Puzzle, Download, Trash2, Shield } from 'lucide-react'
 import { useQuery } from 'convex/react'
 import { api } from '../../../../../../convex/_generated/api'
 import { useToast } from '#/components/ui/toast'
@@ -10,7 +10,6 @@ import { useToast } from '#/components/ui/toast'
 export const Route = createFileRoute('/_dashboard/agents/$agentId/skills/installed')({ component: AgentSkillsInstalled })
 
 function AgentSkillsInstalled() {
-  const { agentId } = Route.useParams()
   const skills = useQuery(api.platform.list, {})
   const installed = (skills ?? []).filter((s: { isEnabled: boolean }) => s.isEnabled)
   const { toast } = useToast()

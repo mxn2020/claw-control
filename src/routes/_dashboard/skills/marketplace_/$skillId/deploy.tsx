@@ -153,7 +153,7 @@ function SkillDeploy() {
                             <h4 className="text-sm font-medium text-white mb-2">Required Configuration</h4>
                             <div className="space-y-1.5">
                                 <label className="text-xs text-slate-400">API Key (OpenWeatherMap)</label>
-                                <Input type="password" placeholder="Defaults to global instance secret" />
+                                <input type="password" placeholder="Defaults to global instance secret" className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-cyan-500" />
                             </div>
                         </div>
 

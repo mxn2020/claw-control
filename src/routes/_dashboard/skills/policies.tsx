@@ -36,14 +36,14 @@ function SkillsPolicies() {
       name: 'High-Risk Restrictions',
       description: `${highRiskSkills.length} high/critical risk skills detected. These should be reviewed and restricted in production.`,
       rulesCount: highRiskSkills.length,
-      appliedTo: instances.filter((i) => i.status === 'online').map((i) => i.name),
+      appliedTo: instances.filter((i: any) => i.status === 'online').map((i: any) => i.name),
       status: highRiskSkills.length > 0 ? 'active' : 'inactive',
     },
     {
       name: 'Enabled Skills Policy',
       description: `${enabledSkills.length} skills are currently enabled across the fleet.`,
       rulesCount: enabledSkills.length,
-      appliedTo: instances.map((i) => i.name),
+      appliedTo: instances.map((i: any) => i.name),
       status: 'active',
     },
     {
@@ -135,7 +135,7 @@ function SkillsPolicies() {
                 </span>
                 <div className="flex gap-1 flex-wrap">
                   {policy.appliedTo.length > 0 ? (
-                    policy.appliedTo.slice(0, 3).map((inst) => (
+                    policy.appliedTo.slice(0, 3).map((inst: any) => (
                       <Badge key={inst} variant="outline" className="text-xs">
                         <Server className="w-3 h-3 mr-1" />
                         {inst}

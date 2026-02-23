@@ -26,7 +26,7 @@ function ConfigureDefaults() {
   }
 
   // Derive default model from the first instance config that has one
-  const configuredInstance = instances.find((i) => i.config?.defaultModel)
+  const configuredInstance = instances.find((i: any) => i.config?.defaultModel)
   const defaultModel = configuredInstance?.config?.defaultModel ?? 'Not configured'
   const sandboxMode = configuredInstance?.config?.sandboxMode ?? false
 

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
-import { Card, CardHeader, CardTitle, CardContent } from '#/components/ui/card'
+import { Card, CardContent } from '#/components/ui/card'
 import { Badge } from '#/components/ui/badge'
 import { Button } from '#/components/ui/button'
 import { Clock, Timer, Webhook, Mail, Calendar, Filter, Plus, Power } from 'lucide-react'
