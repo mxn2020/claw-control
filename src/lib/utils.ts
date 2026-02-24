@@ -2,5 +2,7 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
+  const merged = twMerge(clsx(inputs));
+  // Deduplicate exact duplicate classes
+  return Array.from(new Set(merged.split(" ").filter(Boolean))).join(" ");
 }
