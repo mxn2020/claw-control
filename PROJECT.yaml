@@ -1,0 +1,16 @@
+name: claw-control
+project_scope: main
+project_type: standalone
+description: "ClawControl — Complete Route & Feature Blueprint"
+tier: prototype
+lane: claw-platform
+priority: medium
+oss: false
+stack: [typescript, react, convex, tailwind, tanstack, vite]
+repo: "https://github.com/mxn2020/claw-control"
+deploy_url: null
+last_active: 2026-02-24
+tags: [claw, control, openclaw, ai-gateway, tools]
+notes: null
+id: 1c016e16-8138-4988-816c-59851ee5f06d
+category: oss-tool

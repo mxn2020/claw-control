@@ -14,3 +14,7 @@ __unconfig*
 todos.json
 package-lock.json
 
+
+# Added by AI Agent
+.env.*
+!.env.example

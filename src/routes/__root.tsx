@@ -5,6 +5,7 @@ import { AuthProvider, MockAuthProvider } from '../lib/authContext'
 import { ToastProvider } from '../components/ui/toast'
 
 import appCss from '../styles.css?url'
+import { Analytics } from "@vercel/analytics/react"
 
 const convexUrl = import.meta.env.VITE_CONVEX_URL as string
 const convex = convexUrl ? new ConvexReactClient(convexUrl) : null
@@ -30,6 +31,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body className="bg-slate-900 text-white">
         {children}
+        <Analytics />
         <Scripts />
       </body>
     </html>
